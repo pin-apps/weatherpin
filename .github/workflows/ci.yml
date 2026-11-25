@@ -270,18 +270,26 @@ jobs:
     timeout-minutes: 5
     permissions:
       contents: read
-      pull-requests: read # lists the PR's commits to scan
+    env:
+      # The gitleaks command-line tool (MIT), checked against its release's
+      # checksum. Not gitleaks-action: it needs a licence key for repos
+      # owned by an organization.
+      GITLEAKS_VERSION: 8.30.1
+      GITLEAKS_SHA256: 551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0 # full history, so every commit gets scanned
           persist-credentials: false
-      - uses: gitleaks/gitleaks-action@e0c47f4f8be36e29cdc102c57e68cb5cbf0e8d1e # v3.0.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # Comments would need pull-requests: write; findings still fail the job
-          # and show up in the job summary.
-          GITLEAKS_ENABLE_COMMENTS: false
+      - name: Install gitleaks
+        run: |
+          file="gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
+          curl -sSfLO "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/${file}"
+          echo "${GITLEAKS_SHA256}  ${file}" | sha256sum -c -
+          tar -xzf "${file}" gitleaks
+      # Every commit (a few seconds); findings fail the job, values redacted.
+      - name: Scan for secrets
+        run: ./gitleaks git --redact --no-banner --verbose .
 
   deploy:
     name: Deploy to Cloudflare

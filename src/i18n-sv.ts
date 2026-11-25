@@ -325,6 +325,7 @@ export const SWEDISH: Record<string, string> = {
   'Waning crescent': 'Avtagande skära',
   'Local time': 'Lokal tid',
   Coordinates: 'Koordinater',
+  Elevation: 'Höjd över havet',
 
   // Warnings
   'Weather warnings': 'Vädervarningar',
@@ -570,6 +571,8 @@ export const SWEDISH: Record<string, string> = {
   'Estimate from published tests, not your car.':
     'Uppskattning från publicerade tester, inte din bil.',
   'Temperature quiz': 'Temperaturquiz',
+  'html:sources-elevation':
+    '<strong>Höjd över havet:</strong> från höjdmodellen Copernicus DEM (rutnät på 90 m), via Open-Meteo; i brant terräng kan den skilja sig med tiotals meter.',
   'html:sources-ev':
     '<strong>Elbilens räckvidd i kyla:</strong> typiska värden från publicerade vintertester och fordonsdata (norska NAF:s vintertester El Prix, AAA, Geotab) efter temperaturen nu; inte någon särskild bil.',
 };

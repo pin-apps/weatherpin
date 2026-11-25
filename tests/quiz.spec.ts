@@ -88,6 +88,8 @@ test.describe('temperature quiz', () => {
     await openQuiz(page);
     await quiz(page).getByRole('button', { name: "Play today's quiz" }).click();
     await expect(quiz(page).locator('.quiz__question')).toHaveText("What's today's high here?");
+    await expect(quiz(page).locator('.quiz__question strong')).toHaveText("today's high");
+    await expect(quiz(page)).toContainText('The whole day there, also the hours still to come.');
     await expect(slider(page)).toBeFocused();
     expect(await guess(page, 6)).toBe('🟩 You guessed 6 °C: 0° off · 100 points');
     await expect(quiz(page).locator('.quiz__answer')).toContainText(
@@ -155,6 +157,8 @@ test.describe('temperature quiz', () => {
     await expect(quiz(page).locator('.quiz__question')).toHaveText(
       "What's the temperature here right now?",
     );
+    await expect(quiz(page).locator('.quiz__question strong')).toHaveText('right now');
+    await expect(quiz(page)).not.toContainText('The whole day');
     expect(await guess(page, 7)).toBe('🟩 You guessed 7 °C: 2° off · 80 points');
     await expect(quiz(page).locator('.quiz__answer')).toContainText("It's 5 °C there right now.");
   });
@@ -284,6 +288,7 @@ test.describe('temperature quiz', () => {
       await expect(finnish.locator('.quiz__question')).toHaveText(
         'Mikä on täällä tänään päivän ylin lämpötila?',
       );
+      await expect(finnish.locator('.quiz__question strong')).toHaveText('päivän ylin lämpötila');
     });
   });
 });

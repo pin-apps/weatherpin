@@ -98,6 +98,18 @@ export function formatWaveHeight(metres: number): string {
   return `${fixed(metres, 1)} m`;
 }
 
+/**
+ * Height above sea level: "1,234 m", or feet for those who use inches
+ * ("4,049 ft"); whole numbers, the language's thousands separator.
+ */
+export function formatElevation(metres: number): string {
+  const feet = currentUnits().precipitation === 'inch';
+  const value = roundWhole(feet ? metres * 3.28084 : metres);
+  const language = currentLanguage();
+  const number = new Intl.NumberFormat(language === 'en' ? 'en' : LANGUAGE_LOCALES[language]);
+  return `${number.format(value)} ${feet ? 'ft' : 'm'}`;
+}
+
 /** Snow depth from Open-Meteo's cm: "2.1 cm", or "0.8 in" with °F. */
 export function formatSnow(cm: number): string {
   if (currentUnits().precipitation === 'inch') return `${fixed(cm / 2.54, 1)} in`;

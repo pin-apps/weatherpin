@@ -322,6 +322,7 @@ export const NORWEGIAN: Record<string, string> = {
   'Waning crescent': 'Minkende månesigd',
   'Local time': 'Lokal tid',
   Coordinates: 'Koordinater',
+  Elevation: 'Høyde over havet',
 
   // Warnings
   'Weather warnings': 'Farevarsler',
@@ -563,6 +564,8 @@ export const NORWEGIAN: Record<string, string> = {
     'Typisk ved {temp}. Mindre med varmepumpe eller hvis bilen forvarmes under lading; mer på korte turer.',
   'Estimate from published tests, not your car.': 'Anslag fra publiserte tester, ikke din bil.',
   'Temperature quiz': 'Temperaturquiz',
+  'html:sources-elevation':
+    '<strong>Høyde over havet:</strong> fra høydemodellen Copernicus DEM (rutenett på 90 m), via Open-Meteo; i bratt terreng kan den avvike med flere titalls meter.',
   'html:sources-ev':
     '<strong>Elbilens rekkevidde i kulde:</strong> typiske tall fra publiserte vintertester og flåtedata (NAFs El Prix-vintertester, AAA, Geotab) etter temperaturen nå; ikke noen bestemt bil.',
 };

@@ -43,6 +43,7 @@ test.describe('beer outside', () => {
       'Local time',
       'Weather warnings',
       'Coordinates',
+      'Elevation',
     ]);
   });
 

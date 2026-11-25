@@ -5,8 +5,9 @@ full-screen world map and clicks/taps any point, searches for a place by
 name, or uses "My location" to get the weather there (current conditions,
 next 24 hours, 7 days). Live at https://weatherpin.app (and the old
 workers.dev address). It was first called "Nordic Weather": the Worker,
-the repo, `package.json` and the `nordic-weather:` storage keys keep that
-name on purpose (see README).
+`package.json` and the `nordic-weather:` storage keys keep that name on
+purpose (see README). The repo is `pin-apps/weatherpin` (public, no
+licence: all rights reserved).
 
 - Map: [Leaflet](https://leafletjs.com/) (npm, bundled; no CDN) with
   OpenStreetMap standard tiles. Follow the

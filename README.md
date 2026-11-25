@@ -147,8 +147,10 @@ browsers can't read directly. It runs on the free plan.
 These steps are done by hand, once. Never commit the token or account ID.
 
 1. **Create a Cloudflare API token.** In the Cloudflare dashboard, go to
-   **Account API tokens → Create Token** and use the **Edit Cloudflare
-   Workers** template. Limit it to the one account you deploy to.
+   **Account API tokens → Create Token → Create Custom Token** with only:
+   Account **Workers Scripts: Edit** and **Account Settings: Read**, and
+   for the zone `weatherpin.app` **Workers Routes: Edit**. (The **Edit
+   Cloudflare Workers** template also works but allows much more.)
 2. **Find your account ID.** It's on the account's overview page in the
    dashboard (see
    [Find account and zone IDs](https://developers.cloudflare.com/fundamentals/account/find-account-and-zone-ids/)).
@@ -168,10 +170,10 @@ These steps are done by hand, once. Never commit the token or account ID.
 The app's own domain, `weatherpin.app`, is set in `wrangler.jsonc`
 (`routes`, `custom_domain`): the deploy points it at the Worker and
 Cloudflare issues its certificate. The domain must be in the same Cloudflare
-account, and the API token needs **Workers Routes: Edit** for its zone (the
-Workers template's "All zones" includes it). The workers.dev address stays
-on (`workers_dev`). The Worker, the repo and the storage keys keep the old
-name `nordic-weather` (renaming the Worker would create a new one, and new
+account, and the API token needs **Workers Routes: Edit** for its zone
+(step 1). The workers.dev address stays on (`workers_dev`). The Worker,
+`package.json` and the storage keys keep the old name `nordic-weather`
+(renaming the Worker would create a new one, and new
 storage keys would lose everyone's saved favourites).
 
 ### Rollback
@@ -179,3 +181,10 @@ storage keys would lose everyone's saved favourites).
 In the Cloudflare dashboard, open **Workers & Pages → nordic-weather →
 Deployments** and roll back to an earlier version. Or revert the commit on
 `main` and let the pipeline deploy again.
+
+## Copyright
+
+© 2026 tomk. All rights reserved. The code is public to read, but no
+licence is granted to copy, change or reuse it. The weather data, map and
+other sources the app uses come under their own licences (listed in the
+app's About).

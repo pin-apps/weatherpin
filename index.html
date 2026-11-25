@@ -1,0 +1,762 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <meta
+      name="description"
+      content="Tap anywhere on the world map for the weather now, the next 24 hours and 7 days, with rain radar, air quality, pollen and warnings. Free, no ads, no tracking."
+    />
+    <title data-i18n>Weatherpin – weather anywhere on the world map</title>
+    <!-- For search engines and link previews (chat apps, social sites): the
+         one address to use, and the picture, title and text to show with a
+         shared link (og-image.png: drawn by scripts/make-icons.py). -->
+    <link rel="canonical" href="https://weatherpin.app/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Weatherpin" />
+    <meta property="og:url" content="https://weatherpin.app/" />
+    <meta property="og:title" content="Weatherpin – weather anywhere on the world map" />
+    <meta
+      property="og:description"
+      content="Tap anywhere on the world map for the weather now, the next 24 hours and 7 days, with rain radar, air quality, pollen and warnings. Free, no ads, no tracking."
+    />
+    <meta property="og:image" content="https://weatherpin.app/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="The Weatherpin icon: a white cloud and a yellow sun on blue"
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <!-- What the site is, in the form search engines read (schema.org). Data
+         only: browsers never run it, so the CSP's script-src doesn't apply. -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Weatherpin",
+        "url": "https://weatherpin.app/",
+        "description": "Tap anywhere on the world map for the weather now, the next 24 hours and 7 days, with rain radar, air quality, pollen and warnings. Free, no ads, no tracking.",
+        "applicationCategory": "Weather",
+        "operatingSystem": "Any (web browser)",
+        "inLanguage": ["en", "fi", "sv", "nb"],
+        "isAccessibleForFree": true,
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" }
+      }
+    </script>
+    <!-- Start connecting early: map tiles load straight away, and the
+         weather comes from Open-Meteo (fetch needs crossorigin to share the
+         connection). Saves a DNS + TLS round trip on slow phone networks. -->
+    <link rel="preconnect" href="https://tile.openstreetmap.org" />
+    <link rel="preconnect" href="https://api.open-meteo.com" crossorigin />
+    <!-- Icons: SVG in browser tabs (PNG fallback); the home-screen icon and
+         name come from the manifest (Android, iOS 16.4+) and the Apple tag. -->
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="apple-mobile-web-app-title" content="Weather" />
+    <!-- Browser bar colour: the app's blue, or its dark surface in dark
+         mode (set by theme.js). -->
+    <meta name="theme-color" content="#0b63ce" />
+    <!-- Light or dark before anything is drawn (no white flash); a plain
+         blocking script on purpose. See src/theme.ts. -->
+    <script src="/theme.js"></script>
+  </head>
+  <body>
+    <main class="app">
+      <h1 class="visually-hidden">Weatherpin</h1>
+      <div
+        id="map"
+        class="map"
+        role="application"
+        data-i18n-attrs="aria-label"
+        aria-label="World map. Click or tap a point to see the weather there. With the keyboard, pan with the arrow keys and press Enter for the weather at the centre."
+      ></div>
+
+      <!-- Search, over the top-left of the map. -->
+      <div class="toolbar">
+        <div class="toolbar__row">
+          <form id="search" class="search" role="search">
+            <label for="search-input" class="visually-hidden" data-i18n>Search for a place</label>
+            <svg class="search__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <circle
+                cx="10.5"
+                cy="10.5"
+                r="6.5"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              />
+              <path
+                d="M15.5 15.5 21 21"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+            </svg>
+            <input
+              id="search-input"
+              class="search__input"
+              type="search"
+              placeholder="Search for a place"
+              data-i18n-attrs="placeholder"
+              autocomplete="off"
+              spellcheck="false"
+              enterkeyhint="search"
+              role="combobox"
+              aria-autocomplete="list"
+              aria-expanded="false"
+              aria-controls="search-results"
+            />
+            <!-- The suggestions, and under the favourites a way to edit them
+                 (outside the listbox, which may only hold options). -->
+            <div class="search__popup" hidden>
+              <ul
+                id="search-results"
+                class="search__results"
+                role="listbox"
+                aria-label="Places"
+                hidden
+              ></ul>
+              <button type="button" class="search__edit" hidden>
+                <span class="search__button-icon" aria-hidden="true">✏️</span>
+                <span data-i18n>Edit favourites</span>
+              </button>
+              <!-- Shown with an empty box (main.ts: a random place on land). -->
+              <button type="button" class="search__random" hidden>
+                <span class="search__button-icon" aria-hidden="true">🎲</span>
+                <span data-i18n>Random place</span>
+              </button>
+              <!-- The temperature quiz (quiz/), also opened by a link to #quiz. -->
+              <button type="button" class="search__quiz" hidden>
+                <span class="search__button-icon" aria-hidden="true">🌡️</span>
+                <span data-i18n>Temperature quiz</span>
+              </button>
+            </div>
+            <p class="search__message" hidden></p>
+            <p class="search__status visually-hidden" role="status"></p>
+          </form>
+          <!-- Settings: units, light/dark, language, start place. -->
+          <button
+            type="button"
+            id="settings-button"
+            class="toolbar__button"
+            aria-label="Settings"
+            title="Settings"
+            data-i18n-attrs="aria-label title"
+            aria-haspopup="dialog"
+          >
+            <svg class="toolbar__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <circle
+                cx="12"
+                cy="12"
+                r="6.5"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+              />
+              <circle cx="12" cy="12" r="2.25" fill="none" stroke="currentColor" stroke-width="2" />
+              <path
+                d="M12 1.5V5M12 19v3.5M1.5 12H5M19 12h3.5M4.58 4.58l2.47 2.47M16.95 16.95l2.47 2.47M4.58 19.42l2.47-2.47M16.95 7.05l2.47-2.47"
+                stroke="currentColor"
+                stroke-width="3.5"
+              />
+            </svg>
+          </button>
+        </div>
+        <p id="locate-message" class="toolbar__message" role="alert" hidden></p>
+      </div>
+
+      <!-- Floating "my location" button, bottom-right like in map apps. -->
+      <button
+        type="button"
+        id="locate-button"
+        class="locate"
+        aria-label="Weather at my location"
+        title="Weather at my location"
+        data-i18n-attrs="aria-label title"
+      >
+        <svg class="locate__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <circle cx="12" cy="12" r="3.5" fill="currentColor" />
+          <circle cx="12" cy="12" r="7.5" fill="none" stroke="currentColor" stroke-width="2" />
+          <path
+            d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+          />
+        </svg>
+      </button>
+
+      <!-- Rain radar history: shown while the radar is on (radar.ts). -->
+      <div class="radar-bar" hidden>
+        <button
+          type="button"
+          class="radar-bar__play"
+          aria-label="Play radar history"
+          data-i18n-attrs="aria-label"
+          aria-pressed="false"
+        >
+          ▶
+        </button>
+        <input
+          class="radar-bar__slider"
+          type="range"
+          min="0"
+          max="0"
+          step="1"
+          value="0"
+          aria-label="Radar time"
+          data-i18n-attrs="aria-label"
+        />
+        <span class="radar-bar__time"></span>
+      </div>
+
+      <!-- Rain radar on/off, left of the location button. -->
+      <button
+        type="button"
+        id="radar-button"
+        class="locate radar-button"
+        aria-label="Rain radar"
+        data-i18n-attrs="aria-label"
+        aria-pressed="false"
+      >
+        <svg class="locate__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path
+            d="M7 15.5a4.5 4.5 0 0 1-.6-8.96A6 6 0 0 1 18 8a3.75 3.75 0 0 1-.5 7.5z"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linejoin="round"
+          />
+          <path
+            d="M8.5 18.5l-1 2.5M12.5 18.5l-1 2.5M16.5 18.5l-1 2.5"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+          />
+        </svg>
+      </button>
+
+      <aside id="panel" class="panel" aria-labelledby="panel-title" hidden>
+        <!-- Top bar: also the swipe area of the mobile bottom sheet. -->
+        <div class="panel__top">
+          <button
+            type="button"
+            class="panel__handle"
+            aria-label="Weather details"
+            data-i18n-attrs="aria-label"
+            aria-controls="panel-content"
+            aria-expanded="true"
+          >
+            <span class="panel__grabber" aria-hidden="true"></span>
+          </button>
+          <header class="panel__header">
+            <div class="panel__heading">
+              <div class="panel__title-row">
+                <h2 id="panel-title" class="panel__title" data-i18n>Weather</h2>
+                <!-- Shown when this place is the start place. -->
+                <span class="panel__start-mark" title="Start place" data-i18n-attrs="title" hidden>
+                  <span aria-hidden="true">⌂</span>
+                  <span class="visually-hidden" data-i18n>Start place</span>
+                </span>
+              </div>
+              <p class="panel__summary"></p>
+            </div>
+            <button
+              type="button"
+              class="panel__favourite"
+              aria-label="Favourite"
+              data-i18n-attrs="aria-label"
+              aria-pressed="false"
+              hidden
+            >
+              <span class="panel__favourite-icon" aria-hidden="true">☆</span>
+            </button>
+            <!-- ⋯: the place's less used actions, in a small menu that
+                 opens below (src/panel-menu.ts). Right after the button in
+                 the page, so Tab reaches its items next. -->
+            <button
+              type="button"
+              class="panel__more"
+              aria-label="More actions"
+              title="More actions"
+              data-i18n-attrs="aria-label title"
+              aria-expanded="false"
+              aria-controls="panel-menu"
+            >
+              <span aria-hidden="true">⋯</span>
+            </button>
+            <div id="panel-menu" class="panel__menu" hidden>
+              <button type="button" class="panel__menu-item panel__share" hidden>
+                <span class="panel__menu-icon" aria-hidden="true">↗</span>
+                <span data-i18n>Share this place</span>
+              </button>
+              <!-- The weather as a postcard picture (postcard.ts). -->
+              <button type="button" class="panel__menu-item panel__postcard" hidden>
+                <span class="panel__menu-icon" aria-hidden="true">📸</span>
+                <span data-i18n>Share as a picture</span>
+              </button>
+              <!-- An excuse made from the weather, just for fun (quips/excuses.ts). -->
+              <button type="button" class="panel__menu-item panel__excuse" hidden>
+                <span class="panel__menu-icon" aria-hidden="true">🎲</span>
+                <span data-i18n>Weather excuse</span>
+              </button>
+              <!-- A conversation opener from the weather (quips/small-talk.ts). -->
+              <button type="button" class="panel__menu-item panel__small-talk" hidden>
+                <span class="panel__menu-icon" aria-hidden="true">💬</span>
+                <span data-i18n>Small talk</span>
+              </button>
+              <!-- The weather on a past day, in a dialog (past-weather.ts). -->
+              <button type="button" class="panel__menu-item panel__past" hidden>
+                <span class="panel__menu-icon" aria-hidden="true">🎂</span>
+                <span data-i18n>Weather on a day…</span>
+              </button>
+              <!-- On/off: aria-pressed, and ✓ instead of ⌂ when on. -->
+              <button
+                type="button"
+                class="panel__menu-item panel__start"
+                aria-pressed="false"
+                hidden
+              >
+                <span class="panel__menu-icon panel__start-icon" aria-hidden="true">⌂</span>
+                <span data-i18n>Start here</span>
+              </button>
+            </div>
+            <button
+              type="button"
+              class="panel__close"
+              aria-label="Close weather panel"
+              data-i18n-attrs="aria-label"
+            >
+              <span aria-hidden="true">×</span>
+            </button>
+          </header>
+          <!-- "Saved to favourites" etc.; empty when there's nothing to say. -->
+          <p class="panel__message" role="status"></p>
+          <!-- What the ⋯ menu did ("Link copied"), or the link to copy by hand. -->
+          <p class="panel__action-status" role="status"></p>
+        </div>
+        <div id="panel-content" class="panel__content">
+          <div class="panel__body" aria-live="polite"></div>
+          <p class="panel__credit">
+            <a href="https://open-meteo.com/" data-i18n>Weather data by Open-Meteo.com</a>
+            (<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>)
+          </p>
+        </div>
+      </aside>
+    </main>
+    <!-- About: sources, licences, privacy. Opened from "About" in the map
+         credits (src/about.ts). Kept free of personal details. -->
+    <dialog id="about" class="about" aria-labelledby="about-title">
+      <div class="about__content">
+        <header class="about__header">
+          <h2 id="about-title" class="about__title" data-i18n>About Weatherpin</h2>
+          <button
+            type="button"
+            class="about__close"
+            aria-label="Close"
+            data-i18n-attrs="aria-label"
+          >
+            <span aria-hidden="true">×</span>
+          </button>
+        </header>
+        <p data-i18n>
+          Tap anywhere on the world map, search for a place, or use My location to see the weather
+          there: now, the next 24 hours and 7 days, with air quality, UV, rain radar and weather
+          warnings.
+        </p>
+
+        <h3 data-i18n>Where the data comes from</h3>
+        <ul class="about__list">
+          <li data-i18n-html="sources-weather">
+            <strong>Weather, UV, snow and sea:</strong>
+            <a href="https://open-meteo.com/">Open-Meteo.com</a>
+            (<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>)
+          </li>
+          <li data-i18n-html="sources-search">
+            <strong>Place search:</strong> Open-Meteo, with place names from
+            <a href="https://www.geonames.org/">GeoNames</a>
+            (<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>)
+          </li>
+          <li data-i18n-html="sources-names">
+            <strong>Names of tapped places:</strong>
+            <a href="https://nominatim.org/">Nominatim</a>, from ©
+            <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors (ODbL)
+          </li>
+          <li data-i18n-html="sources-air">
+            <strong>Air quality, pollen and greenhouse gases:</strong> the Copernicus Atmosphere
+            Monitoring Service, via Open-Meteo
+          </li>
+          <li data-i18n-html="sources-history">
+            <strong>Weather on a past day:</strong> ERA5 from the Copernicus Climate Change Service,
+            via <a href="https://open-meteo.com/">Open-Meteo.com</a> (<a
+              href="https://creativecommons.org/licenses/by/4.0/"
+              >CC BY 4.0</a
+            >)
+          </li>
+          <li data-i18n-html="sources-aurora">
+            <strong>Northern lights:</strong>
+            <a href="https://www.swpc.noaa.gov/products/aurora-30-minute-forecast"
+              >NOAA Space Weather Prediction Center</a
+            >
+            (OVATION model, public domain)
+          </li>
+          <li data-i18n-html="sources-edm">
+            <strong>Atmospheric correction (EDM):</strong> calculated in the app with the formula
+            Leica Geosystems publishes in its total station manuals (e.g. the TS13 user manual,
+            Technical Data → Formulas; visible red laser, 658 nm), from the forecast's temperature,
+            ground-level pressure and humidity. 0 ppm = 1013.25 hPa, 12 °C, 60 % humidity. Other
+            makes and lasers use slightly different formulas, usually within a few ppm.
+          </li>
+          <li data-i18n-html="sources-ev">
+            <strong>Electric car range in the cold:</strong> typical figures from published
+            cold-weather tests and fleet data (NAF's El Prix winter tests in Norway, AAA, Geotab),
+            by the temperature now; not any particular car.
+          </li>
+          <li data-i18n-html="sources-map">
+            <strong>Map:</strong> ©
+            <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, shown
+            with <a href="https://leafletjs.com/">Leaflet</a>
+          </li>
+          <li data-i18n-html="sources-radar">
+            <strong>Rain radar:</strong>
+            <a href="https://eccc-msc.github.io/open-data/licence/readme_en/"
+              >Environment and Climate Change Canada</a
+            >
+            over North America (Open Government Licence – Canada) and
+            <a href="https://www.rainviewer.com/">RainViewer</a> elsewhere
+          </li>
+          <li data-i18n-html="sources-warnings">
+            <strong>Weather warnings:</strong> Environment and Climate Change Canada, the US
+            National Weather Service, MET Norway (CC BY 4.0), SMHI (CC BY 4.0) and the Finnish
+            Meteorological Institute (CC BY 4.0), for Canada, the US, Norway, Sweden and Finland.
+            Finland's come through this site's own server, as FMI's feed can't be read by browsers
+            directly; your location is not sent to it (the app checks which warnings cover the place
+            itself)
+          </li>
+          <li data-i18n-html="sources-roads">
+            <strong>Road conditions in Finland:</strong>
+            <a href="https://www.digitraffic.fi/">Fintraffic / digitraffic.fi</a> (CC BY 4.0), the
+            main road nearest the place; downloaded for the whole country, so no location is sent
+          </li>
+        </ul>
+
+        <h3 data-i18n>Privacy</h3>
+        <ul class="about__list">
+          <li data-i18n-html="privacy-tracking">
+            No account, no cookies and no tracking. Visits are counted anonymously with Cloudflare
+            Web Analytics, without cookies or anything that identifies you.
+          </li>
+          <li data-i18n-html="privacy-saved">
+            Your favourites, start place (rounded to about 1 km), unit choices, light or dark
+            appearance, language, rain radar setting, which sections you've folded away and your
+            quiz results (today's score, streak and best) are saved only in this browser, on this
+            device. So is the weather of the last three places you looked at (rounded to about 1
+            km), so it can be shown without a connection.
+          </li>
+          <li data-i18n-html="privacy-sent">
+            To show the weather, the coordinates of the place you pick are sent to the weather
+            services above, and for a tapped point also to OpenStreetMap's Nominatim, for its name.
+            For Weather on a day, the day you pick is sent to Open-Meteo too, and not saved. Like
+            any website, they, the map service and Cloudflare (which hosts the site) see your IP
+            address.
+          </li>
+          <li data-i18n-html="privacy-location">
+            Your location is used only when you press My location. It is saved only if you make that
+            place your start place, and with its weather (above), rounded to about 1 km.
+          </li>
+          <li data-i18n-html="privacy-address">
+            The page address shows the place you're looking at (rounded to about 1 km), so it can be
+            bookmarked or shared. It stays in your browser unless you share the link.
+          </li>
+        </ul>
+        <h3 data-i18n>Use at your own risk</h3>
+        <ul class="about__list">
+          <li data-i18n>
+            Forecasts can be wrong, and data can be late or missing. Don't rely on this app alone
+            where safety is at stake, such as at sea, in the mountains or in severe weather. Follow
+            the official warnings of your national weather service.
+          </li>
+          <li data-i18n>Air quality, pollen and UV are general information, not medical advice.</li>
+          <li data-i18n>
+            The northern lights chance is a model estimate for the next hour or so, and the aurora
+            can change within minutes. Stargazing, golden hour and the other sky times are
+            calculated from the sun, moon and cloud forecast, and are approximate.
+          </li>
+          <li data-i18n>
+            The atmospheric correction for surveying instruments and the air values (pollutants,
+            CO₂, methane) are model estimates, not measurements. Don't use them where accuracy
+            matters without measuring on site.
+          </li>
+          <!-- The weather excuses and small talk (quips/): jokes, not advice. -->
+          <li data-i18n-html="fun-disclaimer">
+            Weather excuses and small talk are for fun. They're based on the forecast for the place;
+            the results are not guaranteed. We take no responsibility if your boss doesn't accept
+            the excuse, the conversation dies after one line, or your cat disagrees.
+          </li>
+          <li data-i18n>
+            The app is free and provided as is, without any warranty. To the extent the law allows,
+            no liability is accepted for any loss from using it.
+          </li>
+          <li data-i18n>
+            The app is not affiliated with or endorsed by the data providers or instrument makers
+            above.
+          </li>
+        </ul>
+      </div>
+    </dialog>
+
+    <!-- The temperature quiz (src/quiz/quiz.ts fills the body). Not modal: the
+         map behind it shows each place. -->
+    <dialog id="quiz" class="quiz" aria-labelledby="quiz-title">
+      <header class="quiz__header">
+        <h2 id="quiz-title" class="quiz__title">
+          <span aria-hidden="true">🌡️</span> <span data-i18n>Temperature quiz</span>
+        </h2>
+        <button type="button" class="quiz__close" aria-label="Close" data-i18n-attrs="aria-label">
+          <span aria-hidden="true">×</span>
+        </button>
+      </header>
+      <div class="quiz__body"></div>
+      <p class="quiz__status" role="status"></p>
+    </dialog>
+
+    <!-- Settings (src/settings.ts), opened from the ⚙ button. Each row of
+         buttons is a group named by its heading; the choice in use is
+         pressed. -->
+    <dialog id="settings" class="settings" aria-labelledby="settings-title">
+      <div class="settings__content">
+        <header class="about__header">
+          <h2 id="settings-title" class="about__title" data-i18n>Settings</h2>
+          <button
+            type="button"
+            class="about__close settings__close"
+            aria-label="Close"
+            data-i18n-attrs="aria-label"
+          >
+            <span aria-hidden="true">×</span>
+          </button>
+        </header>
+
+        <!-- Add to home screen (settings.ts, install-prompt.ts). -->
+        <section class="settings__app" aria-labelledby="settings-app">
+          <h3 id="settings-app" data-i18n>App</h3>
+          <button type="button" class="button settings__install">
+            <span aria-hidden="true">📲</span> <span data-i18n>Add to home screen</span>
+          </button>
+          <p class="settings__hint settings__install-hint" hidden></p>
+          <p class="settings__hint settings__installed" hidden data-i18n>
+            Added to the home screen.
+          </p>
+        </section>
+
+        <h3 id="settings-units" data-i18n>Units</h3>
+        <p id="settings-temperature" class="settings__label" data-i18n>Temperature</p>
+        <div
+          class="settings__choices"
+          role="group"
+          aria-labelledby="settings-temperature"
+          data-setting="temperature"
+        >
+          <button type="button" class="button settings__choice" data-value="celsius">°C</button>
+          <button type="button" class="button settings__choice" data-value="fahrenheit">°F</button>
+        </div>
+        <p id="settings-wind" class="settings__label" data-i18n>Wind</p>
+        <div
+          class="settings__choices"
+          role="group"
+          aria-labelledby="settings-wind"
+          data-setting="wind"
+        >
+          <button type="button" class="button settings__choice" data-value="auto" data-i18n>
+            Automatic
+          </button>
+          <button type="button" class="button settings__choice" data-value="ms">m/s</button>
+          <button type="button" class="button settings__choice" data-value="kmh">km/h</button>
+          <button type="button" class="button settings__choice" data-value="mph">mph</button>
+          <button type="button" class="button settings__choice" data-value="kn" data-i18n>
+            Knots
+          </button>
+          <button type="button" class="button settings__choice" data-value="bft" data-i18n>
+            Beaufort
+          </button>
+        </div>
+        <p id="settings-precipitation" class="settings__label" data-i18n>Rain and snow</p>
+        <div
+          class="settings__choices"
+          role="group"
+          aria-labelledby="settings-precipitation"
+          data-setting="precipitation"
+        >
+          <button type="button" class="button settings__choice" data-value="auto" data-i18n>
+            Automatic
+          </button>
+          <button type="button" class="button settings__choice" data-value="mm">mm</button>
+          <button type="button" class="button settings__choice" data-value="inch">in</button>
+        </div>
+        <p id="settings-pressure" class="settings__label" data-i18n>Pressure</p>
+        <div
+          class="settings__choices"
+          role="group"
+          aria-labelledby="settings-pressure"
+          data-setting="pressure"
+        >
+          <button type="button" class="button settings__choice" data-value="auto" data-i18n>
+            Automatic
+          </button>
+          <button type="button" class="button settings__choice" data-value="hPa">hPa</button>
+          <button type="button" class="button settings__choice" data-value="inHg">inHg</button>
+          <button type="button" class="button settings__choice" data-value="mmHg">mmHg</button>
+        </div>
+        <!-- What Automatic gives now; filled in by settings.ts. -->
+        <p class="settings__hint settings__units-hint"></p>
+
+        <h3 id="settings-theme" data-i18n>Appearance</h3>
+        <div
+          class="settings__choices"
+          role="group"
+          aria-labelledby="settings-theme"
+          data-setting="theme"
+        >
+          <button type="button" class="button settings__choice" data-value="auto" data-i18n>
+            Automatic
+          </button>
+          <button type="button" class="button settings__choice" data-value="light" data-i18n>
+            Light
+          </button>
+          <button type="button" class="button settings__choice" data-value="dark" data-i18n>
+            Dark
+          </button>
+        </div>
+        <p class="settings__hint" data-i18n>Automatic follows your device's setting.</p>
+
+        <h3 id="settings-language" data-i18n>Language</h3>
+        <!-- Each language in its own name, so it can be found in either. -->
+        <div
+          class="settings__choices"
+          role="group"
+          aria-labelledby="settings-language"
+          data-setting="language"
+        >
+          <button type="button" class="button settings__choice" data-value="en" lang="en">
+            English
+          </button>
+          <button type="button" class="button settings__choice" data-value="fi" lang="fi">
+            Suomi
+          </button>
+          <button type="button" class="button settings__choice" data-value="sv" lang="sv">
+            Svenska
+          </button>
+          <button type="button" class="button settings__choice" data-value="nb" lang="nb">
+            Norsk
+          </button>
+        </div>
+
+        <section class="settings__start" aria-labelledby="settings-start">
+          <h3 id="settings-start" data-i18n>Start place</h3>
+          <p class="settings__start-text" tabindex="-1"></p>
+          <button type="button" class="button settings__start-remove" hidden data-i18n>
+            Remove start place
+          </button>
+        </section>
+
+        <p class="settings__actions">
+          <button type="button" class="button settings__clear" data-i18n>Clear saved data</button>
+        </p>
+        <p class="settings__message" role="status"></p>
+        <p class="settings__about"><a href="#about" data-i18n>About Weatherpin</a></p>
+      </div>
+    </dialog>
+
+    <!-- Edit favourites: rename, reorder, remove (src/favourites/editor.ts).
+         Opened from "Edit favourites" under the favourites list. Done gets
+         the first focus, so a phone's keyboard doesn't pop up. -->
+    <dialog
+      id="favourites-editor"
+      class="favourites-editor"
+      aria-labelledby="favourites-editor-title"
+    >
+      <div class="favourites-editor__content">
+        <header class="favourites-editor__header">
+          <h2 id="favourites-editor-title" class="favourites-editor__title" data-i18n>
+            Edit favourites
+          </h2>
+          <button type="button" class="button favourites-editor__done" autofocus data-i18n>
+            Done
+          </button>
+        </header>
+        <p class="favourites-editor__hint" data-i18n>
+          Tap a name to rename the place. ↑ and ↓ change the order.
+        </p>
+        <ol class="favourites-editor__list"></ol>
+        <p class="favourites-editor__empty" hidden data-i18n>
+          No favourites. Tap ☆ in the weather panel to save a place.
+        </p>
+        <div class="favourites-editor__footer">
+          <p class="favourites-editor__status" role="status"></p>
+          <button type="button" class="button favourites-editor__undo" hidden data-i18n>
+            Undo
+          </button>
+        </div>
+      </div>
+    </dialog>
+
+    <!-- Weather on a day (src/past-weather.ts): the place shown on a past
+         day, from Open-Meteo's archive. Opened from the panel's ⋯ menu. -->
+    <dialog id="past-weather" class="past-weather" aria-labelledby="past-weather-title">
+      <div class="past-weather__content">
+        <header class="about__header">
+          <h2 id="past-weather-title" class="about__title" data-i18n>Weather on a day</h2>
+          <button
+            type="button"
+            class="about__close past-weather__close"
+            aria-label="Close"
+            data-i18n-attrs="aria-label"
+          >
+            <span aria-hidden="true">×</span>
+          </button>
+        </header>
+        <p class="past-weather__place"></p>
+        <div
+          class="past-weather__choices"
+          role="group"
+          aria-label="This day in the past"
+          data-i18n-attrs="aria-label"
+        >
+          <button type="button" class="button past-weather__ago" data-years="1" data-i18n>
+            1 year ago
+          </button>
+          <button type="button" class="button past-weather__ago" data-years="10" data-i18n>
+            10 years ago
+          </button>
+          <button type="button" class="button past-weather__ago" data-years="50" data-i18n>
+            50 years ago
+          </button>
+        </div>
+        <form class="past-weather__form">
+          <label for="past-weather-date" class="past-weather__label" data-i18n>Any day</label>
+          <div class="past-weather__pick">
+            <input id="past-weather-date" class="past-weather__date" type="date" required />
+            <button type="submit" class="button" data-i18n>Show</button>
+          </div>
+          <p class="past-weather__hint" data-i18n>From 1 January 1940 to about a week ago.</p>
+        </form>
+        <div class="past-weather__result" role="status"></div>
+        <!-- The day as a postcard picture (postcard.ts). -->
+        <button type="button" class="button past-weather__share" hidden>
+          <span aria-hidden="true">📸</span> <span data-i18n>Share as a picture</span>
+        </button>
+        <p class="past-weather__status" role="status"></p>
+        <p class="past-weather__note" hidden data-i18n>
+          Estimated from weather records (ERA5, about 25 km grid): a thermometer there may have
+          shown a few degrees different. Historical weather: Open-Meteo.com, ERA5 by Copernicus.
+        </p>
+      </div>
+    </dialog>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

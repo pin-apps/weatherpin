@@ -1,0 +1,2316 @@
+/* Colours: light by default; dark on <html data-theme="dark">, which
+   public/theme.js and src/theme.ts set from the user's choice in Settings
+   (Automatic follows the device). */
+:root {
+  color-scheme: light;
+  font-family: system-ui, sans-serif;
+
+  --color-text: #1b2a3a;
+  --color-text-muted: #4d5f72;
+  --color-bg: #eef3f7;
+  --color-surface: #ffffff;
+  --color-border: #d3dde6;
+  --color-accent: #0b63ce;
+  --color-error: #b3261e;
+  --color-marker-ring: #ffffff;
+  /* The temperature line in graphs. */
+  --color-temp: #c2410c;
+  --shadow-panel: 0 4px 16px rgb(0 0 0 / 0.2);
+  --radius: 12px;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --color-text: #e4ebf2;
+  --color-text-muted: #a5b4c3;
+  --color-bg: #111a24;
+  --color-surface: #1b2633;
+  --color-border: #344456;
+  --color-accent: #5aa2ff;
+  --color-error: #ffb4ab;
+  --color-marker-ring: #111a24;
+  --color-temp: #fb923c;
+  --shadow-panel: 0 4px 16px rgb(0 0 0 / 0.6);
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+/* Don't let Safari enlarge text by itself when the phone turns sideways. */
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* On iPhone and iPad, follow the text size chosen in iOS settings (Dynamic
+   Type): Apple's body font sets the base size, and every rem size scales
+   with it. Touch screens only: on a Mac the same font is a small 13px. */
+@supports (font: -apple-system-body) {
+  @media (hover: none) and (pointer: coarse) {
+    html {
+      font: -apple-system-body;
+      font-family: system-ui, sans-serif;
+    }
+  }
+}
+
+body {
+  color: var(--color-text);
+  background: var(--color-bg);
+}
+
+.app {
+  position: fixed;
+  inset: 0;
+}
+
+.map {
+  width: 100%;
+  height: 100%;
+}
+
+/* OSM's sea colour instead of Leaflet's grey, for any gap while tiles load. */
+.leaflet-container {
+  background: #aad3df;
+}
+
+/* Marker: a pin-like dot drawn with CSS, its tip at the picked point. */
+.pick-marker {
+  background: none;
+  border: none;
+}
+
+.pick-marker__dot {
+  display: block;
+  width: 20px;
+  height: 20px;
+  margin: 0 auto;
+  border-radius: 50% 50% 50% 0;
+  background: var(--color-accent);
+  border: 2px solid var(--color-marker-ring);
+  box-shadow: 0 1px 4px rgb(0 0 0 / 0.4);
+  transform: rotate(-45deg);
+}
+
+/* Where the user is (after My location): a blue dot with a white ring,
+   as in most map apps; distinct from the pin of the place shown. */
+.user-position {
+  background: none;
+  border: none;
+}
+
+.user-position__dot {
+  display: block;
+  width: 16px;
+  height: 16px;
+  margin: 3px;
+  border-radius: 50%;
+  background: #1a73e8;
+  border: 3px solid #ffffff;
+  box-shadow:
+    0 0 0 1px rgb(0 0 0 / 0.25),
+    0 1px 4px rgb(0 0 0 / 0.4);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* The map fills the screen, so draw its focus ring inside the edge. */
+.map:focus-visible {
+  outline-offset: -4px;
+}
+
+button {
+  /* No double-tap-to-zoom delay on buttons. */
+  touch-action: manipulation;
+}
+
+/* Toolbar over the top-left of the map: the search box (and messages from
+   the location button). Leaflet's zoom buttons go below it. */
+.toolbar {
+  position: absolute;
+  /* Above Leaflet's controls; below the weather panel. */
+  z-index: 1050;
+  top: 12px;
+  left: 12px;
+  /* Leaves room for the 360px weather panel on the right. */
+  width: min(440px, calc(100% - 24px - 384px));
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* While searching, its suggestions go over the weather panel (on a phone
+   the sheet can reach up to them). */
+.toolbar:focus-within {
+  z-index: 1150;
+}
+
+.toolbar__row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+/* Settings (⚙), right of the search box: a round button as tall as the
+   search box. */
+.toolbar__button {
+  width: 44px;
+  height: 44px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  box-shadow: var(--shadow-panel);
+  cursor: pointer;
+}
+
+.toolbar__button:hover {
+  background: var(--color-bg);
+  color: var(--color-accent);
+}
+
+.toolbar__icon {
+  width: 22px;
+  height: 22px;
+}
+
+/* What hides the bottom or right edge of the map, so the credits and round
+   buttons stay clear of it: the weather sheet on phones (--sheet-height,
+   sheet.ts), or the quiz card while it's open (--quiz-bottom/--quiz-right,
+   quiz/quiz.ts; both 0 in a wide screen's free bottom-left corner). */
+body {
+  --covered-bottom: var(--sheet-height, 0px);
+  --covered-right: 0px;
+}
+
+body:has(.quiz[open]) {
+  --covered-bottom: var(--quiz-bottom, 0px);
+  --covered-right: var(--quiz-right, 0px);
+}
+
+.leaflet-container .leaflet-right {
+  right: var(--covered-right);
+}
+
+.leaflet-container .leaflet-bottom {
+  bottom: var(--covered-bottom);
+}
+
+/* Round floating "my location" button, bottom-right as in map apps: above
+   the attribution, and on phones above the bottom sheet. */
+.locate {
+  position: absolute;
+  z-index: 1050;
+  right: calc(var(--covered-right) + 12px);
+  bottom: calc(var(--covered-bottom) + 36px);
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: var(--color-surface);
+  color: var(--color-accent);
+  box-shadow: var(--shadow-panel);
+  cursor: pointer;
+}
+
+.locate:hover {
+  background: var(--color-bg);
+}
+
+.locate__icon {
+  width: 24px;
+  height: 24px;
+}
+
+.locate[aria-disabled='true'] {
+  cursor: progress;
+}
+
+/* Pulses while the browser looks for the position. */
+.locate[aria-disabled='true'] .locate__icon {
+  animation: locate-pulse 1s ease-in-out infinite alternate;
+}
+
+/* Rain radar button: same round button, one place to the left. Pressed:
+   filled with the accent colour. */
+.radar-button {
+  right: calc(var(--covered-right) + 72px);
+}
+
+.radar-button[aria-pressed='true'],
+.radar-button[aria-pressed='true']:hover {
+  background: var(--color-accent);
+  color: var(--color-surface);
+}
+
+/* Radar history bar (radar.ts): bottom left, which is free (zoom buttons
+   top left, the panel, round buttons and credits on the right). On phones:
+   beside the round buttons, in two rows. */
+.radar-bar {
+  position: absolute;
+  z-index: 1050;
+  left: 12px;
+  bottom: calc(var(--covered-bottom) + 36px);
+  width: min(360px, calc(100% - 24px));
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 12px 4px 4px;
+  border-radius: 24px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: var(--shadow-panel);
+  font-size: 0.9375rem;
+}
+
+.radar-bar[hidden] {
+  display: none;
+}
+
+.radar-bar__play {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: var(--color-accent);
+  color: var(--color-surface);
+  font-size: 1.125rem;
+  cursor: pointer;
+}
+
+.radar-bar__slider {
+  flex: 1;
+  min-width: 60px;
+  accent-color: var(--color-accent);
+}
+
+.radar-bar__time {
+  flex: none;
+  white-space: nowrap;
+}
+
+@keyframes locate-pulse {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0.3;
+  }
+}
+
+.toolbar__message {
+  margin: 0;
+  padding: 10px 14px;
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  color: var(--color-error);
+  box-shadow: var(--shadow-panel);
+}
+
+.toolbar__message[hidden] {
+  display: none;
+}
+
+/* Search: input with a dropdown list of suggestions under it. */
+.search {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+}
+
+.search__input {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 44px;
+  /* Room on the left for the magnifier icon. */
+  padding: 0 16px 0 44px;
+  border: 1px solid transparent;
+  border-radius: 22px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: var(--shadow-panel);
+  /* 16px or more stops iOS Safari zooming the page on focus. */
+  font: inherit;
+  font-size: 1rem;
+}
+
+.search__icon {
+  position: absolute;
+  top: 12px;
+  left: 14px;
+  width: 20px;
+  height: 20px;
+  color: var(--color-text-muted);
+  pointer-events: none;
+}
+
+.search__input::placeholder {
+  color: var(--color-text-muted);
+}
+
+.search__popup,
+.search__message {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  margin: 0;
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-panel);
+}
+
+/* The list scrolls; "Edit favourites" stays visible under it. */
+.search__popup {
+  display: flex;
+  flex-direction: column;
+  max-height: min(60vh, 320px);
+  overflow: hidden;
+}
+
+.search__results {
+  min-height: 0;
+  margin: 0;
+  overflow-y: auto;
+  padding: 4px 0;
+  list-style: none;
+}
+
+.search__edit,
+.search__random,
+.search__quiz {
+  flex: none;
+  /* Laid out like the list's rows, so their texts line up. */
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 6px 16px;
+  border: none;
+  border-top: 1px solid var(--color-border);
+  background: transparent;
+  color: var(--color-accent);
+  font: inherit;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+
+.search__edit:hover,
+.search__random:hover,
+.search__quiz:hover {
+  background: var(--color-bg);
+}
+
+.search__edit:focus-visible,
+.search__random:focus-visible,
+.search__quiz:focus-visible {
+  outline-offset: -3px;
+}
+
+/* Visible heading for the favourites list, from data-heading (set by
+   search.ts, so it's translated). Screen readers get the list's aria-label
+   instead, so the "/ ''" gives this text no spoken alternative. Texts
+   never go in CSS itself: they couldn't be translated. */
+.search__results[data-mode='favourites']::before {
+  /* Fallback for browsers without the "/ ''" syntax; they ignore the next line. */
+  content: attr(data-heading);
+  content: attr(data-heading) / '';
+  display: block;
+  padding: 6px 16px 2px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+/* Favourite stars in the list in the same gold as the panel's ★. */
+.search__results[data-mode='favourites'] .search__option-flag {
+  color: #e0a800;
+}
+
+.search__popup[hidden],
+.search__results[hidden],
+.search__edit[hidden],
+.search__random[hidden],
+.search__quiz[hidden],
+.search__message[hidden] {
+  display: none;
+}
+
+.search__message {
+  padding: 10px 16px;
+  color: var(--color-text-muted);
+}
+
+.search__option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 6px 16px;
+  cursor: pointer;
+}
+
+.search__option:hover,
+.search__option[aria-selected='true'] {
+  background: var(--color-bg);
+}
+
+/* The highlighted option also gets a bar, not only a colour change. */
+.search__option[aria-selected='true'] {
+  box-shadow: inset 4px 0 0 var(--color-accent);
+}
+
+.search__option-flag,
+.search__button-icon {
+  flex: none;
+  width: 1.5em;
+  font-size: 1.25rem;
+  font-weight: 400;
+  text-align: center;
+}
+
+/* The weather now at a favourite, at the row's end: "☁ 3 °C". */
+.search__option-weather {
+  flex: none;
+  margin-left: auto;
+  font-size: 0.9375rem;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.search__option-weather-icon {
+  margin-right: 4px;
+}
+
+.search__option-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.search__option-name {
+  font-weight: 600;
+}
+
+.search__option-region {
+  font-size: 0.9375rem;
+  color: var(--color-text-muted);
+}
+
+/* Room for the toolbar above Leaflet's top-left controls (zoom buttons). */
+.leaflet-top.leaflet-left {
+  top: 56px;
+}
+
+/* Weather panel: floats over the map on the right (zoom buttons are left). */
+.panel {
+  position: absolute;
+  /* Above Leaflet's panes and controls (z-index up to 1000). */
+  z-index: 1100;
+  top: 12px;
+  right: 12px;
+  width: min(360px, calc(100% - 24px));
+  /* Leave room for the location button and attribution at the bottom. */
+  max-height: calc(100% - 108px);
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  color: var(--color-text);
+  background: var(--color-surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-panel);
+}
+
+.panel[hidden] {
+  display: none;
+}
+
+/* The handle and the summary line are only for the mobile bottom sheet. */
+.panel__handle,
+.panel__summary {
+  display: none;
+}
+
+.panel__header {
+  /* The ⋯ menu opens below it. */
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 12px 8px 16px;
+}
+
+.panel__heading {
+  flex: 1;
+  min-width: 0;
+}
+
+.panel__title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.panel__summary {
+  margin: 2px 0 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--color-text-muted);
+}
+
+.panel__close {
+  width: 44px;
+  height: 44px;
+  flex: none;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: inherit;
+  font-size: 1.75rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.panel__close:hover,
+.panel__favourite:hover {
+  background: var(--color-border);
+}
+
+/* ☆ / ★ toggle, same size as the close button (44px touch target). */
+.panel__favourite {
+  width: 44px;
+  height: 44px;
+  flex: none;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: inherit;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.panel__favourite[hidden] {
+  display: none;
+}
+
+.panel__favourite[aria-pressed='true'] {
+  color: #e0a800;
+}
+
+/* Messages such as "You have 20 favourites…". While empty it takes no
+   space but stays in the page (not display: none), so screen readers keep
+   listening to it as a live region. */
+.panel__message {
+  margin: 0 16px 8px;
+  color: var(--color-text-muted);
+  font-size: 0.9375rem;
+}
+
+.panel__message:empty {
+  margin: 0;
+}
+
+/* "Link copied" and the like from the ⋯ menu; like .panel__message. */
+.panel__action-status {
+  margin: 0 16px 8px;
+  color: var(--color-text-muted);
+  font-size: 0.9375rem;
+  overflow-wrap: anywhere;
+}
+
+.panel__action-status:empty {
+  margin: 0;
+}
+
+/* ⋯: same 44px round button as ☆ and ×. */
+.panel__more {
+  width: 44px;
+  height: 44px;
+  flex: none;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.panel__more:hover,
+.panel__more[aria-expanded='true'] {
+  background: var(--color-border);
+}
+
+/* The ⋯ menu: a small card under the header's right end, over the
+   weather. */
+.panel__menu {
+  position: absolute;
+  z-index: 2;
+  top: calc(100% - 4px);
+  right: 12px;
+  min-width: 13rem;
+  max-width: calc(100% - 24px);
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-panel);
+}
+
+.panel__menu[hidden] {
+  display: none;
+}
+
+/* Each action: a full-width row, 44px tall for touch. Start place on: the
+   accent colour and a ✓. */
+.panel__menu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  margin: 0;
+  padding: 0 12px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--color-text);
+  font: inherit;
+  font-size: 0.9375rem;
+  text-align: start;
+  cursor: pointer;
+}
+
+/* Small phones (iPhone SE): one column of all the actions would run off
+   the bottom; two columns instead. */
+@media (max-height: 600px) {
+  .panel__menu {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* Short screens (a phone on its side): the sheet's header sits mid-screen
+   and a column of items would run off the bottom. Side by side instead;
+   they wrap if the words are long. */
+@media (max-height: 480px) {
+  .panel__menu {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+}
+
+.panel__menu-item[hidden] {
+  display: none;
+}
+
+.panel__menu-item:hover {
+  background: var(--color-bg);
+}
+
+.panel__start[aria-pressed='true'] {
+  color: var(--color-accent);
+}
+
+.panel__menu-icon {
+  width: 1.25rem;
+  flex: none;
+  text-align: center;
+}
+
+/* Title with the start place mark (⌂) after it. */
+.panel__title-row {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  min-width: 0;
+}
+
+.panel__title-row .panel__title {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.panel__start-mark {
+  flex: none;
+  color: var(--color-accent);
+}
+
+.panel__start-mark[hidden] {
+  display: none;
+}
+
+/* Content area: only the body scrolls; the header and credit stay put. */
+.panel__content {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.panel__body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 0 16px;
+}
+
+.panel__status {
+  color: var(--color-text-muted);
+}
+
+.panel__error {
+  margin: 8px 0 16px;
+  color: var(--color-error);
+}
+
+.panel__credit {
+  margin: 0;
+  padding: 8px 16px 12px;
+  border-top: 1px solid var(--color-border);
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+}
+
+.panel a {
+  color: var(--color-accent);
+}
+
+.button {
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1px solid var(--color-accent);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--color-accent);
+  font: inherit;
+  cursor: pointer;
+}
+
+.local-time__value {
+  color: var(--color-text);
+  font-variant-numeric: tabular-nums;
+}
+
+.current__headline {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.current__icon {
+  font-size: 3.5rem;
+  line-height: 1;
+}
+
+.current__summary p {
+  margin: 0;
+}
+
+.current__temp {
+  font-size: 2.25rem;
+  font-weight: 600;
+}
+
+/* The sauna easter egg (sauna.ts): warm, like the löyly. */
+.sauna {
+  border-left: 4px solid var(--color-temp);
+  padding-left: 12px;
+}
+
+.sauna__temp {
+  margin: 0;
+  font-size: 2.25rem;
+  font-weight: 600;
+  color: var(--color-temp);
+}
+
+.sauna__lines,
+.santa__lines {
+  margin: 4px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sauna__lines li,
+.santa__lines li {
+  padding: 2px 0;
+}
+
+/* Santa's workshop (santa.ts): Christmas red, from the theme colours. */
+.santa {
+  border-left: 4px solid var(--color-error);
+  padding-left: 12px;
+}
+
+/* The weather excuse / small talk card (quips/card.ts), at the top of the panel. */
+.quip {
+  margin-bottom: 16px;
+  padding: 12px 16px 16px;
+  border: 1px solid var(--color-border);
+  border-left: 4px solid var(--color-accent);
+  border-radius: var(--radius);
+  background: var(--color-bg);
+}
+
+.quip__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.quip__title {
+  margin: 0;
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+
+.quip__close {
+  min-width: 44px;
+  min-height: 44px;
+  margin: -8px -8px -8px 0;
+  border: none;
+  background: none;
+  color: var(--color-text-muted);
+  font: inherit;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.quip__text {
+  margin: 4px 0 12px;
+  font-size: 1.0625rem;
+  line-height: 1.4;
+}
+
+.quip__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* A weather record near the point (records.ts). */
+.record {
+  border-left: 4px solid var(--color-accent);
+  padding-left: 12px;
+}
+
+.record__text {
+  margin: 4px 0 0;
+}
+
+.current__feels {
+  color: var(--color-text-muted);
+}
+
+.current__nowcast {
+  font-weight: 600;
+  color: var(--color-accent);
+}
+
+.current__wear,
+.current__frost,
+.current__roads {
+  margin: 4px 0 0;
+}
+
+.current__updated {
+  font-size: 0.9375rem;
+  color: var(--color-text-muted);
+}
+
+/* Old weather from this device's copy: hard to miss. */
+.current__updated--offline {
+  font-weight: 600;
+  color: var(--color-error);
+}
+
+.details {
+  margin: 16px 0;
+}
+
+.details__row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 8px 0;
+  border-top: 1px solid var(--color-border);
+}
+
+.details dt {
+  color: var(--color-text-muted);
+}
+
+.details dd {
+  margin: 0;
+  text-align: right;
+}
+
+/* Label and value on the first line; the inputs and the warning below,
+   each across the whole row. */
+.details__row--estimate {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  column-gap: 16px;
+  row-gap: 4px;
+}
+
+.details dd.edm__inputs,
+.details dd.ev__detail,
+.details dd.estimate-note {
+  grid-column: 1 / -1;
+  text-align: left;
+}
+
+.edm__inputs,
+.ev__detail {
+  color: var(--color-text-muted);
+}
+
+/* "⚠️ Estimate only, not a measurement. …" under every estimate. */
+.estimate-note {
+  margin: 4px 0 0;
+  font-size: 0.9375rem;
+  line-height: 1.4;
+  color: var(--color-text);
+}
+
+.details dd.estimate-note {
+  margin: 0;
+}
+
+/* Air quality in the at-a-glance list: the badge sits inline. */
+.glance-aqi .aqi {
+  display: inline-flex;
+  vertical-align: middle;
+}
+
+.wind-arrow {
+  display: inline-block;
+}
+
+.forecast-section {
+  margin-bottom: 16px;
+}
+
+.section-title {
+  margin: 0 0 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-text-muted);
+}
+
+/* Foldable sections (render/fold.ts): the whole heading is the button. */
+.fold {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 44px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.fold__summary {
+  display: none;
+  align-items: center;
+  font-size: 0.9375rem;
+  font-weight: 400;
+  letter-spacing: normal;
+  text-transform: none;
+  color: var(--color-text);
+}
+
+.fold__arrow {
+  margin-left: auto;
+  font-size: 1rem;
+  transition: transform 0.15s;
+}
+
+.is-folded .fold__summary {
+  display: inline-flex;
+}
+
+.is-folded .fold__arrow {
+  transform: rotate(-90deg);
+}
+
+.forecast-section.is-folded > :not(.section-title) {
+  display: none;
+}
+
+.forecast-section.is-folded .section-title {
+  margin-bottom: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fold__arrow {
+    transition: none;
+  }
+}
+
+/* Hourly strip: scrolls sideways, snapping to whole hours. */
+.hourly {
+  display: flex;
+  gap: 4px;
+  margin: 0;
+  padding: 0 0 8px;
+  list-style: none;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  overscroll-behavior-x: contain;
+}
+
+.hourly__item {
+  flex: none;
+  width: 56px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 0;
+  border-radius: 8px;
+  background: var(--color-bg);
+  scroll-snap-align: start;
+  font-variant-numeric: tabular-nums;
+}
+
+.hourly__time {
+  font-size: 0.9375rem;
+  color: var(--color-text-muted);
+}
+
+.hourly__icon {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.hourly__temp {
+  font-weight: 600;
+}
+
+/* Arrow over the speed: "4 m/s", "15 km/h" and "9 mph" fit the hour. */
+.hourly__wind {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 0.8125rem;
+  line-height: 1.2;
+  color: var(--color-text-muted);
+}
+
+.hourly__wind-arrow {
+  display: inline-block;
+  font-size: 0.9375rem;
+  line-height: 1;
+}
+
+.hourly__chance {
+  font-size: 0.8125rem;
+  color: var(--color-accent);
+}
+
+/* 7-day list: day | icon | rain (and snow) | UV | low | high | ›. */
+.daily {
+  /* One set of columns for all 7 rows (each row is a subgrid of it), so
+     every column lines up down the list even when one row's temperatures
+     are wider than another's. Day, icon, rain (and snow), UV badge, low,
+     high, and a › that turns when the day's hours are open; gaps tight
+     enough for a 320 px phone. */
+  display: grid;
+  grid-template-columns: minmax(3rem, auto) 1.75rem minmax(0, 1fr) auto auto auto 0.75rem;
+  column-gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.daily__item {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: subgrid;
+  border-top: 1px solid var(--color-border);
+}
+
+/* The row is a button (it opens the day's hours) laid out on the list's
+   columns, looking like the rest of the list rather than a button. */
+.daily__row {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: subgrid;
+  align-items: center;
+  min-height: 44px;
+  margin: 0;
+  padding: 6px 0;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+}
+
+@media (hover: hover) {
+  .daily__row:hover {
+    background: var(--color-bg);
+  }
+}
+
+/* A square box as wide as its column: turned a quarter, a tall box would
+   get wider and stick out of the row. The glyph is centred in it. */
+.daily__chevron {
+  justify-self: center;
+  display: grid;
+  place-items: center;
+  width: 0.75rem;
+  height: 0.75rem;
+  color: var(--color-text-muted);
+  font-size: 1.25rem;
+  line-height: 1;
+  transition: transform 0.15s;
+}
+
+.daily__row[aria-expanded='true'] .daily__chevron {
+  transform: rotate(90deg);
+}
+
+/* The open day's graph and hours, under its row. */
+.daily__hours {
+  grid-column: 1 / -1;
+  min-width: 0;
+  padding: 4px 0 8px;
+}
+
+.daily__no-hours {
+  margin: 4px 0 8px;
+  color: var(--color-text-muted);
+}
+
+/* Hour graph: temperature line, precipitation bars, hour labels. Sizes are
+   in drawing units; the picture scales to the panel's width. */
+.hours-graph {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 0 0 8px;
+}
+
+.hours-graph__line {
+  fill: none;
+  stroke: var(--color-temp);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.hours-graph__dot {
+  fill: var(--color-temp);
+}
+
+.hours-graph__bar {
+  fill: var(--color-accent);
+  opacity: 0.6;
+}
+
+.hours-graph__base,
+.hours-graph__grid {
+  stroke: var(--color-border);
+  stroke-width: 1;
+}
+
+.hours-graph__temp {
+  font-size: 13px;
+  font-weight: 600;
+  fill: var(--color-text);
+}
+
+.hours-graph__hour {
+  font-size: 13px;
+  fill: var(--color-text-muted);
+}
+
+.daily__icon {
+  font-size: 1.5rem;
+  line-height: 1;
+  text-align: center;
+}
+
+.daily__precip {
+  /* "0.7 mm" must not split over two lines on a 320 px phone. */
+  white-space: nowrap;
+  font-size: 0.9375rem;
+  color: var(--color-text-muted);
+}
+
+/* Rain amount, with snow under it on snowy days. */
+.daily__water {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+/* A smaller UV badge than in the current weather, to fit its column. */
+.daily__uv .uv {
+  padding: 0 5px;
+  font-size: 0.8125rem;
+}
+
+/* "❄ 2.1 cm": snow, apart from the rain amount (which counts it as water). */
+.daily__snow {
+  font-size: 0.9375rem;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+/* Temperatures right-aligned, so "7 °C" and "10 °C" line up on the unit. */
+.daily__low,
+.daily__high {
+  justify-self: end;
+  white-space: nowrap;
+}
+
+.daily__min {
+  color: var(--color-text-muted);
+}
+
+.daily__max {
+  text-align: right;
+  font-weight: 600;
+}
+
+/* Mobile: the panel becomes a bottom sheet that can be collapsed so the map
+   above it stays usable. */
+@media (max-width: 767px) {
+  .panel {
+    top: auto;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    /* On short (landscape) screens, leave room above the sheet for the
+       search box and the location button. */
+    height: min(60dvh, 560px, calc(100dvh - 160px));
+    max-height: none;
+    border-radius: 16px 16px 0 0;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .panel--collapsed {
+    height: auto;
+  }
+
+  .panel--collapsed .panel__content {
+    display: none;
+  }
+
+  /* Swipes here are handled in sheet.ts, not by the browser. */
+  .panel__top {
+    touch-action: none;
+  }
+
+  .panel__handle {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    height: 24px;
+    padding: 0;
+    padding-top: 8px;
+    border: none;
+    border-radius: 16px 16px 0 0;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .panel__grabber {
+    width: 40px;
+    height: 5px;
+    border-radius: 3px;
+    background: var(--color-border);
+  }
+
+  .panel__header {
+    padding-top: 0;
+  }
+
+  .panel__summary {
+    display: block;
+  }
+
+  /* The search box spans the top. */
+  .toolbar {
+    right: 12px;
+    width: auto;
+  }
+
+  /* Attribution and location button ride just above the bottom sheet, so
+     the sheet never covers them. */
+  .leaflet-container .leaflet-control-attribution {
+    font-size: 11px;
+  }
+
+  .locate {
+    bottom: calc(var(--covered-bottom) + 44px);
+  }
+
+  /* Left of the round buttons, the time under the slider. */
+  .radar-bar {
+    right: 132px;
+    bottom: calc(var(--covered-bottom) + 44px);
+    width: auto;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-areas:
+      'play slider'
+      'play time';
+    column-gap: 8px;
+    border-radius: 16px;
+  }
+
+  .radar-bar__play {
+    grid-area: play;
+  }
+
+  .radar-bar__slider {
+    grid-area: slider;
+    min-width: 0;
+  }
+
+  .radar-bar__time {
+    grid-area: time;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* No room above a fully open weather sheet: collapse it to use the radar. */
+  body:has(.panel:not([hidden], .panel--collapsed)) .radar-bar {
+    display: none;
+  }
+}
+
+/* Very narrow phones: the credits (with the radar's) take two lines. */
+@media (max-width: 359px) {
+  .locate,
+  .radar-bar {
+    bottom: calc(var(--covered-bottom) + 58px);
+  }
+}
+
+/* Leaflet's own controls, matched to the dark theme. */
+:root[data-theme='dark'] .leaflet-bar a,
+:root[data-theme='dark'] .leaflet-bar a:hover {
+  background: var(--color-surface);
+  color: var(--color-text);
+  border-bottom-color: var(--color-border);
+}
+
+:root[data-theme='dark'] .leaflet-bar a.leaflet-disabled {
+  background: var(--color-bg);
+  color: var(--color-text-muted);
+}
+
+/* Solid: over the light-blue sea colour (no map pictures, e.g. offline) a
+   see-through box leaves the links too faint. */
+:root[data-theme='dark'] .leaflet-container .leaflet-control-attribution {
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+:root[data-theme='dark'] .leaflet-container .leaflet-control-attribution a {
+  color: var(--color-accent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hourly {
+    scroll-behavior: auto;
+  }
+
+  .daily__chevron {
+    transition: none;
+  }
+
+  /* A steady dimmed icon instead of a pulse. */
+  .locate[aria-disabled='true'] .locate__icon {
+    animation: none;
+    opacity: 0.4;
+  }
+}
+
+/* Air quality: index badge in the official colours of each scale (EEA for
+   the European AQI, EPA for the US AQI, DEFRA, ECCC), with the level also
+   in words. */
+.air-quality__status {
+  color: var(--color-text-muted);
+}
+
+.aqi {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 10px;
+  margin: 0 0 8px;
+  padding: 10px 14px;
+  border-radius: var(--radius);
+  /* Fixed colours that read the same in light and dark mode. */
+  color: #111111;
+}
+
+.aqi__value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.aqi__label {
+  font-weight: 600;
+}
+
+.aqi__scale {
+  margin-left: auto;
+  font-size: 0.875rem;
+  opacity: 0.85;
+}
+
+/* Level 1–6 colours per scale. Text is near-black or white, whichever gives
+   at least 4.5:1 contrast on that colour (checked for every band). */
+.aqi--european.aqi--level-1 {
+  background: #50f0e6;
+}
+.aqi--european.aqi--level-2 {
+  background: #50ccaa;
+}
+.aqi--european.aqi--level-3 {
+  background: #f0e641;
+}
+.aqi--european.aqi--level-4 {
+  background: #ff5050;
+}
+.aqi--european.aqi--level-5 {
+  background: #960032;
+  color: #ffffff;
+}
+.aqi--european.aqi--level-6 {
+  background: #7d2181;
+  color: #ffffff;
+}
+
+.aqi--us.aqi--level-1 {
+  background: #00e400;
+}
+.aqi--us.aqi--level-2 {
+  background: #ffff00;
+}
+.aqi--us.aqi--level-3 {
+  background: #ff7e00;
+}
+.aqi--us.aqi--level-4 {
+  background: #ff0000;
+}
+.aqi--us.aqi--level-5 {
+  background: #8f3f97;
+  color: #ffffff;
+}
+.aqi--us.aqi--level-6 {
+  background: #7e0023;
+  color: #ffffff;
+}
+
+/* UK DAQI (DEFRA) and Canada AQHI (ECCC), one colour per band: the
+   middle shade of each band in the official 1–10 scales. */
+.aqi--uk.aqi--level-1 {
+  background: #31cf00;
+}
+.aqi--uk.aqi--level-2 {
+  background: #ffcf00;
+}
+.aqi--uk.aqi--level-3 {
+  background: #ff0000;
+}
+.aqi--uk.aqi--level-4 {
+  background: #ce30ff;
+}
+
+.aqi--canada.aqi--level-1 {
+  background: #00ccff;
+}
+.aqi--canada.aqi--level-2 {
+  background: #ffcc00;
+}
+.aqi--canada.aqi--level-3 {
+  background: #ff0000;
+}
+.aqi--canada.aqi--level-4 {
+  background: #660000;
+  color: #ffffff;
+}
+
+.air-quality__note,
+.air-quality__aside {
+  margin: 0 0 8px;
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+}
+
+.air-quality .details {
+  margin: 8px 0;
+}
+
+/* Air quality forecast: one row per day with a small badge. */
+.air-quality__subtitle {
+  margin: 12px 0 4px;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.aqi-days {
+  margin: 0 0 8px;
+  padding: 0;
+  list-style: none;
+}
+
+.aqi-days__item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 10px;
+  padding: 4px 0;
+  border-top: 1px solid var(--color-border);
+}
+
+.aqi-days__day {
+  width: 3.5rem;
+  flex: none;
+}
+
+.aqi--small {
+  margin: 0;
+  padding: 2px 10px;
+  gap: 8px;
+}
+
+.aqi--small .aqi__value {
+  font-size: 1rem;
+}
+
+.aqi-days__when {
+  color: var(--color-text-muted);
+  font-size: 0.9375rem;
+}
+
+/* Pollen forecast: a row per day, a chip per pollen type in the air. */
+.pollen-days {
+  margin: 0 0 8px;
+  padding: 0;
+  list-style: none;
+}
+
+.pollen-days__item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+  padding: 4px 0;
+  border-top: 1px solid var(--color-border);
+}
+
+.pollen-days__day {
+  width: 3.5rem;
+  flex: none;
+}
+
+.pollen-days__none {
+  color: var(--color-text-muted);
+}
+
+.pollen-level {
+  padding: 2px 8px 2px 6px;
+  border-left: 6px solid;
+  border-radius: 4px;
+  background: var(--color-bg);
+  font-size: 0.9375rem;
+}
+
+.pollen-level--low {
+  border-left-color: #43a047;
+}
+
+.pollen-level--moderate {
+  border-left-color: #f9a825;
+}
+
+.pollen-level--high {
+  border-left-color: #d32f2f;
+}
+
+.air-quality__credit {
+  margin: 4px 0 0;
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+}
+
+/* Weather warnings: one box per warning at the top of the weather, with a
+   thick edge in the warning's colour and a see-through tint of it (so the
+   text keeps the theme's colour and contrast). Tap the title for the text. */
+.warnings {
+  display: grid;
+  gap: 8px;
+  margin: 4px 0 12px;
+}
+
+.warning {
+  border-left: 6px solid var(--color-border);
+  border-radius: var(--radius);
+  background: color-mix(in srgb, var(--color-border) 30%, transparent);
+}
+
+.warning--yellow {
+  border-left-color: #e6b800;
+  background: rgb(255 214 0 / 16%);
+}
+
+.warning--orange {
+  border-left-color: #f07c00;
+  background: rgb(240 124 0 / 16%);
+}
+
+.warning--red {
+  border-left-color: #d8001d;
+  background: rgb(216 0 29 / 14%);
+}
+
+.warning__summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px 6px;
+  min-height: 44px;
+  padding: 6px 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.warning__until {
+  font-weight: 400;
+}
+
+/* Where it applies, on its own line under the title (lined up with it). */
+.warning__area {
+  flex-basis: 100%;
+  padding-left: calc(1em + 6px);
+  font-size: 0.9375rem;
+  font-weight: 400;
+}
+
+.warning__text,
+.warning__instruction,
+.warning__source {
+  margin: 0 12px 10px;
+}
+
+.warning__instruction {
+  font-weight: 600;
+}
+
+.warning__source {
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+}
+
+/* UV index badges in the WHO colours (green, yellow, orange, red, violet).
+   Text is near-black or white, whichever gives at least 4.5:1 contrast.
+   Fixed colours, the same in light and dark mode. */
+/* "Sun protection 11:00–13:00": its own line under the UV value. */
+.uv-protection {
+  display: block;
+  margin-top: 2px;
+  color: var(--color-text-muted);
+  font-size: 0.9375rem;
+}
+
+.uv {
+  display: inline-block;
+  padding: 1px 8px;
+  border-radius: 999px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.uv--level-1 {
+  background: #4eb400;
+  color: #111111;
+}
+
+.uv--level-2 {
+  background: #f7e400;
+  color: #111111;
+}
+
+.uv--level-3 {
+  background: #f85900;
+  color: #111111;
+}
+
+.uv--level-4 {
+  background: #d8001d;
+  color: #ffffff;
+}
+
+.uv--level-5 {
+  background: #6b49c8;
+  color: #ffffff;
+}
+
+/* About and Edit favourites: a card over the map with a dimmed backdrop;
+   its content scrolls on small screens. Native <dialog> sits above
+   everything. */
+.about,
+.settings,
+.past-weather,
+.favourites-editor {
+  width: min(34rem, calc(100% - 32px));
+  max-height: min(85dvh, 44rem);
+  padding: 0;
+  border: none;
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: var(--shadow-panel);
+}
+
+.about::backdrop,
+.settings::backdrop,
+.past-weather::backdrop,
+.favourites-editor::backdrop {
+  background: rgb(0 0 0 / 45%);
+}
+
+.about__content,
+.settings__content,
+.past-weather__content,
+.favourites-editor__content {
+  padding: 4px 20px 20px;
+}
+
+.about__header,
+.favourites-editor__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.about__title,
+.favourites-editor__title {
+  margin: 12px 0;
+  font-size: 1.125rem;
+}
+
+.about__close {
+  width: 44px;
+  height: 44px;
+  flex: none;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: inherit;
+  font-size: 1.75rem;
+  cursor: pointer;
+}
+
+.about__close:hover {
+  background: var(--color-border);
+}
+
+.about h3,
+.settings h3 {
+  margin: 20px 0 8px;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-text-muted);
+}
+
+.about__list {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+.about__list li {
+  margin-bottom: 6px;
+}
+
+/* A unit's name above its row (Temperature, Wind…). */
+.settings__label {
+  margin: 12px 0 6px;
+  font-weight: 600;
+}
+
+/* Settings: each choice a row of toggle buttons; the one in use filled. */
+.settings__choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.settings__choice[aria-pressed='true'] {
+  background: var(--color-accent);
+  /* The surface colour: white on blue, dark on light blue in dark mode. */
+  color: var(--color-surface);
+}
+
+.settings__hint,
+.settings__start-text {
+  margin: 8px 0 0;
+  color: var(--color-text-muted);
+}
+
+.settings__start-text:focus {
+  outline: none;
+}
+
+.settings__start-remove {
+  margin-top: 8px;
+}
+
+.settings__start[hidden],
+.settings__start-remove[hidden],
+.settings__clear[hidden] {
+  display: none;
+}
+
+.settings__actions {
+  margin: 24px 0 0;
+}
+
+/* A live region: empty it takes no space but stays in the page, so screen
+   readers keep listening to it. */
+.settings__message:empty {
+  margin: 0;
+}
+
+.settings__about {
+  margin: 16px 0 0;
+}
+
+.settings a {
+  color: var(--color-accent);
+}
+
+/* Weather on a day: quick choices, a date field, then the day's weather. */
+.past-weather__place {
+  margin: 0 0 16px;
+  color: var(--color-text-muted);
+}
+
+.past-weather__choices,
+.past-weather__pick {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.past-weather__form {
+  margin: 20px 0 0;
+}
+
+.past-weather__label {
+  display: block;
+  margin: 0 0 8px;
+  font-weight: 600;
+}
+
+.past-weather__date {
+  min-height: 44px;
+  padding: 0 10px;
+  border: 1px solid var(--color-text-muted);
+  border-radius: 8px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+}
+
+.past-weather__hint,
+.past-weather__note {
+  margin: 8px 0 0;
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+}
+
+.past-weather__note[hidden],
+.past-weather__share[hidden] {
+  display: none;
+}
+
+.past-weather__share {
+  margin: 12px 0 0;
+}
+
+.past-weather__status {
+  margin: 8px 0 0;
+}
+
+.past-weather__status:empty {
+  margin: 0;
+}
+
+.past-weather__result {
+  margin: 20px 0 0;
+}
+
+.past-weather__result:empty {
+  margin: 0;
+}
+
+.past-weather__result p {
+  margin: 0 0 6px;
+}
+
+.past-weather__day {
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+
+.past-weather__today {
+  font-weight: 600;
+}
+
+/* Edit favourites: one row per place, the name field taking the room left
+   by the ↑ ↓ ✕ buttons. */
+.favourites-editor__hint {
+  margin: 0 0 12px;
+  color: var(--color-text-muted);
+}
+
+.favourites-editor__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.favourites-editor__item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 0;
+  border-top: 1px solid var(--color-border);
+}
+
+.favourites-editor__text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  margin-right: 4px;
+}
+
+.favourites-editor__name {
+  min-height: 44px;
+  padding: 0 10px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  /* 16 px or more, or iPhone zooms the page in when the field is tapped. */
+  font: inherit;
+  font-weight: 600;
+}
+
+.favourites-editor__place {
+  padding: 2px 11px 0;
+  overflow: hidden;
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.favourites-editor__place:empty {
+  display: none;
+}
+
+.favourites-editor__up,
+.favourites-editor__down,
+.favourites-editor__remove {
+  width: 44px;
+  height: 44px;
+  flex: none;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--color-accent);
+  font: inherit;
+  font-size: 1.25rem;
+  cursor: pointer;
+}
+
+.favourites-editor__remove {
+  color: var(--color-text-muted);
+}
+
+.favourites-editor__up:hover:not(:disabled),
+.favourites-editor__down:hover:not(:disabled),
+.favourites-editor__remove:hover {
+  background: var(--color-bg);
+}
+
+/* Faded, but still visible: it shows the place is already first or last. */
+.favourites-editor__up:disabled,
+.favourites-editor__down:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.favourites-editor__empty[hidden],
+.favourites-editor__hint[hidden],
+.favourites-editor__undo[hidden] {
+  display: none;
+}
+
+.favourites-editor__empty {
+  color: var(--color-text-muted);
+}
+
+.favourites-editor__footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 12px;
+  margin-top: 8px;
+}
+
+/* A live region: empty it takes no space but stays in the page. */
+.favourites-editor__status {
+  margin: 0;
+}
+
+/* Fintraffic's credit after the road conditions line (panel.ts). */
+.road-credit {
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+}
+
+/* Whether official warnings are covered here, when none is shown
+   (render/warnings.ts): so no box never reads as "all clear". */
+.warnings__coverage {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+}
+
+/* The temperature quiz (quiz/quiz.ts): a card over the map (not modal, so
+   the map shows each place). Phones: along the bottom; wider screens: the
+   bottom left corner. */
+.quiz {
+  position: fixed;
+  inset: auto 12px 12px 12px;
+  z-index: 1100;
+  width: auto;
+  max-width: 420px;
+  max-height: min(60vh, 560px);
+  margin: 0;
+  padding: 12px 16px 16px;
+  overflow-y: auto;
+  box-sizing: border-box;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: var(--shadow-panel);
+}
+
+.quiz__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.quiz__title {
+  margin: 0;
+  font-size: 1.125rem;
+}
+
+.quiz__close {
+  min-width: 44px;
+  min-height: 44px;
+  margin: -8px -8px -8px 0;
+  border: none;
+  background: none;
+  color: var(--color-text-muted);
+  font: inherit;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.quiz__body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+/* The guess and its button on one line: a shorter card, more map. */
+.quiz__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+}
+
+.quiz__body p {
+  margin: 0;
+}
+
+.quiz__lead,
+.quiz__place,
+.quiz__question,
+.quiz__answer,
+.quiz__verdict {
+  font-size: 1rem;
+}
+
+.quiz__place,
+.quiz__score {
+  font-weight: 600;
+}
+
+.quiz__score {
+  font-size: 1.5rem;
+}
+
+.quiz__boxes {
+  font-size: 1.5rem;
+  letter-spacing: 0.1em;
+}
+
+.quiz__round,
+.quiz__local,
+.quiz__hint,
+.quiz__best {
+  font-size: 0.9375rem;
+  color: var(--color-text-muted);
+}
+
+.quiz__slider {
+  width: 100%;
+  min-height: 44px;
+  accent-color: var(--color-accent);
+}
+
+.quiz__value {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.quiz__primary {
+  background: var(--color-accent);
+  color: var(--color-surface);
+}
+
+.quiz__places {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.quiz__places-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+  padding: 6px 0;
+  border-top: 1px solid var(--color-border);
+}
+
+.quiz__places-name {
+  flex: 1 1 60%;
+}
+
+.quiz__places-answer {
+  color: var(--color-text-muted);
+}
+
+.quiz__status {
+  margin: 8px 0 0;
+}
+
+.quiz__status:empty {
+  display: none;
+}
+
+/* Phones: a bottom sheet like the weather panel's; the map, its credits and
+   buttons start above it. */
+@media (max-width: 767px) {
+  .quiz {
+    inset: auto 0 0 0;
+    max-width: none;
+    border-width: 1px 0 0;
+    border-radius: 16px 16px 0 0;
+    padding-bottom: calc(16px + env(safe-area-inset-bottom));
+  }
+}
+
+/* A phone on its side: along the bottom the card would cover most of the
+   map, so it sits on the right instead (quiz.ts aims the map to its left). */
+@media (max-height: 500px) and (orientation: landscape) {
+  .quiz {
+    inset: 12px 12px 12px auto;
+    max-width: 420px;
+    border-width: 1px;
+    border-radius: var(--radius);
+    padding-bottom: 16px;
+    width: min(360px, 45vw);
+    max-height: calc(100vh - 24px);
+  }
+}

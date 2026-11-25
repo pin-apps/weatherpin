@@ -1,0 +1,32 @@
+# Security headers for every static asset. Cloudflare reads this file at
+# deploy time; it is not served itself.
+# img-src allows OpenStreetMap's tile server (map tiles) and the radar
+# images of RainViewer and Environment Canada (MSC GeoMet); connect-src
+# allows the site itself ('self': the warnings broker at /api, worker/),
+# allows only Open-Meteo's forecast, geocoding (place search), air quality
+# and marine (sea weather) APIs, its archive (weather on a past day),
+# NOAA's aurora nowcast (the northern lights now), the two radar services' lists of radar times, and the weather
+# warnings of Environment Canada, the US National Weather Service, MET
+# Norway and SMHI (Sweden), Fintraffic's road weather (Digitraffic, for
+# Finland), and OpenStreetMap's Nominatim (the name of a tapped point).
+# Cloudflare Web Analytics: Cloudflare adds its visit counter to the page
+# (automatic setup, no token in our code); script-src lets its script load
+# and connect-src lets it report. No cookies, nothing that identifies you.
+# Nothing else external may load.
+# Strict-Transport-Security: browsers use https only, for a year (the .app
+# domain is on the browsers' https-only list anyway).
+# geolocation=(self) lets our own page ask for the user's location (the
+# "My location" button); embedded third-party frames cannot.
+/*
+  Content-Security-Policy: default-src 'self'; script-src 'self' https://static.cloudflareinsights.com; style-src 'self'; img-src 'self' data: https://tile.openstreetmap.org https://tilecache.rainviewer.com https://geo.weather.gc.ca; font-src 'self'; connect-src 'self' https://api.open-meteo.com https://archive-api.open-meteo.com https://services.swpc.noaa.gov https://tie.digitraffic.fi https://geocoding-api.open-meteo.com https://nominatim.openstreetmap.org https://air-quality-api.open-meteo.com https://marine-api.open-meteo.com https://api.rainviewer.com https://geo.weather.gc.ca https://api.weather.gc.ca https://api.weather.gov https://api.met.no https://opendata-download-warnings.smhi.se https://cloudflareinsights.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(self), camera=(), microphone=(), payment=(), usb=()
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+
+# Built JS and CSS have the content's hash in their names (index-Ab12.js), so
+# a changed file always gets a new name: browsers may keep them for a year
+# without asking again. index.html and the icons keep the default (checked
+# on each visit), so a deploy shows up straight away.
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable

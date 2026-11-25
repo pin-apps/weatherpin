@@ -1,0 +1,329 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  # "Run workflow" on the Actions page: every browser test on every device
+  # (never deploys: only pushes to main do).
+  workflow_dispatch:
+  # Once a week, the same full run on main, for anything a quick PR run
+  # missed (Mondays 05:00 UTC).
+  schedule:
+    - cron: '0 5 * * 1'
+
+# Deny everything by default; each job asks only for what it needs.
+permissions: {}
+
+# A newer push to the same PR makes older runs pointless. Runs on main are
+# never cancelled, so a deploy can't be cut off halfway.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  # Decides whether the code checks are needed. A change that only touches
+  # Markdown files at the top of the repo (BACKLOG.md, README.md, CLAUDE.md)
+  # can't change the site, so tests and deploy are skipped. Anything else,
+  # or a diff that can't be worked out, runs everything.
+  #
+  # Also decides whether a push to main needs the browser tests again (the
+  # costliest part, ~30 of a run's ~35 billed minutes). Not when main now
+  # holds exactly the code a PR run already tested and passed: see the
+  # "retest" step.
+  changes:
+    name: What changed
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      actions: read # looks up the PR's earlier CI runs
+    outputs:
+      code: ${{ steps.diff.outputs.code }}
+      browser: ${{ steps.retest.outputs.browser }}
+      full: ${{ steps.diff.outputs.full }}
+      shards: ${{ steps.diff.outputs.shards }}
+      shard-count: ${{ steps.diff.outputs.shard-count }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0 # both ends of the diff must be present
+          persist-credentials: false
+      - id: diff
+        env:
+          EVENT: ${{ github.event_name }}
+          PR_BASE: ${{ github.event.pull_request.base.sha }}
+          PR_HEAD: ${{ github.event.pull_request.head.sha }}
+          PUSH_BEFORE: ${{ github.event.before }}
+          PUSH_AFTER: ${{ github.sha }}
+        run: |
+          if [ "$EVENT" = pull_request ]; then
+            range="$PR_BASE...$PR_HEAD"
+          else
+            range="$PUSH_BEFORE...$PUSH_AFTER"
+          fi
+          code=true
+          # A full browser run (every test on every device) instead of the
+          # quick one: for the button, the weekly run, an unknown diff, and
+          # changes to what every screen shares (layout, styles, the sheet,
+          # the map, the panel and its menu, dependencies, the test setup).
+          # The quick run saves about half the CI minutes.
+          full=false
+          if [ "$EVENT" = pull_request ] || [ "$EVENT" = push ]; then
+            if files=$(git diff --name-only "$range"); then
+              echo "Changed files:"
+              echo "$files"
+              # Docs-only when every changed file is a top-level .md file.
+              if [ -n "$files" ] && ! echo "$files" | grep -qvE '^[^/]+\.md$'; then
+                code=false
+              fi
+              if echo "$files" | grep -qE '^(index\.html|src/(style\.css|sheet\.ts|map\.ts|panel\.ts|panel-menu\.ts|main\.ts)|package(-lock)?\.json|playwright\.config\.ts|tests/helpers\.ts|\.github/workflows/ci\.yml)$'; then
+                full=true
+              fi
+            else
+              echo "Couldn't diff $range; running everything."
+              full=true
+            fi
+          else
+            full=true
+          fi
+          if [ "$full" = true ]; then shards='[1,2,3]'; count=3; else shards='[1,2]'; count=2; fi
+          echo "Code checks needed: $code; full browser run: $full"
+          echo "code=$code" >> "$GITHUB_OUTPUT"
+          echo "full=$full" >> "$GITHUB_OUTPUT"
+          echo "shards=$shards" >> "$GITHUB_OUTPUT"
+          echo "shard-count=$count" >> "$GITHUB_OUTPUT"
+      # Browser tests are skipped on main only when all of these hold:
+      # - the push is a PR's merge commit (a second parent: the PR's head),
+      # - the merged code is identical to that head's code (the PR was up to
+      #   date with main, so nothing else came in with the merge),
+      # - a CI run for that exact head passed on the PR.
+      # Anything else (main moved meanwhile, a direct push, an unknown run,
+      # a failed lookup) runs every browser test as before.
+      - id: retest
+        env:
+          EVENT: ${{ github.event_name }}
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          browser=true
+          if [ "$EVENT" = push ] && head=$(git rev-parse --verify -q HEAD^2); then
+            if [ "$(git rev-parse HEAD^{tree})" = "$(git rev-parse "$head^{tree}")" ]; then
+              passed=$(gh api "repos/$REPO/actions/runs?head_sha=$head&event=pull_request&status=success" \
+                --jq '[.workflow_runs[] | select(.name == "CI")] | length' || echo 0)
+              if [ "$passed" -gt 0 ]; then
+                echo "Same code as PR head $head, which passed CI: browser tests already done."
+                browser=false
+              else
+                echo "No passed PR run found for $head; running browser tests."
+              fi
+            else
+              echo "Main changed after the PR was tested; running browser tests."
+            fi
+          fi
+          echo "Browser tests needed: $browser"
+          echo "browser=$browser" >> "$GITHUB_OUTPUT"
+
+  checks:
+    name: Typecheck, lint, build
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 26
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm run build
+      # JS and CSS sizes against their budgets (scripts/check-size.mjs).
+      - run: npm run check:size
+      # Every text the app shows has a Finnish translation (scripts/check-i18n.mjs).
+      - run: npm run check:i18n
+      # The warnings broker's unit tests (worker/, Node's own test runner).
+      - run: npm run test:worker
+
+  browser-tests:
+    # Split into parallel jobs ("shards"), so a run takes minutes, not ten:
+    # 2 for the quick run, 3 for a full one. No more: each job also spends
+    # ~70 s starting up and is billed in whole minutes, so more shards cost
+    # more minutes.
+    name: Browser tests (${{ matrix.shard }}/${{ needs.changes.outputs.shard-count }})
+    needs: changes
+    if: needs.changes.outputs.code == 'true' && needs.changes.outputs.browser == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    # Playwright's own image: Chromium, WebKit and every Linux library they
+    # need, already installed. Before, each shard downloaded those libraries
+    # from Ubuntu's mirror, which some days crawled and ran a shard out of
+    # time before a single test. Keep the tag in step with @playwright/test
+    # in package.json (the step below fills any gap, but slower).
+    container:
+      image: mcr.microsoft.com/playwright:v1.65.1-noble@sha256:1507cbfc550a63a6b7396791ca4f00df17beb56342d2447b3f106c306f525579
+      # Chromium needs more shared memory than Docker gives by default.
+      options: --ipc=host
+    strategy:
+      # Let every shard finish, so one failure shows all failures.
+      fail-fast: false
+      matrix:
+        shard: ${{ fromJSON(needs.changes.outputs.shards) }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 26
+          cache: npm
+      - run: npm ci
+      # A no-op when the image matches the Playwright version in the
+      # lockfile; if they drift apart, this downloads the right browsers.
+      - run: npx playwright install chromium webkit
+      # Builds, serves dist/ with wrangler dev (real headers/CSP) and runs
+      # this shard's share of tests/ on phone, tablet and desktop sizes.
+      - run: npm run test:e2e -- --shard=${{ matrix.shard }}/${{ needs.changes.outputs.shard-count }}
+        env:
+          FULL_TESTS: ${{ needs.changes.outputs.full == 'true' && '1' || '0' }}
+      # Raw results, merged into one report by the job below. Best effort:
+      # a full Actions storage must never fail the tests themselves.
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: ${{ !cancelled() }}
+        continue-on-error: true
+        with:
+          name: blob-report-${{ matrix.shard }}
+          path: blob-report/
+          retention-days: 1
+
+  # One HTML report for all shards: a screenshot of every tested screen, plus
+  # traces for failures. Download it from the run's summary page.
+  browser-tests-report:
+    name: Browser test report
+    needs: browser-tests
+    if: ${{ !cancelled() && needs.browser-tests.result != 'skipped' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 26
+          cache: npm
+      - run: npm ci
+      # The report is a convenience: if storage is full and the raw results
+      # are missing, the run still passes (the tests' own result counts).
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        continue-on-error: true
+        with:
+          pattern: blob-report-*
+          path: all-blob-reports
+          merge-multiple: true
+      - run: npx playwright merge-reports --reporter html ./all-blob-reports
+        continue-on-error: true
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        continue-on-error: true
+        with:
+          name: playwright-report
+          path: playwright-report/
+          # Kept 2 days: ~27 MB each, and the free plan includes 0.5 GB of
+          # storage (cleanup.yml deletes all but the newest few too).
+          retention-days: 2
+
+  audit:
+    name: npm audit
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 26
+      # Reads package-lock.json only, so no install is needed.
+      # Only what users load (dependencies, e.g. Leaflet) blocks the deploy.
+      # Build tools (devDependencies) never ship; their advisories still show
+      # as Dependabot alerts on GitHub. Without this, an advisory with no fix
+      # yet (picomatch, Nov 2026) blocked every PR and deploy.
+      - run: npm audit --omit=dev --audit-level=high
+
+  secrets:
+    name: gitleaks
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: read # lists the PR's commits to scan
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0 # full history, so every commit gets scanned
+          persist-credentials: false
+      - uses: gitleaks/gitleaks-action@e0c47f4f8be36e29cdc102c57e68cb5cbf0e8d1e # v3.0.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Comments would need pull-requests: write; findings still fail the job
+          # and show up in the job summary.
+          GITLEAKS_ENABLE_COMMENTS: false
+
+  deploy:
+    name: Deploy to Cloudflare
+    # Only after every check passes, and only for pushes to main (not PRs).
+    # The browser tests must pass here, or have been skipped because the PR
+    # run already passed them on this exact code. Skipped checks (a
+    # docs-only change) skip the deploy too: nothing on the site changed.
+    # (`!cancelled()` lets this condition decide when a job was skipped.)
+    needs: [changes, checks, browser-tests, audit, secrets]
+    if: >-
+      !cancelled() &&
+      github.event_name == 'push' && github.ref == 'refs/heads/main' &&
+      needs.checks.result == 'success' &&
+      needs.audit.result == 'success' &&
+      needs.secrets.result == 'success' &&
+      (needs.browser-tests.result == 'success' ||
+       (needs.browser-tests.result == 'skipped' && needs.changes.outputs.browser == 'false'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    environment:
+      name: production
+      url: ${{ steps.deploy.outputs.deployment-url }}
+    # One production deploy at a time; queue rather than cancel.
+    concurrency:
+      group: deploy-production
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 26
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      # Uses the wrangler version from package-lock.json, since it's installed.
+      - id: deploy
+        uses: cloudflare/wrangler-action@953926a2e2182532811c01a25e53647d93bf07c0 # v4.1.3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy

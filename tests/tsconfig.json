@@ -1,0 +1,8 @@
+{
+  // Browser tests run in Node (Playwright), not in the browser like src/.
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "types": ["node"]
+  },
+  "include": ["./**/*.ts", "../playwright.config.ts"]
+}

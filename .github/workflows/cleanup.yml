@@ -1,0 +1,58 @@
+name: Clean up artifacts
+
+# CI saves a test report (~27 MB of screenshots) per run; the free plan
+# includes only 0.5 GB of Actions storage. This deletes every report except
+# the newest few, and raw shard results once their run is long done.
+# Runs once when this file lands on main, every Monday, and from the
+# "Run workflow" button (Actions → Clean up artifacts). Uses the workflow's
+# own token: no personal token needed.
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '30 5 * * 1'
+  push:
+    branches: [main]
+    paths: ['.github/workflows/cleanup.yml']
+
+permissions: {}
+
+concurrency:
+  group: cleanup-artifacts
+  cancel-in-progress: false
+
+jobs:
+  cleanup:
+    name: Delete old test reports
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      actions: write # delete artifacts
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPO: ${{ github.repository }}
+      # Newest test reports to keep (to look at recent screenshots).
+      KEEP_REPORTS: 3
+    steps:
+      - name: Delete
+        run: |
+          gh api --paginate "repos/$REPO/actions/artifacts?per_page=100" \
+            --jq '.artifacts[] | select(.expired == false) | "\(.created_at) \(.id) \(.name)"' \
+            | sort -r > artifacts.txt
+          # Raw shard results: a run merges them within minutes, so any more
+          # than 2 hours old is done with (never one a running job needs).
+          cutoff=$(date -u -d '2 hours ago' +%Y-%m-%dT%H:%M:%SZ)
+          {
+            awk '$3 == "playwright-report"' artifacts.txt | tail -n +$((KEEP_REPORTS + 1))
+            awk -v cutoff="$cutoff" '$3 ~ /^blob-report-/ && $1 < cutoff' artifacts.txt
+          } > delete.txt
+          echo "Artifacts: $(wc -l < artifacts.txt); deleting $(wc -l < delete.txt)"
+          deleted=0
+          while read -r created id name; do
+            if gh api -X DELETE "repos/$REPO/actions/artifacts/$id" > /dev/null; then
+              deleted=$((deleted + 1))
+            else
+              echo "Couldn't delete $name ($id, $created)"
+            fi
+          done < delete.txt
+          echo "Deleted $deleted"

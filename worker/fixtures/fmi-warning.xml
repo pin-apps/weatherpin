@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<alert xmlns="urn:oasis:names:tc:emergency:cap:1.2">
+  <identifier>urn:oid:2.49.0.1.246.0.0.2026.28029135.72137552092521959079217482520904267603</identifier>
+  <sender>urn:oid:2.49.0.0.246.0</sender>
+  <sent>2026-11-21T11:52:15+02:00</sent>
+  <status>Actual</status>
+  <msgType>Update</msgType>
+  <scope>Public</scope>
+  <code>profile:cap:https://alerts.fmi.fi/cap/profile/v1.1.0</code>
+  <code>profile:cap:https://git.smhi.se/metcoop/metcoop-cap-profile/blob/version-1.0/metcoop-cap-profile.md</code>
+  <references>urn:oid:2.49.0.0.246.0,urn:oid:2.49.0.1.246.0.0.2026.28018522.72137552092521959079217482520904267603,2026-11-21T08:55:22+02:00 urn:oid:2.49.0.0.246.0,urn:oid:2.49.0.1.246.0.0.2026.27986433.72137552092521959079217482520904267603,2026-11-21T00:00:33+02:00 urn:oid:2.49.0.0.246.0,urn:oid:2.49.0.1.246.0.0.2026.28004427.72137552092521959079217482520904267603,2026-11-21T05:00:27+02:00</references>
+  <info>
+    <language>fi-FI</language>
+    <category>Met</category>
+    <event>Tuulivaroitus merelle</event>
+    <urgency>Future</urgency>
+    <severity>Moderate</severity>
+    <certainty>Likely</certainty>
+    <eventCode>
+      <valueName>profile:cap:https://alerts.fmi.fi/cap/profile/v1.1.0</valueName>
+      <value>seaWind</value>
+    </eventCode>
+    <onset>2026-11-23T00:00:00+02:00</onset>
+    <expires>2026-11-23T09:00:00+02:00</expires>
+    <senderName>Ilmatieteen laitos</senderName>
+    <headline>Keltainen tuulivaroitus merelle: Ahvenanmeri, ma 0.00 - 9.00</headline>
+    <description>Kovan tuulen varoitus: Kovan pohjoistuulen todennäköisyys on 70 % sunnuntain ja maanantain välisenä yönä ja maanantaina aamulla.</description>
+    <web>https://www.ilmatieteenlaitos.fi/varoitukset</web>
+    <contact>https://www.ilmatieteenlaitos.fi/yhteystiedot</contact>
+    <parameter>
+      <valueName>windIntensity</valueName>
+      <value>19</value>
+    </parameter>
+    <parameter>
+      <valueName>windIntensityUom</valueName>
+      <value>m/s</value>
+    </parameter>
+    <parameter>
+      <valueName>windDirection</valueName>
+      <value>0</value>
+    </parameter>
+    <parameter>
+      <valueName>windDirectionUom</valueName>
+      <value>°</value>
+    </parameter>
+    <parameter>
+      <valueName>color</valueName>
+      <value>yellow</value>
+    </parameter>
+    <parameter>
+      <valueName>probability</valueName>
+      <value>70</value>
+    </parameter>
+    <parameter>
+      <valueName>probabilityUom</valueName>
+      <value>%</value>
+    </parameter>
+    <parameter>
+      <valueName>typicalImpacts</valueName>
+      <value>Mahdollisesti vaarallinen huviveneille.</value>
+    </parameter>
+    <area>
+      <areaDesc>Ahvenanmeri</areaDesc>
+      <polygon>60.496199,18.05812 60.497221,18.993449 60.498321,20.001002 60.376837,20.000743 60.379719,19.938681 60.415133,19.929527 60.425757,19.849754 60.410175,19.786981 60.364136,19.783058 60.312431,19.866754 60.289058,19.877216 60.245852,19.852369 60.258601,19.767365 60.321639,19.80529 60.337929,19.755595 60.292599,19.732056 60.280558,19.658821 60.249393,19.657514 60.228145,19.690207 60.16369,19.703285 60.115527,19.732056 60.090737,19.823598 60.090737,19.891602 60.065946,19.930834 60.073738,19.97399 60.060721,20.000069 59.832789,19.999583 59.832789,19.085319 59.880375,19.091256 59.905873,19.037638 59.916497,18.963096 59.960411,18.912093 59.982368,18.913401 60.033365,18.854552 60.105611,18.84409 60.102777,18.773471 60.12261,18.735547 60.141733,18.637465 60.136067,18.582539 60.177148,18.451764 60.210437,18.479227 60.222478,18.600848 60.24656,18.613925 60.272059,18.517152 60.342179,18.443917 60.337929,18.390299 60.357053,18.330143 60.345012,18.233369 60.381135,18.272601 60.413008,18.148365 60.461172,18.11044 60.496199,18.05812</polygon>
+      <polygon>59.832789,19.044165 59.832789,19.009445 59.864084,18.977481 59.832789,18.937905 59.832789,18.93251 59.843544,18.947403 59.898082,18.950018 59.832789,19.044165</polygon>
+      <geocode>
+        <valueName>METAREA</valueName>
+        <value>B4W</value>
+      </geocode>
+    </area>
+  </info>
+  <info>
+    <language>sv-FI</language>
+    <category>Met</category>
+    <event>Vindvarning för havsområden</event>
+    <urgency>Future</urgency>
+    <severity>Moderate</severity>
+    <certainty>Likely</certainty>
+    <eventCode>
+      <valueName>profile:cap:https://alerts.fmi.fi/cap/profile/v1.1.0</valueName>
+      <value>seaWind</value>
+    </eventCode>
+    <onset>2026-11-23T00:00:00+02:00</onset>
+    <expires>2026-11-23T09:00:00+02:00</expires>
+    <senderName>Meteorologiska institutet</senderName>
+    <headline>Gul vind varning för sjöområden: Ålands hav, må 0.00 - 9.00</headline>
+    <description>Varning för hård vind: På natten mellan söndag och måndag och på måndag morgon är sannolikheten 70 % för hård nordlig vind.</description>
+    <web>https://sv.ilmatieteenlaitos.fi/varningar</web>
+    <contact>https://sv.ilmatieteenlaitos.fi/kontaktuppgifter</contact>
+    <parameter>
+      <valueName>windIntensity</valueName>
+      <value>19</value>
+    </parameter>
+    <parameter>
+      <valueName>windIntensityUom</valueName>
+      <value>m/s</value>
+    </parameter>
+    <parameter>
+      <valueName>windDirection</valueName>
+      <value>0</value>
+    </parameter>
+    <parameter>
+      <valueName>windDirectionUom</valueName>
+      <value>°</value>
+    </parameter>
+    <parameter>
+      <valueName>color</valueName>
+      <value>yellow</value>
+    </parameter>
+    <parameter>
+      <valueName>probability</valueName>
+      <value>70</value>
+    </parameter>
+    <parameter>
+      <valueName>probabilityUom</valueName>
+      <value>%</value>
+    </parameter>
+    <parameter>
+      <valueName>typicalImpacts</valueName>
+      <value>Möjligtvis farligt för fritidsbåtar.</value>
+    </parameter>
+    <area>
+      <areaDesc>Ålands hav</areaDesc>
+      <polygon>60.496199,18.05812 60.497221,18.993449 60.498321,20.001002 60.376837,20.000743 60.379719,19.938681 60.415133,19.929527 60.425757,19.849754 60.410175,19.786981 60.364136,19.783058 60.312431,19.866754 60.289058,19.877216 60.245852,19.852369 60.258601,19.767365 60.321639,19.80529 60.337929,19.755595 60.292599,19.732056 60.280558,19.658821 60.249393,19.657514 60.228145,19.690207 60.16369,19.703285 60.115527,19.732056 60.090737,19.823598 60.090737,19.891602 60.065946,19.930834 60.073738,19.97399 60.060721,20.000069 59.832789,19.999583 59.832789,19.085319 59.880375,19.091256 59.905873,19.037638 59.916497,18.963096 59.960411,18.912093 59.982368,18.913401 60.033365,18.854552 60.105611,18.84409 60.102777,18.773471 60.12261,18.735547 60.141733,18.637465 60.136067,18.582539 60.177148,18.451764 60.210437,18.479227 60.222478,18.600848 60.24656,18.613925 60.272059,18.517152 60.342179,18.443917 60.337929,18.390299 60.357053,18.330143 60.345012,18.233369 60.381135,18.272601 60.413008,18.148365 60.461172,18.11044 60.496199,18.05812</polygon>
+      <polygon>59.832789,19.044165 59.832789,19.009445 59.864084,18.977481 59.832789,18.937905 59.832789,18.93251 59.843544,18.947403 59.898082,18.950018 59.832789,19.044165</polygon>
+      <geocode>
+        <valueName>METAREA</valueName>
+        <value>B4W</value>
+      </geocode>
+    </area>
+  </info>
+  <info>
+    <language>en-GB</language>
+    <category>Met</category>
+    <event>Wind warning for sea areas</event>
+    <urgency>Future</urgency>
+    <severity>Moderate</severity>
+    <certainty>Likely</certainty>
+    <eventCode>
+      <valueName>profile:cap:https://alerts.fmi.fi/cap/profile/v1.1.0</valueName>
+      <value>seaWind</value>
+    </eventCode>
+    <onset>2026-11-23T00:00:00+02:00</onset>
+    <expires>2026-11-23T09:00:00+02:00</expires>
+    <senderName>Finnish Meteorological Institute</senderName>
+    <headline>Yellow wind warning for sea area: Sea of Åland, Mon 0.00 - 9.00</headline>
+    <description>Wind warning for sea areas: In the night between Sunday and Monday and in Monday morning, probability for north gale-force winds is 70%.</description>
+    <web>https://en.ilmatieteenlaitos.fi/warnings</web>
+    <contact>https://en.ilmatieteenlaitos.fi/contact-information</contact>
+    <parameter>
+      <valueName>windIntensity</valueName>
+      <value>19</value>
+    </parameter>
+    <parameter>
+      <valueName>windIntensityUom</valueName>
+      <value>m/s</value>
+    </parameter>
+    <parameter>
+      <valueName>windDirection</valueName>
+      <value>0</value>
+    </parameter>
+    <parameter>
+      <valueName>windDirectionUom</valueName>
+      <value>°</value>
+    </parameter>
+    <parameter>
+      <valueName>color</valueName>
+      <value>yellow</value>
+    </parameter>
+    <parameter>
+      <valueName>probability</valueName>
+      <value>70</value>
+    </parameter>
+    <parameter>
+      <valueName>probabilityUom</valueName>
+      <value>%</value>
+    </parameter>
+    <parameter>
+      <valueName>typicalImpacts</valueName>
+      <value>Possibly dangerous for recreational crafts and small boats.</value>
+    </parameter>
+    <area>
+      <areaDesc>Sea of Åland</areaDesc>
+      <polygon>60.496199,18.05812 60.497221,18.993449 60.498321,20.001002 60.376837,20.000743 60.379719,19.938681 60.415133,19.929527 60.425757,19.849754 60.410175,19.786981 60.364136,19.783058 60.312431,19.866754 60.289058,19.877216 60.245852,19.852369 60.258601,19.767365 60.321639,19.80529 60.337929,19.755595 60.292599,19.732056 60.280558,19.658821 60.249393,19.657514 60.228145,19.690207 60.16369,19.703285 60.115527,19.732056 60.090737,19.823598 60.090737,19.891602 60.065946,19.930834 60.073738,19.97399 60.060721,20.000069 59.832789,19.999583 59.832789,19.085319 59.880375,19.091256 59.905873,19.037638 59.916497,18.963096 59.960411,18.912093 59.982368,18.913401 60.033365,18.854552 60.105611,18.84409 60.102777,18.773471 60.12261,18.735547 60.141733,18.637465 60.136067,18.582539 60.177148,18.451764 60.210437,18.479227 60.222478,18.600848 60.24656,18.613925 60.272059,18.517152 60.342179,18.443917 60.337929,18.390299 60.357053,18.330143 60.345012,18.233369 60.381135,18.272601 60.413008,18.148365 60.461172,18.11044 60.496199,18.05812</polygon>
+      <polygon>59.832789,19.044165 59.832789,19.009445 59.864084,18.977481 59.832789,18.937905 59.832789,18.93251 59.843544,18.947403 59.898082,18.950018 59.832789,19.044165</polygon>
+      <geocode>
+        <valueName>METAREA</valueName>
+        <value>B4W</value>
+      </geocode>
+    </area>
+  </info>
+</alert>

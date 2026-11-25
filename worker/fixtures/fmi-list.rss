@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0">
+  <channel>
+    <title>Finnish Meteorological Institute warnings</title>
+    <link>https://en.ilmatieteenlaitos.fi/warnings</link>
+    <description>Finnish Meteorological Institute open data (CAP) warnings in effect for the next 0-5 days</description>
+    <language>en-GB</language>
+    <copyright>Copyright Finnish Meteorological Institute. Licensed under Creative Commons BY 4.0</copyright>
+    <pubDate>Sat, 21 Nov 2026 09:52:15 GMT</pubDate>
+    <dc:rights>Copyright Finnish Meteorological Institute. Licensed under Creative Commons BY 4.0</dc:rights>
+    <item>
+      <title>Yellow wind warning for sea area: Western part of Northern Baltic and Sea of Åland, Sat 11.52 - 17.00</title>
+      <link>https://alerts.fmi.fi/cap/2026/11-21/09-52-15Z/2.49.0.1.246.0.0.2026.28029135.339798825087883153937181910200762739050.xml</link>
+      <description>Wind warning for sea areas: North to northwest gale 17 m/s at first.</description>
+      <category>MET</category>
+      <pubDate>Sat, 21 Nov 2026 09:52:15 GMT</pubDate>
+      <author>cap@fmi.fi (Finnish Meteorological Institute)</author>
+      <guid isPermaLink="false">urn:oid:2.49.0.1.246.0.0.2026.28029135.339798825087883153937181910200762739050</guid>
+    </item>
+    <item>
+      <title>Yellow wind warning for sea area: Gulf of Finland, Mon 11.00 - Tue 0.00</title>
+      <link>https://alerts.fmi.fi/cap/2026/11-21/09-52-15Z/2.49.0.1.246.0.0.2026.28029135.64048082470813442054809909372893355128.xml</link>
+      <description>Wind warning for sea areas: From Monday noon to the night between Monday and Tuesday, probability for north to northeast gale-force winds is 40%.</description>
+      <category>MET</category>
+      <pubDate>Sat, 21 Nov 2026 09:52:15 GMT</pubDate>
+      <author>cap@fmi.fi (Finnish Meteorological Institute)</author>
+      <guid isPermaLink="false">urn:oid:2.49.0.1.246.0.0.2026.28029135.64048082470813442054809909372893355128</guid>
+    </item>
+    <item>
+      <title>Yellow wind warning for sea area: Locally on all sea areas, Sun 0.00 - Mon 11.00</title>
+      <link>https://alerts.fmi.fi/cap/2026/11-21/09-52-15Z/2.49.0.1.246.0.0.2026.28029135.96387429756631423705577914930970612376.xml</link>
+      <description>Wind warning for sea areas: North to northeast near gale 15 m/s from the midnight on.</description>
+      <category>MET</category>
+      <pubDate>Sat, 21 Nov 2026 09:52:15 GMT</pubDate>
+      <author>cap@fmi.fi (Finnish Meteorological Institute)</author>
+      <guid isPermaLink="false">urn:oid:2.49.0.1.246.0.0.2026.28029135.96387429756631423705577914930970612376</guid>
+    </item>
+    <item>
+      <title>Yellow wind warning for sea area: Southern Sea of Bothnia and Northern Bay of Bothnia, Sat 13.00 - Sun 0.00</title>
+      <link>https://alerts.fmi.fi/cap/2026/11-21/09-52-15Z/2.49.0.1.246.0.0.2026.28029135.330936786725918890156192580868968924590.xml</link>
+      <description>Wind warning for sea areas: Northeast gale 17 m/s at first.</description>
+      <category>MET</category>
+      <pubDate>Sat, 21 Nov 2026 09:52:15 GMT</pubDate>
+      <author>cap@fmi.fi (Finnish Meteorological Institute)</author>
+      <guid isPermaLink="false">urn:oid:2.49.0.1.246.0.0.2026.28029135.330936786725918890156192580868968924590</guid>
+    </item>
+    <item>
+      <title>Yellow traffic weather warning: Locally in the southern and middle parts of the country, Mon 0.00 - Tue 0.00</title>
+      <link>https://alerts.fmi.fi/cap/2026/11-21/09-52-15Z/2.49.0.1.246.0.0.2026.28029135.205384133487040870444859787598516617497.xml</link>
+      <description>Traffic weather warning: From the night between Sunday and Monday to the night between Monday and Tuesday, probability for bad road conditions is 30% because of snow and ice-covered roads.</description>
+      <category>MET</category>
+      <pubDate>Sat, 21 Nov 2026 09:52:15 GMT</pubDate>
+      <author>cap@fmi.fi (Finnish Meteorological Institute)</author>
+      <guid isPermaLink="false">urn:oid:2.49.0.1.246.0.0.2026.28029135.205384133487040870444859787598516617497</guid>
+    </item>
+    <item>
+      <title>Yellow wind warning for sea area: Western part of Northern Baltic and locally on Gulf of Bothnia, Sun 0.00 - Mon 11.00</title>
+      <link>https://alerts.fmi.fi/cap/2026/11-21/09-52-15Z/2.49.0.1.246.0.0.2026.28029135.304611788161118751190880025419454628374.xml</link>
+      <description>Wind warning for sea areas: North gale 19 m/s from the midnight on.</description>
+      <category>MET</category>
+      <pubDate>Sat, 21 Nov 2026 09:52:15 GMT</pubDate>
+      <author>cap@fmi.fi (Finnish Meteorological Institute)</author>
+      <guid isPermaLink="false">urn:oid:2.49.0.1.246.0.0.2026.28029135.304611788161118751190880025419454628374</guid>
+    </item>
+    <item>
+      <title>Yellow sea level warning: Northern Bay of Bothnia, Sun 16.00 - Mon 5.00</title>
+      <link>https://alerts.fmi.fi/cap/2026/11-21/09-52-15Z/2.49.0.1.246.0.0.2026.28029135.150753919622978559585163674354858127145.xml</link>
+      <description>Sea level warning: In Sunday evening and in the night between Sunday and Monday, probability for low water level is 40%.</description>
+      <category>MET</category>
+      <pubDate>Sat, 21 Nov 2026 09:52:15 GMT</pubDate>
+      <author>cap@fmi.fi (Finnish Meteorological Institute)</author>
+      <guid isPermaLink="false">urn:oid:2.49.0.1.246.0.0.2026.28029135.150753919622978559585163674354858127145</guid>
+    </item>
+    <item>
+      <title>Yellow wind warning for sea area: Sea of Åland, Mon 0.00 - 9.00</title>
+      <link>https://alerts.fmi.fi/cap/2026/11-21/09-52-15Z/2.49.0.1.246.0.0.2026.28029135.72137552092521959079217482520904267603.xml</link>
+      <description>Wind warning for sea areas: In the night between Sunday and Monday and in Monday morning, probability for north gale-force winds is 70%.</description>
+      <category>MET</category>
+      <pubDate>Sat, 21 Nov 2026 09:52:15 GMT</pubDate>
+      <author>cap@fmi.fi (Finnish Meteorological Institute)</author>
+      <guid isPermaLink="false">urn:oid:2.49.0.1.246.0.0.2026.28029135.72137552092521959079217482520904267603</guid>
+    </item>
+    <item>
+      <title>Yellow wind warning for sea area: Locally on Gulf of Bothnia, Sat 11.52 - Sun 0.00</title>
+      <link>https://alerts.fmi.fi/cap/2026/11-21/09-52-15Z/2.49.0.1.246.0.0.2026.28029135.332518282284906228387067636822305327211.xml</link>
+      <description>Wind warning for sea areas: North to northeast gale 19 m/s at first.</description>
+      <category>MET</category>
+      <pubDate>Sat, 21 Nov 2026 09:52:15 GMT</pubDate>
+      <author>cap@fmi.fi (Finnish Meteorological Institute)</author>
+      <guid isPermaLink="false">urn:oid:2.49.0.1.246.0.0.2026.28029135.332518282284906228387067636822305327211</guid>
+    </item>
+    <item>
+      <title>Yellow traffic weather warning: Locally in the middle and northern parts of the country, Sat 11.52 - Sun 0.00</title>
+      <link>https://alerts.fmi.fi/cap/2026/11-21/09-52-15Z/2.49.0.1.246.0.0.2026.28029135.5823456763986353325850376756033170024.xml</link>
+      <description>Traffic weather warning: Bad road conditions are expected at first because of snow or sleet.</description>
+      <category>MET</category>
+      <pubDate>Sat, 21 Nov 2026 09:52:15 GMT</pubDate>
+      <author>cap@fmi.fi (Finnish Meteorological Institute)</author>
+      <guid isPermaLink="false">urn:oid:2.49.0.1.246.0.0.2026.28029135.5823456763986353325850376756033170024</guid>
+    </item>
+    <item>
+      <title>Yellow traffic weather warning: Locally in over the whole country, Sun 0.00 - Mon 0.00</title>
+      <link>https://alerts.fmi.fi/cap/2026/11-21/09-52-15Z/2.49.0.1.246.0.0.2026.28029135.58155527221815070984937686550235279407.xml</link>
+      <description>Traffic weather warning: Bad road conditions are expected from the midnight on because of snow and ice-covered roads.</description>
+      <category>MET</category>
+      <pubDate>Sat, 21 Nov 2026 09:52:15 GMT</pubDate>
+      <author>cap@fmi.fi (Finnish Meteorological Institute)</author>
+      <guid isPermaLink="false">urn:oid:2.49.0.1.246.0.0.2026.28029135.58155527221815070984937686550235279407</guid>
+    </item>
+    <item>
+      <title>Orange wind warning for sea area: Sea of Åland and Southern Sea of Bothnia, Sun 6.00 - Mon 0.00</title>
+      <link>https://alerts.fmi.fi/cap/2026/11-21/09-52-15Z/2.49.0.1.246.0.0.2026.28029135.173199901937926383764018877368924521313.xml</link>
+      <description>Wind warning for sea areas: North severe gale 21 m/s from the morning on.</description>
+      <category>MET</category>
+      <pubDate>Sat, 21 Nov 2026 09:52:15 GMT</pubDate>
+      <author>cap@fmi.fi (Finnish Meteorological Institute)</author>
+      <guid isPermaLink="false">urn:oid:2.49.0.1.246.0.0.2026.28029135.173199901937926383764018877368924521313</guid>
+    </item>
+    <item>
+      <title>Orange wave height warning: Western part of Northern Baltic and locally on Gulf of Bothnia, Sun 12.00 - Mon 0.00</title>
+      <link>https://alerts.fmi.fi/cap/2026/11-21/09-52-15Z/2.49.0.1.246.0.0.2026.28029135.65159786091785361876714321645412233659.xml</link>
+      <description>Wave height warning: From Sunday noon to the night between Sunday and Monday, probability for very rough waves is 30%. The significant wave height may exceed 4 meters.</description>
+      <category>MET</category>
+      <pubDate>Sat, 21 Nov 2026 09:52:15 GMT</pubDate>
+      <author>cap@fmi.fi (Finnish Meteorological Institute)</author>
+      <guid isPermaLink="false">urn:oid:2.49.0.1.246.0.0.2026.28029135.65159786091785361876714321645412233659</guid>
+    </item>
+    <item>
+      <title>Orange wave height warning: Sea of Åland and Sea of Bothnia, Sat 19.00 - Mon 0.00</title>
+      <link>https://alerts.fmi.fi/cap/2026/11-21/09-52-15Z/2.49.0.1.246.0.0.2026.28029135.276639799712840510827275822238405501294.xml</link>
+      <description>Wave height warning: Very rough waves occur from the evening on. Significant wave height exceeds 4 meters.</description>
+      <category>MET</category>
+      <pubDate>Sat, 21 Nov 2026 09:52:15 GMT</pubDate>
+      <author>cap@fmi.fi (Finnish Meteorological Institute)</author>
+      <guid isPermaLink="false">urn:oid:2.49.0.1.246.0.0.2026.28029135.276639799712840510827275822238405501294</guid>
+    </item>
+  </channel>
+</rss>

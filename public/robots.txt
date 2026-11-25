@@ -1,0 +1,5 @@
+# Every page may be read by search engines.
+User-agent: *
+Allow: /
+
+Sitemap: https://weatherpin.app/sitemap.xml

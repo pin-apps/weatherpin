@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Weatherpin icon: a white cloud and a yellow sun on the app's blue.
+       Same shapes as the PNG icons (drawn by a script from these numbers). -->
+  <rect width="100" height="100" rx="22" fill="#0b63ce" />
+  <circle cx="63" cy="37" r="17" fill="#ffd23f" />
+  <g fill="#ffffff">
+    <circle cx="36" cy="62" r="14" />
+    <circle cx="52" cy="54" r="19" />
+    <circle cx="68" cy="63" r="13" />
+    <rect x="22" y="62" width="59" height="14" rx="7" />
+  </g>
+</svg>

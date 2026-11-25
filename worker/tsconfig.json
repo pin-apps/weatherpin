@@ -1,0 +1,10 @@
+{
+  // The Worker (Cloudflare's runtime: web APIs) and its unit tests (Node,
+  // which runs these .ts files directly).
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "types": ["node"],
+    "allowImportingTsExtensions": true
+  },
+  "include": ["./**/*.ts"]
+}

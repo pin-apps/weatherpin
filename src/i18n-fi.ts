@@ -324,6 +324,7 @@ export const FINNISH: Record<string, string> = {
   'Waning crescent': 'Vähenevä sirppi',
   'Local time': 'Paikallinen aika',
   Coordinates: 'Koordinaatit',
+  Elevation: 'Korkeus merenpinnasta',
 
   // Warnings
   'Weather warnings': 'Säävaroitukset',
@@ -566,6 +567,8 @@ export const FINNISH: Record<string, string> = {
   'Estimate from published tests, not your car.':
     'Arvio julkaistujen testien perusteella, ei sinun autosi.',
   'Temperature quiz': 'Lämpötilavisa',
+  'html:sources-elevation':
+    '<strong>Korkeus merenpinnasta:</strong> Copernicus DEM -korkeusmallista (90 metrin ruudukko) Open-Meteon kautta; jyrkässä maastossa se voi heittää kymmeniä metrejä.',
   'html:sources-ev':
     '<strong>Sähköauton toimintamatka kylmällä:</strong> tyypilliset luvut julkaistuista talvitesteistä ja ajoneuvodatasta (Norjan autoliiton NAF:n El Prix -talvitestit, AAA, Geotab) nykyisen lämpötilan mukaan; ei mikään tietty auto.',
 };

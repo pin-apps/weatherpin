@@ -49,6 +49,7 @@ export function forecastFixture(kind: ForecastKind = 'normal') {
     timezone: polar ? 'Arctic/Longyearbyen' : 'Europe/Oslo',
     timezone_abbreviation: 'GMT+1',
     utc_offset_seconds: 3600,
+    elevation: polar ? 9 : 23,
     current: {
       time: CURRENT_TIME,
       interval: 900,

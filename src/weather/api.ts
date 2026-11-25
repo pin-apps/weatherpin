@@ -145,6 +145,11 @@ export interface Forecast {
   timezone: string;
   timezone_abbreviation: string;
   utc_offset_seconds: number;
+  /**
+   * Height of the point above sea level in metres, from a 90 m elevation
+   * map (Copernicus DEM). Missing in copies saved before it was shown.
+   */
+  elevation?: number;
   current: CurrentWeather;
   hourly: HourlyForecast;
   /** Missing if the service leaves it out; the app then just doesn't say. */

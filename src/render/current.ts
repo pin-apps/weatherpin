@@ -6,6 +6,7 @@ import { el, estimateNote, hiddenText, iconEl } from '../dom';
 import {
   formatClockTime,
   formatCoordinates,
+  formatElevation,
   formatDayTimeIn,
   formatLocalNow,
   formatPercent,
@@ -269,6 +270,9 @@ export function renderMoreDetails(forecast: Forecast, point: PickedPoint): HTMLE
     // A clicked point already has its coordinates as the panel title.
     ...(point.name
       ? [[t('Coordinates'), formatCoordinates(point.lat, point.lng)] as [string, string]]
+      : []),
+    ...(forecast.elevation !== undefined && Number.isFinite(forecast.elevation)
+      ? [[t('Elevation'), formatElevation(forecast.elevation)] as [string, string]]
       : []),
   ];
 

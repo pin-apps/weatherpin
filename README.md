@@ -1,28 +1,40 @@
 # Weatherpin
 
-Live at **https://weatherpin.app**. A world weather map, built with Vite and vanilla TypeScript. Click or tap any
-point on the map, search for a place by name, or press "My location" to see
-the current weather and forecast there.
+Live at **https://weatherpin.app**. A world weather map, built with Vite and
+vanilla TypeScript. Tap or click any point on the map, search for a place by
+name, or press "My location" to see the weather there: now, the next 24
+hours and 7 days, air quality and pollen, the sea, the sky (sun, moon,
+northern lights) and official weather warnings where available.
 
-The °C / °F button in the weather panel switches units (wind, rain and
-pressure follow it). The first choice, the clock (`14:00` or `2 PM`) and the
-date style come from the browser's language. The choice and favourite places
-are saved on the device only. "Start here" under the place's name in the
-weather panel makes that place the start place: the app then opens there,
-with its weather showing.
+The app speaks English, Finnish, Swedish and Norwegian (bokmål), from the
+browser's language or chosen in Settings (⚙ next to the search box). Units
+(°C/°F, wind, rain, pressure), the clock (`14:00` or `2 PM`) and the date
+style follow the browser's language unless chosen there. Favourite places,
+a start place ("Start here" in the place's ⋯ menu), settings and the last
+few forecasts are saved on the device only: no accounts, no cookies.
 
-Map tiles come from [OpenStreetMap](https://www.openstreetmap.org/), shown with
-[Leaflet](https://leafletjs.com/). Forecasts come from the
-[Open-Meteo](https://open-meteo.com/) API, and place search from Open-Meteo's
-geocoding API (data from [GeoNames](https://www.geonames.org/)), and air
-quality from Open-Meteo's air quality API (data from the Copernicus
-Atmosphere Monitoring Service), and the optional rain radar from
-[Environment and Climate Change Canada](https://eccc-msc.github.io/open-data/msc-geomet/readme_en/)
-over North America and [RainViewer](https://www.rainviewer.com/) elsewhere.
-Severe weather warnings come from Environment and Climate Change Canada,
-the US National Weather Service and MET Norway (other areas are not
-covered yet). All are
-called directly from the browser. There is no backend.
+For fun there's a daily temperature quiz, weather excuses and small talk
+from the real weather, and a postcard of the place to share.
+
+Where the data comes from (all credited in the app's About):
+
+- Forecasts, place search, air quality, the sea and past days:
+  [Open-Meteo](https://open-meteo.com/) (place names from
+  [GeoNames](https://www.geonames.org/); air quality from the Copernicus
+  Atmosphere Monitoring Service).
+- Map: [OpenStreetMap](https://www.openstreetmap.org/), shown with
+  [Leaflet](https://leafletjs.com/); names of tapped points from
+  [Nominatim](https://nominatim.org/).
+- Rain radar: [Environment and Climate Change Canada](https://eccc-msc.github.io/open-data/msc-geomet/readme_en/)
+  over North America, [RainViewer](https://www.rainviewer.com/) elsewhere.
+- Warnings: Environment and Climate Change Canada, the US National Weather
+  Service, MET Norway, SMHI (Sweden) and FMI (Finland).
+- Northern lights: NOAA's Space Weather Prediction Center; road weather in
+  Finland: Fintraffic.
+
+The browser calls these services directly. The only server code is a tiny
+broker on the same Cloudflare Worker for FMI's warnings, which can't be
+read from a browser directly; it never receives a location.
 
 ## Development
 

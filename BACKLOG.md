@@ -5,12 +5,16 @@ delete them) when they ship. Newest ideas at the bottom of each section.
 
 ## Status (2026-11-25)
 
-Live at https://weatherpin.app and working. Recently shipped: the
-temperature quiz, small talk and weather excuses, units of one's own,
-Norwegian, foldable sections (see Done). Decided: no EDM calculator with
-typed-in readings. The warnings work (Next, and the WMO email under
-Waiting on others) is the biggest open item; the Ideas are smaller and
-independent. Start-up JS is 71.6/72 KB: ask before adding to start-up.
+Live at https://weatherpin.app and working; **development on a pause**
+from 2026-11-25. The repo moved to `pin-apps/weatherpin` (public, fresh
+start, main protected by a ruleset, CodeQL and secret scanning on, no
+open alerts or PRs). Recently shipped: the quiz's smooth flights, bottom
+sheet on phones, bold question words and elevation clue; elevation in
+More details (see Done). Good first picks when picking up again: the
+security fixes (Next), the thunder heads-up and "today vs tomorrow"
+(Ideas); the warnings work waits on the WMO email. Decided: no EDM calculator with
+typed-in readings. Start-up JS is
+71.7/72 KB: ask before adding to start-up.
 
 ## Next
 
@@ -147,16 +151,15 @@ Built or thought through, then put aside. Revisit only with a clear reason.
 
 - TypeScript 7: blocked until `typescript-eslint` supports it. Then remove
   the TypeScript `ignore` rule in `.github/dependabot.yml`.
-- Dependabot alert (`minimatch`, GHSA-g3hv-75wg-m249): dev-only, via
-  `typescript-eslint`; clears when it allows `minimatch` 11. Dismiss on
-  GitHub or wait.
-- Dependabot alert (`picomatch` ReDoS, GHSA-fc5q-39xc-vjpf): build tools
-  only (Vite), no patched version yet. CI's audit now checks shipped
-  packages only, so it no longer blocks. Update when picomatch is fixed.
 
 ## Done
 
 Newest first, one line each; the details are in the PRs and git history.
+
+- Repo moved to pin-apps/weatherpin (public, all rights reserved; gitleaks via its command-line tool); README intro refreshed
+- Quiz: the place's elevation as a clue; the question's key words in bold, the high covers the whole day
+- Quiz: one smooth flight per place (no extra re-centring); a bottom sheet on phones, map credits and buttons kept clear of it
+- Elevation in More details (Copernicus DEM via Open-Meteo, metres or feet)
 
 - 🌡️ Temperature quiz (daily for everyone, free play, shareable) and electric car range in More details
 - 📲 Add to home screen in Settings (install dialog, or how-to for iPhone and Firefox)

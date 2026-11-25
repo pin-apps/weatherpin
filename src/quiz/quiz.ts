@@ -9,7 +9,13 @@
 // the device's copy of recent weather. Loaded on demand (main.ts).
 
 import { el, iconEl } from '../dom';
-import { formatClockTime, formatCoordinates, formatDuration, formatLocalNow } from '../format';
+import {
+  formatClockTime,
+  formatCoordinates,
+  formatDuration,
+  formatElevation,
+  formatLocalNow,
+} from '../format';
 import type { CoveredArea, PickedPoint } from '../map';
 import { statusLine } from '../status-line';
 import { currentUnits } from '../units';
@@ -125,6 +131,28 @@ function keepRoundHeight() {
 function showLoading() {
   show([el('p', 'quiz__lead', t('Loading…'))]);
   keepRoundHeight();
+}
+
+/**
+ * "☀️ Local time 09:15 · ⛰️ 2,469 m": the height is a fair clue (air cools
+ * about 6.5 °C per 1,000 m) and says nothing of today's weather. On the
+ * same line, so the card (and where the map aims) stays the same height.
+ */
+function localLine(forecast: Forecast, isDay: boolean): HTMLElement {
+  const time = formatLocalNow(forecast.timezone, forecast.utc_offset_seconds);
+  const line = el('p', 'quiz__local', `${isDay ? '☀️' : '🌙'} ${q('localTime', { time })}`);
+  const { elevation } = forecast;
+  if (elevation !== undefined && Number.isFinite(elevation)) {
+    const height = el('span', 'quiz__elevation');
+    // The emoji alone says little to a screen reader.
+    height.append(
+      ' · ⛰️ ',
+      el('span', 'visually-hidden', `${t('Elevation')} `),
+      formatElevation(elevation),
+    );
+    line.append(height);
+  }
+  return line;
 }
 
 /** A paragraph with the text's *marked* words in bold (as text, not HTML). */
@@ -271,13 +299,7 @@ async function playRound(
     [
       el('p', 'quiz__round', q('round', { number: index + 1, total: ROUNDS })),
       el('p', 'quiz__place', placeLabel(point)),
-      el(
-        'p',
-        'quiz__local',
-        `${isDay ? '☀️' : '🌙'} ${q('localTime', {
-          time: formatLocalNow(forecast.timezone, forecast.utc_offset_seconds),
-        })}`,
-      ),
+      localLine(forecast, isDay),
       emphasised('quiz__question', mode === 'daily' ? q('askHigh') : q('askNow')),
       // The high counts the hours still to come: it matters in the morning.
       ...(mode === 'daily' ? [el('p', 'quiz__hint', q('wholeDay'))] : []),

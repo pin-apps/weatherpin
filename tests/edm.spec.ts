@@ -60,6 +60,7 @@ test.describe('atmospheric correction (EDM)', () => {
       'Local time',
       'Weather warnings',
       'Coordinates',
+      'Elevation',
     ]);
   });
 

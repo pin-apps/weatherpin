@@ -79,11 +79,12 @@ const LINE = new RegExp(
   String.raw`\b\w+: \{\s*en:\s*${STRING},\s*fi:\s*${STRING},\s*sv:\s*${STRING},\s*nb:\s*${STRING},?\s*\}`,
   'g',
 );
+// Also the number of *…* marks (bold words in the quiz's questions).
 const placeholders = (text) =>
   [...text.matchAll(/\{(\w+)\}/g)]
     .map((m) => m[1])
     .sort()
-    .join(',');
+    .join(',') + ` *${(text.match(/\*/g) ?? []).length}`;
 let badLines = 0;
 let quipLines = 0;
 const sideBySide = ['src/quips', 'src/quiz'].flatMap((dir) =>

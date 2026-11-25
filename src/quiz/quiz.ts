@@ -127,6 +127,15 @@ function showLoading() {
   keepRoundHeight();
 }
 
+/** A paragraph with the text's *marked* words in bold (as text, not HTML). */
+function emphasised(className: string, text: string): HTMLElement {
+  const paragraph = el('p', className);
+  text.split(/\*([^*]+)\*/).forEach((part, index) => {
+    if (part) paragraph.append(index % 2 ? el('strong', undefined, part) : part);
+  });
+  return paragraph;
+}
+
 /** Side by side: the guess and its button (a compact card leaves more map). */
 function row(...children: HTMLElement[]): HTMLElement {
   const element = el('div', 'quiz__row');
@@ -269,7 +278,9 @@ async function playRound(
           time: formatLocalNow(forecast.timezone, forecast.utc_offset_seconds),
         })}`,
       ),
-      el('p', 'quiz__question', mode === 'daily' ? q('askHigh') : q('askNow')),
+      emphasised('quiz__question', mode === 'daily' ? q('askHigh') : q('askNow')),
+      // The high counts the hours still to come: it matters in the morning.
+      ...(mode === 'daily' ? [el('p', 'quiz__hint', q('wholeDay'))] : []),
       label,
       slider,
       row(value, guessButton),

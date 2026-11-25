@@ -1,7 +1,8 @@
 // The temperature quiz's texts, in every language the app speaks, side by
 // side (a missing one won't compile). Kept here, not in the start-up
 // language files: they load with the quiz, only when it's played.
-// scripts/check-i18n.mjs checks each text's {placeholders} match.
+// scripts/check-i18n.mjs checks each text's {placeholders} and *bold*
+// marks match.
 
 import { currentLanguage, type Language } from '../i18n';
 
@@ -92,17 +93,24 @@ const TEXTS = {
     sv: 'Lokal tid {time}',
     nb: 'Lokal tid {time}',
   },
+  // *…*: the words that tell the two questions apart, shown in bold.
   askHigh: {
-    en: "What's today's high here?",
-    fi: 'Mikä on täällä tänään päivän ylin lämpötila?',
-    sv: 'Vilken är dagens högsta temperatur här?',
-    nb: 'Hva er dagens høyeste temperatur her?',
+    en: "What's *today's high* here?",
+    fi: 'Mikä on täällä tänään *päivän ylin lämpötila*?',
+    sv: 'Vilken är *dagens högsta temperatur* här?',
+    nb: 'Hva er *dagens høyeste temperatur* her?',
+  },
+  wholeDay: {
+    en: 'The whole day there, also the hours still to come.',
+    fi: 'Koko päivän ajalta, myös vielä tulevat tunnit.',
+    sv: 'Hela dagen där, även timmarna som är kvar.',
+    nb: 'Hele dagen der, også timene som gjenstår.',
   },
   askNow: {
-    en: "What's the temperature here right now?",
-    fi: 'Mikä täällä on lämpötila juuri nyt?',
-    sv: 'Vilken temperatur är det här just nu?',
-    nb: 'Hvilken temperatur er det her akkurat nå?',
+    en: "What's the temperature here *right now*?",
+    fi: 'Mikä täällä on lämpötila *juuri nyt*?',
+    sv: 'Vilken temperatur är det här *just nu*?',
+    nb: 'Hvilken temperatur er det her *akkurat nå*?',
   },
   highAt: {
     en: "Today's high: {temp} (around {time})",

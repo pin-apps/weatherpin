@@ -90,6 +90,9 @@ test.describe('temperature quiz', () => {
     await expect(quiz(page).locator('.quiz__question')).toHaveText("What's today's high here?");
     await expect(quiz(page).locator('.quiz__question strong')).toHaveText("today's high");
     await expect(quiz(page)).toContainText('The whole day there, also the hours still to come.');
+    // The height as a clue, on the local time's line (the fake forecast: 23 m).
+    await expect(quiz(page).locator('.quiz__local')).toContainText('· ⛰️ Elevation 23 m');
+    await expect(quiz(page).locator('.quiz__elevation .visually-hidden')).toHaveText('Elevation ');
     await expect(slider(page)).toBeFocused();
     expect(await guess(page, 6)).toBe('🟩 You guessed 6 °C: 0° off · 100 points');
     await expect(quiz(page).locator('.quiz__answer')).toContainText(
@@ -168,6 +171,7 @@ test.describe('temperature quiz', () => {
     await chooseUnit(page, '°F');
     await openQuiz(page);
     await quiz(page).getByRole('button', { name: "Play today's quiz" }).click();
+    await expect(quiz(page).locator('.quiz__local')).toContainText('75 ft');
     // Today's high 6 °C = 43 °F; 4 °F off is still green.
     expect(await guess(page, 47)).toBe('🟩 You guessed 47 °F: 4° off · 78 points');
   });
@@ -289,6 +293,7 @@ test.describe('temperature quiz', () => {
         'Mikä on täällä tänään päivän ylin lämpötila?',
       );
       await expect(finnish.locator('.quiz__question strong')).toHaveText('päivän ylin lämpötila');
+      await expect(finnish.locator('.quiz__local')).toContainText('⛰️ Korkeus merenpinnasta 23 m');
     });
   });
 });

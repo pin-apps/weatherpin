@@ -341,7 +341,8 @@ Never run `wrangler deploy` by hand; CI deploys `main` (see README).
   no server; scoring: 100 − 10 per °C off (5.5 per °F), 🟩 ≤ 2 °C / 4 °F,
   🟨 ≤ 5 °C / 9 °F; `nordic-weather:quiz` keeps only today's result, the
   streak and the best), `quiz.ts` (the non-modal `#quiz` card: the daily
-  asks for today's high, free play for the temperature now; the answer
+  asks for today's high, free play for the temperature now; the local
+  time and the elevation as clues; the answer
   stays hidden: no panel, title, address or saved forecast until the
   guess, map taps ignored; share text "Weatherpin quiz #N · S/500" + boxes
   - a link to `#quiz`), `texts.ts` (its texts in all four languages, out

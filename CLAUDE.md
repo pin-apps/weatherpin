@@ -106,7 +106,7 @@ licence: all rights reserved).
   (needs `npx playwright install chromium webkit` once)
 - `npm run test:e2e:report` — open the last test report (screenshots)
 - `npm run check:size` — gzipped JS/CSS that loads at start against their
-  budgets: code 72 KB, texts 12 KB (the largest language file, as a
+  budgets: code 75 KB (incl. `src/i18n.ts`'s own chunk), texts 12 KB (the largest language file, as a
   visitor gets one), CSS 14 KB; files loaded on demand are listed, not
   counted; after a build; CI runs it
 - `npm run check:i18n` — every text has a Finnish, a Swedish and a
@@ -236,7 +236,24 @@ Never run `wrangler deploy` by hand; CI deploys `main` (see README).
   "joulupukki", "tomten"… offers Santa's workshop (Rovaniemi, the Arctic
   Circle); choosing it adds a report from the real weather there (sleigh
   conditions from gusts, reindeer visibility from fog/snow, days to
-  Christmas Eve). Only from that search; kept out of About
+  Christmas Eve). Only from that search; kept out of About. Both reports
+  (`sauna-report.ts`, `santa-report.ts`) load on demand (`panel.ts`)
+- `src/journey/` — weather levels (🌬️ Breeze 0 → ☁️ Cloud 30 → ⛈️ Storm
+  150 → 🌌 Aurora 600 → 💎 Diamond dust 2,000 points + 5 weather badges):
+  `chip.ts` (start-up: the round chip next to ⚙ with the level's emoji and
+  a progress ring, `--level-progress`; `noteJourney()`), `levels.ts`
+  (levels, saved totals, events), `award.ts` (on demand: points for a day
+  of use 1, the daily quiz 2, a share 3 once a day, a new ~50 km area 2 (5
+  a day), a new country 10 (search's `country_code` or Nominatim's), a new
+  continent 25 (by time zone), a badge 15: −30°, +40°, thunder, polar
+  night, midnight sun, northern lights, below sea level, above 3,000 m;
+  never goes down; back after 30+ days: "resting" toast, streak from 1),
+  `card.ts` ("Your weather journey" dialog and the level-up toast),
+  `texts.ts` (its texts side by side, out of the start-up language files).
+  Shares, the daily quiz and the aurora row announce themselves with
+  window events (`weatherpin:shared`, `weatherpin:quiz`,
+  `weatherpin:aurora`); `main.ts` passes them on. Saved as
+  `nordic-weather:journey` (in About's privacy text)
 - `src/records.ts` — weather records: a point near a record place (Vostok,
   Death Valley, Mawsynram, the Nordic national records…) gets a 🏆 line
   above the real weather; facts built in (WMO's extremes archive and the
@@ -543,6 +560,10 @@ Never run `wrangler deploy` by hand; CI deploys `main` (see README).
   places ask nobody, no name keeps the coordinates
 - `tests/sauna.spec.ts` — the sauna easter egg: search, report, sea, °F,
   stays a secret, Finnish
+- `tests/journey.spec.ts` — weather levels: first visit, a place, a
+  searched country and the level-up toast, 5 areas a day, a badge, shares
+  once a day, the card, resting and never down, the top level's badges,
+  tap size, blocked storage, Finnish
 - `tests/snow-depth.spec.ts` — snow on the ground: cm, none under 1 cm,
   inches, Finnish
 - `tests/sea.spec.ts` — the Sea section at sea, none inland or on failure,

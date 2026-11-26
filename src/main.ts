@@ -12,7 +12,8 @@ import { createPanel } from './panel';
 import { setUpPanelMenu } from './panel-menu';
 import { placeFromHash, placeHash } from './place-link';
 import { placeLabel, zoomForPlace } from './places/geocoding';
-import { placeNameAt } from './places/reverse';
+import { countryCodeAt, placeNameAt } from './places/reverse';
+import { noteJourney, setUpLevelChip } from './journey/chip';
 import { samePlace } from './places/same-place';
 import { SAUNA_ZOOM, saunaPoint } from './sauna';
 import { SANTA_ZOOM, santaPoint } from './santa';
@@ -70,6 +71,17 @@ document.querySelector<HTMLButtonElement>('#settings-button')!.addEventListener(
     () => (openSettings = undefined),
   );
 });
+
+// Weather levels (journey/): the chip, a point for each day of use, and
+// shares, the daily quiz and northern lights (announced by those parts with
+// window events, so they needn't import the levels' code).
+setUpLevelChip(document.querySelector<HTMLButtonElement>('#level-button')!);
+noteJourney({ kind: 'day' });
+window.addEventListener('weatherpin:shared', () => noteJourney({ kind: 'share' }));
+window.addEventListener('weatherpin:aurora', () => noteJourney({ kind: 'aurora' }));
+window.addEventListener('weatherpin:quiz', (event) =>
+  noteJourney({ kind: 'quiz', day: String((event as CustomEvent<string>).detail) }),
+);
 
 // The ⋯ menu's actions share one status line under the panel's header.
 const actionStatus = document.querySelector<HTMLElement>('.panel__action-status')!;
@@ -203,6 +215,8 @@ setUpSearch(document.querySelector<HTMLElement>('#search')!, {
     };
     void loadWeather(point);
     worldMap.goTo(point, panelCoveredArea(), zoomForPlace(place));
+    if (place.country_code)
+      noteJourney({ kind: 'country', code: place.country_code.toUpperCase() });
   },
   onSelectFavourite: (favourite) => {
     const point = { lat: favourite.lat, lng: favourite.lng, name: favourite.name };
@@ -363,6 +377,19 @@ async function loadWeather(
     quipButtons.showFor(point, forecast);
     pastWeatherButton.showFor(point, forecast);
     shownOffline = forecast.offline === true;
+    // A place looked at counts towards the level (not a quiet refresh).
+    if (!quiet) {
+      noteJourney({
+        kind: 'place',
+        lat: point.lat,
+        lng: point.lng,
+        timezone: forecast.timezone,
+        temperature: forecast.current.temperature_2m,
+        weatherCode: forecast.current.weather_code,
+        daylightSeconds: forecast.daily.daylight_duration[0] ?? null,
+        elevation: forecast.elevation,
+      });
+    }
   } catch (error) {
     if (controller.signal.aborted || quiet) return;
     const message =
@@ -427,6 +454,8 @@ async function loadWeather(
  */
 async function showPlaceName(point: PickedPoint, signal: AbortSignal) {
   const name = await placeNameAt(point.lat, point.lng, signal);
+  const country = countryCodeAt(point.lat, point.lng);
+  if (country && !signal.aborted) noteJourney({ kind: 'country', code: country });
   if (!name || signal.aborted || currentPoint !== point) return;
   // The same point object: the favourite, share and start place buttons
   // read its name when pressed.

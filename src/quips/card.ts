@@ -77,6 +77,7 @@ export function showCard({ icon, title, lines, placeLink, status }: CardOptions)
     if (typeof navigator.share === 'function') {
       try {
         await navigator.share({ text: message });
+        window.dispatchEvent(new Event('weatherpin:shared'));
         return;
       } catch (error) {
         // Closing the share sheet is a choice, not a failure.
@@ -86,6 +87,7 @@ export function showCard({ icon, title, lines, placeLink, status }: CardOptions)
     try {
       await navigator.clipboard.writeText(message);
       say(t('Copied'));
+      window.dispatchEvent(new Event('weatherpin:shared'));
     } catch {
       // No clipboard: the text is on screen to copy by hand.
       say(t("Couldn't copy it: select the text to copy it."));

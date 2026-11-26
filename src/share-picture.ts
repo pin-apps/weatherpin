@@ -30,6 +30,7 @@ export async function sharePicture(
   if (navigator.canShare?.({ files: [file] })) {
     try {
       await navigator.share({ files: [file], title });
+      window.dispatchEvent(new Event('weatherpin:shared'));
       return;
     } catch (error) {
       // Closing the share sheet is a choice, not a failure.
@@ -44,4 +45,5 @@ export async function sharePicture(
   // After the browser has taken the file.
   window.setTimeout(() => URL.revokeObjectURL(url), 10_000);
   say(t('Picture saved'));
+  window.dispatchEvent(new Event('weatherpin:shared'));
 }

@@ -328,6 +328,8 @@ async function addAurora(list: HTMLElement, forecast: Forecast, point: PickedPoi
   parts.push('NOAA');
   const row = detailsRow(north ? t('Northern lights') : t('Southern lights'), parts.join(' · '));
   row.classList.add('sky__aurora');
+  // A weather badge (journey/, through main.ts).
+  window.dispatchEvent(new Event('weatherpin:aurora'));
   const moonRow = list.querySelector('.moon')?.closest('.details__row');
   list.insertBefore(row, moonRow ?? null);
 }

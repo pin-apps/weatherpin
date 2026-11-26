@@ -115,7 +115,7 @@ export const SWEDISH: Record<string, string> = {
   'html:privacy-tracking':
     'Inget konto, inga kakor och ingen spårning. Besök räknas anonymt med Cloudflare Web Analytics, utan kakor eller något som identifierar dig.',
   'html:privacy-saved':
-    'Dina favoriter, din startplats (avrundad till ungefär 1 km), dina val av enheter, ljust eller mörkt utseende, språk, regnradarns inställning, vilka avsnitt du har fällt ihop och dina quizresultat (dagens resultat, svit och bästa) sparas bara i den här webbläsaren, på den här enheten. Det gör även vädret för de tre senaste platserna du tittade på (avrundade till ungefär 1 km), så att det kan visas utan anslutning.',
+    'Dina favoriter, din startplats (avrundad till ungefär 1 km), dina val av enheter, ljust eller mörkt utseende, språk, regnradarns inställning, vilka avsnitt du har fällt ihop och dina quizresultat (dagens resultat, svit och bästa) sparas bara i den här webbläsaren, på den här enheten. Det gör även din väderresa: poäng, märken och vilka områden (ungefär 50 km), länder och världsdelar du har tittat på. Det gör även vädret för de tre senaste platserna du tittade på (avrundade till ungefär 1 km), så att det kan visas utan anslutning.',
   'html:privacy-sent':
     'För att visa vädret skickas koordinaterna för den plats du väljer till vädertjänsterna ovan, och för en plats du trycker på även till OpenStreetMaps Nominatim, för dess namn. För Vädret en viss dag skickas även dagen du väljer till Open-Meteo, och den sparas inte. Som för alla webbplatser ser de, liksom karttjänsten och Cloudflare (webbplatsens värdtjänst), din IP-adress.',
   'html:privacy-location':
@@ -326,6 +326,7 @@ export const SWEDISH: Record<string, string> = {
   'Local time': 'Lokal tid',
   Coordinates: 'Koordinater',
   Elevation: 'Höjd över havet',
+  'Your level': 'Din nivå',
   'Snow on the ground': 'Snö på marken',
   'about {depth}': 'cirka {depth}',
 

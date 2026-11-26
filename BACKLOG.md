@@ -14,7 +14,8 @@ More details (see Done). Good first picks when picking up again: the
 security fixes (Next), the thunder heads-up and "today vs tomorrow"
 (Ideas); the warnings work waits on the WMO email. Decided: no EDM calculator with
 typed-in readings. Start-up JS is
-71.7/72 KB: ask before adding to start-up.
+74.4/75 KB (since 2026-11-26 counting `src/i18n.ts`'s own chunk,
+which the check used to skip): ask before adding to start-up.
 
 ## Next
 

@@ -121,7 +121,13 @@ test.describe('weather on a day', () => {
   test('saves nothing on the device', async ({ page }) => {
     await page.goto(OSLO);
     await expect(page.locator('.current__temp')).toBeVisible();
-    const keys = () => page.evaluate(() => Object.keys(localStorage).sort());
+    // (The weather level's points, saved for looking at a place, aside.)
+    const keys = () =>
+      page.evaluate(() =>
+        Object.keys(localStorage)
+          .filter((key) => key !== 'nordic-weather:journey')
+          .sort(),
+      );
     const before = await keys();
     await placeAction(page, 'Weather on a day…');
     await dialog(page).getByRole('button', { name: '10 years ago' }).click();

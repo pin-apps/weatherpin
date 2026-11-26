@@ -23,7 +23,10 @@ import { join } from 'node:path';
 import { exit } from 'node:process';
 import { gzipSync } from 'node:zlib';
 
-const BUDGET_KB = { '.js': 72, texts: 12, '.css': 14 };
+// Code was 72 KB until 2026-11-26, when this check was found to skip the
+// app's own i18n code chunk (named like a language file): counted since,
+// at the true size then (74.4 KB) plus a little room.
+const BUDGET_KB = { '.js': 75, texts: 12, '.css': 14 };
 const LABELS = { '.js': 'JS code', texts: 'Texts (largest language)', '.css': 'CSS' };
 const ASSETS = 'dist/assets';
 
@@ -42,7 +45,8 @@ for (const name of readdirSync(ASSETS)) {
   const ext = name.slice(name.lastIndexOf('.'));
   if (ext !== '.js' && ext !== '.css') continue;
   const bytes = gzipSync(readFileSync(join(ASSETS, name)), { level: 9 }).length;
-  if (name.startsWith('i18n-')) largestLanguage = Math.max(largestLanguage, bytes);
+  // The language files (i18n-fi-…); src/i18n.ts's own chunk is code.
+  if (/^i18n-(fi|sv|nb)-/.test(name)) largestLanguage = Math.max(largestLanguage, bytes);
   else if (atStart.has(name)) totals[ext] += bytes;
   else onDemand.push(`${name} ${(bytes / 1024).toFixed(1)} KB`);
 }

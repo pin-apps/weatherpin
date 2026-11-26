@@ -23,9 +23,14 @@ interface NominatimAddress {
   municipality?: string;
   county?: string;
   country?: string;
+  /** ISO 3166-1 alpha-2, lower case ("fi"). */
+  country_code?: string;
 }
 
 const cache = new Map<string, string | undefined>();
+// The country of each point looked up, for the weather levels (journey/).
+const countryCodes = new Map<string, string>();
+const pointKey = (lat: number, lng: number) => `${lat.toFixed(2)},${lng.toFixed(2)}`;
 let lastRequestAt = 0;
 
 /** "Espoo, Finland" for a point, or undefined (at sea, or on any failure). */
@@ -58,6 +63,8 @@ export async function placeNameAt(
     const data = (await response.json()) as NominatimPlace;
     const name = nameFrom(data, language);
     cache.set(key, name);
+    const code = data.address?.country_code;
+    if (code) countryCodes.set(pointKey(lat, lng), code.toUpperCase());
     return name;
   } catch {
     return undefined;
@@ -115,4 +122,9 @@ function waitForTurn(signal?: AbortSignal): Promise<void> {
       reject(signal.reason);
     });
   });
+}
+
+/** The country ("FI") of a point already looked up, if Nominatim gave one. */
+export function countryCodeAt(lat: number, lng: number): string | undefined {
+  return countryCodes.get(pointKey(lat, lng));
 }

@@ -193,6 +193,46 @@ button {
   height: 22px;
 }
 
+/* Weather level (journey/): the level's emoji, with a ring that fills up
+   to the next level (--level-progress, 0–1, set by chip.ts). */
+.level-chip {
+  position: relative;
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.level-chip::before {
+  content: '';
+  position: absolute;
+  inset: 2px;
+  border-radius: 50%;
+  background: conic-gradient(
+    var(--color-accent) calc(var(--level-progress, 0) * 1turn),
+    var(--color-border) 0
+  );
+  /* Only a thin ring of that circle shows. */
+  mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 3px));
+  pointer-events: none;
+}
+
+.level-chip.is-new-level {
+  box-shadow:
+    0 0 0 4px var(--color-accent),
+    var(--shadow-panel);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .level-chip.is-new-level {
+    animation: level-glow 1s ease-in-out 2 alternate;
+  }
+}
+
+@keyframes level-glow {
+  to {
+    transform: scale(1.12);
+  }
+}
+
 /* What hides the bottom or right edge of the map, so the credits and round
    buttons stay clear of it: the weather sheet on phones (--sheet-height,
    sheet.ts), or the quiz card while it's open (--quiz-bottom/--quiz-right,
@@ -2315,4 +2355,66 @@ body:has(.quiz[open]) {
     width: min(360px, 45vw);
     max-height: calc(100vh - 24px);
   }
+}
+
+/* "Your weather journey" (journey/card.ts), in the Settings dialog's look. */
+.journey__level {
+  margin: 8px 0 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.journey__points,
+.journey__next,
+.journey__streak,
+.journey__explored {
+  margin: 8px 0 0;
+}
+
+.journey__progress {
+  display: block;
+  width: 100%;
+  height: 12px;
+  margin-top: 12px;
+  accent-color: var(--color-accent);
+}
+
+.journey__badges {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
+  gap: 6px 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Badges still to find: the emoji greyed, the words still readable. */
+.journey__badge:not(.is-earned) .journey__badge-icon {
+  filter: grayscale(1);
+  opacity: 0.45;
+}
+
+.journey__not-yet {
+  color: var(--color-text-muted);
+}
+
+/* "New level: ☁️ Cloud!" for a few seconds, under the search box. */
+.journey-toast {
+  position: fixed;
+  top: 76px;
+  left: 50%;
+  z-index: 1200;
+  max-width: calc(100% - 32px);
+  margin: 0;
+  padding: 10px 16px;
+  transform: translateX(-50%);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: var(--shadow-panel);
+  font-weight: 600;
+}
+
+.journey-toast:empty {
+  display: none;
 }

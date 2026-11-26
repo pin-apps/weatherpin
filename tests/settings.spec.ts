@@ -217,10 +217,14 @@ test.describe('Settings', () => {
     await reloaded;
     await expect(page.locator('#panel')).toBeHidden();
     expect(new URL(page.url()).hash).toBe('');
-    const saved = await page.evaluate(() =>
-      Object.keys(localStorage).filter((key) => key.startsWith('nordic-weather:')),
-    );
-    expect(saved).toEqual([]);
+    // Only today's first point towards the weather level, as on a first visit.
+    await expect
+      .poll(() =>
+        page.evaluate(() =>
+          Object.keys(localStorage).filter((key) => key.startsWith('nordic-weather:')),
+        ),
+      )
+      .toEqual(['nordic-weather:journey']);
     await page.locator('#search-input').focus();
     await expect(page.locator('.search__results')).toBeHidden();
   });

@@ -138,6 +138,18 @@
             <p class="search__message" hidden></p>
             <p class="search__status visually-hidden" role="status"></p>
           </form>
+          <!-- Weather level (src/journey/): opens "Your weather journey". -->
+          <button
+            type="button"
+            id="level-button"
+            class="toolbar__button level-chip"
+            aria-label="Your level"
+            title="Your level"
+            data-i18n-attrs="aria-label title"
+            aria-haspopup="dialog"
+          >
+            <span class="level-chip__emoji" aria-hidden="true">🌬️</span>
+          </button>
           <!-- Settings: units, light/dark, language, start place. -->
           <button
             type="button"
@@ -462,8 +474,9 @@
             Your favourites, start place (rounded to about 1 km), unit choices, light or dark
             appearance, language, rain radar setting, which sections you've folded away and your
             quiz results (today's score, streak and best) are saved only in this browser, on this
-            device. So is the weather of the last three places you looked at (rounded to about 1
-            km), so it can be shown without a connection.
+            device. So is your weather journey: points, badges and which roughly 50 km areas,
+            countries and continents you've looked at. So is the weather of the last three places
+            you looked at (rounded to about 1 km), so it can be shown without a connection.
           </li>
           <li data-i18n-html="privacy-sent">
             To show the weather, the coordinates of the place you pick are sent to the weather

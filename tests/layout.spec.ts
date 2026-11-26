@@ -27,6 +27,7 @@ import {
 // on purpose: it's allowed to drop down over the zoom buttons.
 const CONTROLS = {
   'search box': '.search__input',
+  'level button': '#level-button',
   'settings button': '#settings-button',
   'zoom buttons': '.leaflet-control-zoom',
   attribution: '.leaflet-control-attribution',
@@ -314,6 +315,7 @@ test.describe('layout', { tag: '@layout' }, () => {
       'close button': '.panel__close',
       'favourite button': '.panel__favourite',
       'settings button': '#settings-button',
+      'level button': '#level-button',
       'more actions button': '.panel__more',
       'search box': '.search__input',
       'a day in the 7 days': '.daily__row',

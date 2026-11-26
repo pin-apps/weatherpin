@@ -22,6 +22,7 @@ export function setUpShareButton(button: HTMLButtonElement, status: HTMLElement)
     try {
       await navigator.clipboard.writeText(url);
       say(t('Link copied'));
+      window.dispatchEvent(new Event('weatherpin:shared'));
     } catch {
       // No clipboard (old browser, or not allowed): show the link to copy by hand.
       say(url, true);
@@ -35,6 +36,8 @@ export function setUpShareButton(button: HTMLButtonElement, status: HTMLElement)
     if (typeof navigator.share === 'function') {
       try {
         await navigator.share({ title, url });
+        // Counts towards the weather level (main.ts).
+        window.dispatchEvent(new Event('weatherpin:shared'));
         return;
       } catch (error) {
         // Closing the share sheet is a choice, not a failure.

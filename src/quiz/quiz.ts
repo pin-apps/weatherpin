@@ -407,6 +407,8 @@ function showResults(mode: Mode, day: string, rounds: Round[]) {
   const total = rounds.reduce((sum, round) => sum + round.scored.points, 0);
   const boxes = rounds.map((round) => round.scored.box).join('');
   const record = mode === 'daily' ? saveDaily(day, total, boxes) : undefined;
+  // Counts towards the weather level (main.ts).
+  if (record) window.dispatchEvent(new CustomEvent('weatherpin:quiz', { detail: day }));
 
   const list = el('ol', 'quiz__places');
   for (const round of rounds) {
@@ -465,6 +467,7 @@ function shareButton(text: string): HTMLButtonElement {
     if (typeof navigator.share === 'function') {
       try {
         await navigator.share({ text });
+        window.dispatchEvent(new Event('weatherpin:shared'));
         return;
       } catch (error) {
         // Closing the share sheet is a choice, not a failure.
@@ -474,6 +477,7 @@ function shareButton(text: string): HTMLButtonElement {
     try {
       await navigator.clipboard.writeText(text);
       say(t('Copied'));
+      window.dispatchEvent(new Event('weatherpin:shared'));
     } catch {
       say(t("Couldn't copy it: select the text to copy it."));
     }

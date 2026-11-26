@@ -244,6 +244,13 @@ test.describe('accessibility (WCAG 2.2 AA)', { tag: '@layout' }, () => {
     expect(await violations(page)).toEqual([]);
   });
 
+  test('the weather journey card', async ({ page }) => {
+    await openApp(page);
+    await page.locator('#level-button').click();
+    await expect(page.getByRole('dialog', { name: 'Your weather journey' })).toBeVisible();
+    expect(await violations(page)).toEqual([]);
+  });
+
   test('the ⋯ menu, open', async ({ page }) => {
     await openApp(page);
     await pickPoint(page);

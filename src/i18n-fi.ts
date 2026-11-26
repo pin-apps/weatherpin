@@ -115,7 +115,7 @@ export const FINNISH: Record<string, string> = {
   'html:privacy-tracking':
     'Ei tiliä, ei evästeitä eikä seurantaa. Käynnit lasketaan nimettömästi Cloudflare Web Analyticsilla, ilman evästeitä tai mitään, mistä sinut voisi tunnistaa.',
   'html:privacy-saved':
-    'Suosikkisi, aloituspaikka (noin 1 km:n tarkkuudella), yksikkövalinnat, vaalea tai tumma ulkoasu, kieli, sadetutkan asetus, piilottamasi osiot ja visatuloksesi (päivän tulos, putki ja paras) tallennetaan vain tähän selaimeen, tällä laitteella. Samoin kolmen viimeksi katsomasi paikan sää (noin 1 km:n tarkkuudella), jotta sen voi näyttää ilman yhteyttä.',
+    'Suosikkisi, aloituspaikka (noin 1 km:n tarkkuudella), yksikkövalinnat, vaalea tai tumma ulkoasu, kieli, sadetutkan asetus, piilottamasi osiot ja visatuloksesi (päivän tulos, putki ja paras) tallennetaan vain tähän selaimeen, tällä laitteella. Samoin sääseikkailusi: pisteet, merkit ja mitä noin 50 km:n alueita, maita ja maanosia olet katsonut. Samoin kolmen viimeksi katsomasi paikan sää (noin 1 km:n tarkkuudella), jotta sen voi näyttää ilman yhteyttä.',
   'html:privacy-sent':
     'Sään näyttämiseksi valitsemasi paikan koordinaatit lähetetään yllä mainituille sääpalveluille, ja napautetun paikan nimen hakemiseksi myös OpenStreetMapin Nominatimille. Toiminnossa Sää tiettynä päivänä Open-Meteolle lähetetään myös valitsemasi päivä, eikä sitä tallenneta. Kuten minkä tahansa verkkosivun kohdalla, ne, karttapalvelu ja sivustoa isännöivä Cloudflare näkevät IP-osoitteesi.',
   'html:privacy-location':
@@ -325,6 +325,7 @@ export const FINNISH: Record<string, string> = {
   'Local time': 'Paikallinen aika',
   Coordinates: 'Koordinaatit',
   Elevation: 'Korkeus merenpinnasta',
+  'Your level': 'Tasosi',
   'Snow on the ground': 'Lunta maassa',
   'about {depth}': 'noin {depth}',
 

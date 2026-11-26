@@ -17,8 +17,8 @@ import {
 import { renderDaily } from './render/daily';
 import { renderHourly } from './render/hourly';
 import { renderMarine } from './render/marine';
-import { isSaunaPoint, renderSauna } from './sauna';
-import { isSantaPoint, renderSanta } from './santa';
+import { isSaunaPoint } from './sauna';
+import { isSantaPoint } from './santa';
 import type { AirQuality } from './weather/air-quality';
 import { renderWarnings, roadCredit, warningsStatus, type WarningsState } from './render/warnings';
 import type { RoadState } from './roads/state';
@@ -148,6 +148,24 @@ export function createPanel(root: HTMLElement, handlers: PanelHandlers): Panel {
       });
   }
 
+  /**
+   * The sauna and Santa easter eggs' reports (sauna.ts, santa.ts) lead,
+   * above the real weather. They load on demand: few ever see them.
+   */
+  function showEasterEgg(point: PickedPoint, forecast: Forecast) {
+    const sauna = isSaunaPoint(point);
+    if (!sauna && !isSantaPoint(point)) return;
+    // (A failed load, e.g. offline, just shows the plain weather.)
+    void (sauna ? import('./sauna-report') : import('./santa-report'))
+      .catch(() => undefined)
+      .then((module) => {
+        if (!module || shown?.point !== point) return;
+        const report =
+          'renderSauna' in module ? module.renderSauna(marineShown) : module.renderSanta(forecast);
+        body.querySelector(':scope > .record, :scope > .current')?.before(report);
+      });
+  }
+
   // render/sky.ts once loaded: later redraws (a refresh, °C/°F) fill the
   // Sky section at once, so the scroll position holds.
   let sky: typeof import('./render/sky') | undefined;
@@ -182,10 +200,6 @@ export function createPanel(root: HTMLElement, handlers: PanelHandlers): Panel {
     plainSummary = `${condition.icon} ${formatTemperature(now.temperature_2m)} · ${condition.description}`;
     summary.textContent = plainSummary;
     body.replaceChildren(
-      // The sauna easter egg (sauna.ts) leads, above the real weather.
-      ...(isSaunaPoint(point) ? [renderSauna(undefined)] : []),
-      // And the Santa one (santa.ts), from the weather there.
-      ...(isSantaPoint(point) ? [renderSanta(forecast)] : []),
       // By how often people need each part: now at a glance, the forecasts,
       // then air quality in full and the less-checked details.
       renderCurrent(forecast),
@@ -198,6 +212,7 @@ export function createPanel(root: HTMLElement, handlers: PanelHandlers): Panel {
       renderSkySection(forecast),
       renderMoreDetails(forecast, point),
     );
+    showEasterEgg(point, forecast);
     showRecord(point);
     fillSky(point, forecast);
     // A new location starts at the top, not where the last one was scrolled.
@@ -258,7 +273,12 @@ export function createPanel(root: HTMLElement, handlers: PanelHandlers): Panel {
     // Where people look for it: after the forecast for the coming days.
     if (marine) body.querySelector('.daily')?.closest('section')?.after(renderMarine(marine));
     // The sauna report's dip in the sea uses the real sea temperature.
-    body.querySelector('.sauna')?.replaceWith(renderSauna(marine));
+    const sauna = body.querySelector('.sauna');
+    if (sauna) {
+      void import('./sauna-report').then(({ renderSauna }) => {
+        if (sauna.isConnected) sauna.replaceWith(renderSauna(marine));
+      });
+    }
   }
 
   function showAirQualityUnavailable() {

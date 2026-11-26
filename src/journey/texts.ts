@@ -156,10 +156,38 @@ const TEXTS = {
     nb: '🔥 1 dag på rad',
   },
   explored: {
-    en: 'Explored: {areas} areas · {countries} countries · {continents} continents',
-    fi: 'Tutkittu: {areas} aluetta · {countries} maata · {continents} maanosaa',
-    sv: 'Utforskat: {areas} områden · {countries} länder · {continents} världsdelar',
-    nb: 'Utforsket: {areas} områder · {countries} land · {continents} verdensdeler',
+    en: 'Explored: {areas} · {countries} · {continents}',
+    fi: 'Tutkittu: {areas} · {countries} · {continents}',
+    sv: 'Utforskat: {areas} · {countries} · {continents}',
+    nb: 'Utforsket: {areas} · {countries} · {continents}',
+  },
+  areas: {
+    en: '{count} areas',
+    fi: '{count} aluetta',
+    sv: '{count} områden',
+    nb: '{count} områder',
+  },
+  areaOne: { en: '1 area', fi: '1 alue', sv: '1 område', nb: '1 område' },
+  countries: {
+    en: '{count} countries',
+    fi: '{count} maata',
+    sv: '{count} länder',
+    nb: '{count} land',
+  },
+  countryOne: { en: '1 country', fi: '1 maa', sv: '1 land', nb: '1 land' },
+  continents: {
+    en: '{count} continents',
+    fi: '{count} maanosaa',
+    sv: '{count} världsdelar',
+    nb: '{count} verdensdeler',
+  },
+  continentOne: { en: '1 continent', fi: '1 maanosa', sv: '1 världsdel', nb: '1 verdensdel' },
+  pointsOne: { en: '1 point', fi: '1 piste', sv: '1 poäng', nb: '1 poeng' },
+  badgeCountOne: {
+    en: '🏅 1 weather badge',
+    fi: '🏅 1 säämerkki',
+    sv: '🏅 1 vädermärke',
+    nb: '🏅 1 værmerke',
   },
   badges: {
     en: 'Weather badges',
@@ -322,4 +350,18 @@ export function chipLabel(id: string, points: number, next: number | undefined):
   return next === undefined
     ? journeyText('labelTop', { level, points })
     : journeyText('label', { level, points, next });
+}
+
+/** "1 point" or "12 points" (also areas, countries…): the text and its "One" form. */
+export function counted(name: TextName, one: TextName, count: number, key = 'count'): string {
+  return count === 1 ? journeyText(one) : journeyText(name, { [key]: count });
+}
+
+/** "Explored: 3 areas · 1 country · 1 continent". */
+export function exploredText(areas: number, countries: number, continents: number): string {
+  return journeyText('explored', {
+    areas: counted('areas', 'areaOne', areas),
+    countries: counted('countries', 'countryOne', countries),
+    continents: counted('continents', 'continentOne', continents),
+  });
 }

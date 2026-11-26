@@ -14,6 +14,7 @@ import {
   formatPressure,
   formatPressurePrecise,
   formatSnow,
+  formatSnowDepth,
   formatTemperature,
   formatTemperaturePrecise,
   formatTimeHere,
@@ -246,6 +247,15 @@ function renderGlance(forecast: Forecast): HTMLElement {
   return detailsList([
     [t('Wind'), renderWind(now.wind_speed_10m, now.wind_direction_10m, now.wind_gusts_10m)],
     [t('Precipitation'), renderPrecipitation(now.precipitation, now.snowfall)],
+    // From 1 cm; "about": the model's value, not a measurement.
+    ...(now.snow_depth != null && now.snow_depth >= 0.01
+      ? [
+          [
+            t('Snow on the ground'),
+            t('about {depth}', { depth: formatSnowDepth(now.snow_depth) }),
+          ] as [string, string],
+        ]
+      : []),
     [t('UV index'), renderUv(forecast)],
     [t('Air quality'), airQuality],
   ]);

@@ -326,6 +326,8 @@ export const SWEDISH: Record<string, string> = {
   'Local time': 'Lokal tid',
   Coordinates: 'Koordinater',
   Elevation: 'Höjd över havet',
+  'Snow on the ground': 'Snö på marken',
+  'about {depth}': 'cirka {depth}',
 
   // Warnings
   'Weather warnings': 'Vädervarningar',

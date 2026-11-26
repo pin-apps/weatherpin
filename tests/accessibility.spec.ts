@@ -290,4 +290,22 @@ test.describe('accessibility (WCAG 2.2 AA)', { tag: '@layout' }, () => {
     await expect(page.locator('.air-quality > .aqi')).toBeVisible();
     expect(await violations(page)).toEqual([]);
   });
+
+  // The colour sets (Settings → Colours): each on this device's light or
+  // dark, with the weather and the air quality badges.
+  for (const skin of ['nordic', 'sauna', 'retro', 'contrast']) {
+    test(`the "${skin}" colours`, async ({ page }) => {
+      await page.addInitScript((chosen) => {
+        localStorage.setItem('nordic-weather:skin', JSON.stringify(chosen));
+      }, skin);
+      await openApp(page);
+      await expect(page.locator('html')).toHaveAttribute('data-skin', skin);
+      await pickPoint(page);
+      await expect(page.locator('.air-quality > .aqi')).toBeVisible();
+      expect(await violations(page)).toEqual([]);
+      const settings = await openSettings(page);
+      await expect(settings.getByRole('button', { name: 'Close' })).toBeVisible();
+      expect(await violations(page)).toEqual([]);
+    });
+  }
 });

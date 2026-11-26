@@ -472,11 +472,11 @@
           </li>
           <li data-i18n-html="privacy-saved">
             Your favourites, start place (rounded to about 1 km), unit choices, light or dark
-            appearance, language, rain radar setting, which sections you've folded away and your
-            quiz results (today's score, streak and best) are saved only in this browser, on this
-            device. So is your weather journey: points, badges and which roughly 50 km areas,
-            countries and continents you've looked at. So is the weather of the last three places
-            you looked at (rounded to about 1 km), so it can be shown without a connection.
+            appearance and colours, language, rain radar setting, which sections you've folded away
+            and your quiz results (today's score, streak and best) are saved only in this browser,
+            on this device. So is your weather journey: points, badges and which roughly 50 km
+            areas, countries and continents you've looked at. So is the weather of the last three
+            places you looked at (rounded to about 1 km), so it can be shown without a connection.
           </li>
           <li data-i18n-html="privacy-sent">
             To show the weather, the coordinates of the place you pick are sent to the weather
@@ -574,67 +574,6 @@
           </p>
         </section>
 
-        <h3 id="settings-units" data-i18n>Units</h3>
-        <p id="settings-temperature" class="settings__label" data-i18n>Temperature</p>
-        <div
-          class="settings__choices"
-          role="group"
-          aria-labelledby="settings-temperature"
-          data-setting="temperature"
-        >
-          <button type="button" class="button settings__choice" data-value="celsius">°C</button>
-          <button type="button" class="button settings__choice" data-value="fahrenheit">°F</button>
-        </div>
-        <p id="settings-wind" class="settings__label" data-i18n>Wind</p>
-        <div
-          class="settings__choices"
-          role="group"
-          aria-labelledby="settings-wind"
-          data-setting="wind"
-        >
-          <button type="button" class="button settings__choice" data-value="auto" data-i18n>
-            Automatic
-          </button>
-          <button type="button" class="button settings__choice" data-value="ms">m/s</button>
-          <button type="button" class="button settings__choice" data-value="kmh">km/h</button>
-          <button type="button" class="button settings__choice" data-value="mph">mph</button>
-          <button type="button" class="button settings__choice" data-value="kn" data-i18n>
-            Knots
-          </button>
-          <button type="button" class="button settings__choice" data-value="bft" data-i18n>
-            Beaufort
-          </button>
-        </div>
-        <p id="settings-precipitation" class="settings__label" data-i18n>Rain and snow</p>
-        <div
-          class="settings__choices"
-          role="group"
-          aria-labelledby="settings-precipitation"
-          data-setting="precipitation"
-        >
-          <button type="button" class="button settings__choice" data-value="auto" data-i18n>
-            Automatic
-          </button>
-          <button type="button" class="button settings__choice" data-value="mm">mm</button>
-          <button type="button" class="button settings__choice" data-value="inch">in</button>
-        </div>
-        <p id="settings-pressure" class="settings__label" data-i18n>Pressure</p>
-        <div
-          class="settings__choices"
-          role="group"
-          aria-labelledby="settings-pressure"
-          data-setting="pressure"
-        >
-          <button type="button" class="button settings__choice" data-value="auto" data-i18n>
-            Automatic
-          </button>
-          <button type="button" class="button settings__choice" data-value="hPa">hPa</button>
-          <button type="button" class="button settings__choice" data-value="inHg">inHg</button>
-          <button type="button" class="button settings__choice" data-value="mmHg">mmHg</button>
-        </div>
-        <!-- What Automatic gives now; filled in by settings.ts. -->
-        <p class="settings__hint settings__units-hint"></p>
-
         <h3 id="settings-theme" data-i18n>Appearance</h3>
         <div
           class="settings__choices"
@@ -653,6 +592,96 @@
           </button>
         </div>
         <p class="settings__hint" data-i18n>Automatic follows your device's setting.</p>
+        <p id="settings-skin" class="settings__label" data-i18n>Colours</p>
+        <div
+          class="settings__choices"
+          role="group"
+          aria-labelledby="settings-skin"
+          data-setting="skin"
+        >
+          <button type="button" class="button settings__choice" data-value="classic" data-i18n>
+            Classic
+          </button>
+          <button type="button" class="button settings__choice" data-value="nordic" data-i18n>
+            Nordic night
+          </button>
+          <button type="button" class="button settings__choice" data-value="sauna" data-i18n>
+            Sauna
+          </button>
+          <button type="button" class="button settings__choice" data-value="retro" data-i18n>
+            Retro
+          </button>
+          <button type="button" class="button settings__choice" data-value="contrast" data-i18n>
+            High contrast
+          </button>
+        </div>
+        <p class="settings__hint" data-i18n>Each in light and dark.</p>
+
+        <h3 id="settings-units" data-i18n>Units</h3>
+        <p id="settings-temperature" class="settings__label" data-i18n>Temperature</p>
+        <div
+          class="settings__choices"
+          role="group"
+          aria-labelledby="settings-temperature"
+          data-setting="temperature"
+        >
+          <button type="button" class="button settings__choice" data-value="celsius">°C</button>
+          <button type="button" class="button settings__choice" data-value="fahrenheit">°F</button>
+        </div>
+        <!-- Wind, rain and pressure: folded away (most only ever change °C/°F);
+             open when one of them is the user's own (settings.ts). -->
+        <details class="settings__more">
+          <summary data-i18n>More units</summary>
+          <p id="settings-wind" class="settings__label" data-i18n>Wind</p>
+          <div
+            class="settings__choices"
+            role="group"
+            aria-labelledby="settings-wind"
+            data-setting="wind"
+          >
+            <button type="button" class="button settings__choice" data-value="auto" data-i18n>
+              Automatic
+            </button>
+            <button type="button" class="button settings__choice" data-value="ms">m/s</button>
+            <button type="button" class="button settings__choice" data-value="kmh">km/h</button>
+            <button type="button" class="button settings__choice" data-value="mph">mph</button>
+            <button type="button" class="button settings__choice" data-value="kn" data-i18n>
+              Knots
+            </button>
+            <button type="button" class="button settings__choice" data-value="bft" data-i18n>
+              Beaufort
+            </button>
+          </div>
+          <p id="settings-precipitation" class="settings__label" data-i18n>Rain and snow</p>
+          <div
+            class="settings__choices"
+            role="group"
+            aria-labelledby="settings-precipitation"
+            data-setting="precipitation"
+          >
+            <button type="button" class="button settings__choice" data-value="auto" data-i18n>
+              Automatic
+            </button>
+            <button type="button" class="button settings__choice" data-value="mm">mm</button>
+            <button type="button" class="button settings__choice" data-value="inch">in</button>
+          </div>
+          <p id="settings-pressure" class="settings__label" data-i18n>Pressure</p>
+          <div
+            class="settings__choices"
+            role="group"
+            aria-labelledby="settings-pressure"
+            data-setting="pressure"
+          >
+            <button type="button" class="button settings__choice" data-value="auto" data-i18n>
+              Automatic
+            </button>
+            <button type="button" class="button settings__choice" data-value="hPa">hPa</button>
+            <button type="button" class="button settings__choice" data-value="inHg">inHg</button>
+            <button type="button" class="button settings__choice" data-value="mmHg">mmHg</button>
+          </div>
+          <!-- What Automatic gives now; filled in by settings.ts. -->
+          <p class="settings__hint settings__units-hint"></p>
+        </details>
 
         <h3 id="settings-language" data-i18n>Language</h3>
         <!-- Each language in its own name, so it can be found in either. -->

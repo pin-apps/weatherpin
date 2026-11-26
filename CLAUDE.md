@@ -210,13 +210,19 @@ Never run `wrangler deploy` by hand; CI deploys `main` (see README).
   search box: "📲 Add to home screen" (the browser's install dialog where
   there is one, else how to do it: iPhone/iPad Share → Add to Home
   Screen, Firefox ⋮ → Install, others the menu; "Added to the home
-  screen." once installed), °C/°F, appearance (Automatic/Light/Dark), language, the
+  screen." once installed), appearance (Automatic/Light/Dark) and colours
+  (Classic, Nordic night, Sauna, Retro, High contrast), °C/°F with wind,
+  rain and pressure under "More units" (a `<details>`, open when one is
+  the user's own), language, the
   start place (shown, can be removed), "Clear saved data", a link to
   About. Rows of toggle buttons (`aria-pressed`); a choice applies at once.
   Its code loads on the first press of ⚙ (`main.ts`; presses while it
   loads open it once); units, theme and language stay in start-up code
 - `src/theme.ts` + `public/theme.js` — light or dark on
-  `<html data-theme>`: the user's choice, else the device's; `theme.js`
+  `<html data-theme>`: the user's choice, else the device's; the colour
+  set on `<html data-skin>` (none for Classic; saved as `skin`), each
+  skin's light and dark variables in `style.css` (all text 4.5:1 or more);
+  `theme.js`
   (a plain blocking script in `<head>`) sets it before the first paint
   so there's no white flash, `theme.ts` follows changes. Keep the two in
   step

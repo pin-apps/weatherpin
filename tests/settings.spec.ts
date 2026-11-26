@@ -169,6 +169,59 @@ test.describe('Settings', () => {
     });
   });
 
+  test.describe('colours', () => {
+    const accent = (page: Page) =>
+      page.evaluate(() =>
+        getComputedStyle(document.documentElement).getPropertyValue('--color-accent').trim(),
+      );
+
+    test('a colour set, in light and dark, kept and in place before drawing', async ({ page }) => {
+      await openApp(page);
+      const settings = await openSettings(page);
+      await settings.getByRole('button', { name: 'Light' }).click();
+      await expect(settings.getByRole('button', { name: 'Classic' })).toHaveAttribute(
+        'aria-pressed',
+        'true',
+      );
+      await settings.getByRole('button', { name: 'Sauna' }).click();
+      await expect(page.locator('html')).toHaveAttribute('data-skin', 'sauna');
+      await expect(settings.getByRole('button', { name: 'Sauna' })).toHaveAttribute(
+        'aria-pressed',
+        'true',
+      );
+      expect(await accent(page)).toBe('#9a3d12');
+      await settings.getByRole('button', { name: 'Dark' }).click();
+      expect(await accent(page)).toBe('#ff9b54');
+
+      // Kept, and set before <body> appears (no flash of the classic colours).
+      await page.addInitScript(() => {
+        new MutationObserver((_, observer) => {
+          if (!document.body) return;
+          (window as unknown as { skinAtBody?: string }).skinAtBody =
+            document.documentElement.dataset.skin;
+          observer.disconnect();
+        }).observe(document, { childList: true, subtree: true });
+      });
+      await page.goto('/');
+      expect(
+        await page.evaluate(() => (window as unknown as { skinAtBody?: string }).skinAtBody),
+      ).toBe('sauna');
+
+      // Back to Classic: no skin on the page.
+      const again = await openSettings(page);
+      await again.getByRole('button', { name: 'Classic' }).click();
+      await expect(page.locator('html')).not.toHaveAttribute('data-skin', /./);
+    });
+
+    test('a damaged saved value gives the classic colours', async ({ page }) => {
+      await page.addInitScript(() => {
+        localStorage.setItem('nordic-weather:skin', JSON.stringify('__proto__'));
+      });
+      await openApp(page);
+      await expect(page.locator('html')).not.toHaveAttribute('data-skin', /./);
+    });
+  });
+
   test.describe('start place', () => {
     test('shows where the app opens, and removes it', async ({ page }) => {
       await openApp(page);

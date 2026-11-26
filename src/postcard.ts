@@ -110,6 +110,116 @@ export function drawPastDayPostcard(point: PickedPoint, day: PastDayCard): Promi
   });
 }
 
+/** The weather level to brag about (texts made by journey/card.ts). */
+export interface LevelCard {
+  emoji: string;
+  /** "Storm" */
+  level: string;
+  /** "412 points" */
+  points: string;
+  /** Towards the next level, 0–1 (1 at the top). */
+  progress: number;
+  /** "Next: 🌌 Aurora at 600 points", or "The top level. Well done!" */
+  next: string;
+  /** "3 weather badges · Explored: 23 areas · 4 countries · 2 continents" */
+  lines: string[];
+  /** The place shown now, for its weather on the card. */
+  weather?: { place: string; forecast: Forecast };
+}
+
+/**
+ * The weather level as a picture: a big emblem (the level's emoji in a
+ * ring that fills up to the next level), the level and points, badges and
+ * what's been explored, and the weather where you're looking: now and
+ * the next three days.
+ */
+export function drawLevelCard(card: LevelCard): Promise<Blob> {
+  const now = card.weather?.forecast.current;
+  const sky = now ? skyFor(now.weather_code, now.is_day === 1) : 'night';
+  return paint(sky, (ctx) => {
+    const cx = SIZE / 2;
+    const cy = 250;
+    const radius = 160;
+    // The emblem: a light disc, the ring, the emoji.
+    ctx.save();
+    ctx.fillStyle = 'rgb(255 255 255 / 0.18)';
+    circle(ctx, cx, cy, radius);
+    ctx.lineWidth = 22;
+    ctx.strokeStyle = 'rgb(255 255 255 / 0.3)';
+    ctx.beginPath();
+    ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.strokeStyle = '#ffd34d';
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.arc(
+      cx,
+      cy,
+      radius,
+      -Math.PI / 2,
+      -Math.PI / 2 + Math.PI * 2 * Math.max(0.02, card.progress),
+    );
+    ctx.stroke();
+    ctx.restore();
+    ctx.save();
+    ctx.font = `150px ${FONT}`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(card.emoji, cx, cy + 8);
+    ctx.restore();
+
+    const width = SIZE - PAD * 2;
+    text(ctx, card.level, cx, 510, fittingSize(ctx, card.level, width, 84, 48, 700), 700, 'center');
+    text(ctx, card.points, cx, 570, 44, 600, 'center');
+    text(ctx, card.next, cx, 624, fittingSize(ctx, card.next, width, 36, 24, 400), 400, 'center');
+
+    ctx.fillStyle = 'rgb(0 0 0 / 0.22)';
+    ctx.fillRect(0, 670, SIZE, SIZE - 670);
+    card.lines.forEach((line, i) =>
+      text(ctx, line, PAD, 735 + i * 50, fittingSize(ctx, line, width, 34, 22, 400)),
+    );
+    if (card.weather)
+      drawLevelWeather(
+        ctx,
+        card.weather.place,
+        card.weather.forecast,
+        735 + card.lines.length * 50 + 20,
+      );
+    text(ctx, `📍 ${APP_ADDRESS}`, SIZE - PAD, SIZE - PAD + 20, 36, 700, 'right');
+  });
+}
+
+/** "Helsinki: ☁️ 3 °C" and the next three days ("Tomorrow ⛅ 5° · Fri 🌧️ 4° …"). */
+function drawLevelWeather(
+  ctx: CanvasRenderingContext2D,
+  place: string,
+  forecast: Forecast,
+  top: number,
+) {
+  const now = forecast.current;
+  const condition = describeWeather(now.weather_code, now.is_day === 1);
+  const width = SIZE - PAD * 2;
+  const line = `${place}: ${condition.icon} ${formatTemperature(now.temperature_2m)}`;
+  text(ctx, line, PAD, top, fittingSize(ctx, line, width, 40, 24, 700), 700);
+  const daily = forecast.daily;
+  const days = [1, 2, 3]
+    .filter((i) => daily.time[i] !== undefined)
+    .map((i) => {
+      const name = i === 1 ? t('Tomorrow') : formatWeekday(daily.time[i]);
+      const code = daily.weather_code[i];
+      const high = daily.temperature_2m_max[i];
+      return [
+        name,
+        code != null ? describeWeather(code, true).icon : '',
+        high != null ? formatTemperature(high) : '',
+      ]
+        .filter(Boolean)
+        .join(' ');
+    })
+    .join(' · ');
+  if (days) text(ctx, days, PAD, top + 52, fittingSize(ctx, days, width, 34, 22, 400));
+}
+
 /** A 1080×1080 canvas with the sky painted, `draw` on top, as a PNG. */
 function paint(
   sky: keyof typeof SKIES,

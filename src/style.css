@@ -2379,6 +2379,10 @@ body:has(.quiz[open]) {
   accent-color: var(--color-accent);
 }
 
+.journey__share {
+  margin-top: 16px;
+}
+
 .journey__badges {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));

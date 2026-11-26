@@ -113,6 +113,30 @@ const TEXTS = {
     sv: 'Välkommen tillbaka! Din nivå har vilat 💤',
     nb: 'Velkommen tilbake! Nivået ditt har hvilt 💤',
   },
+  share: {
+    en: '📸 Share my level',
+    fi: '📸 Jaa tasosi',
+    sv: '📸 Dela din nivå',
+    nb: '📸 Del nivået ditt',
+  },
+  shareTitle: {
+    en: 'My Weatherpin level',
+    fi: 'Weatherpin-tasoni',
+    sv: 'Min Weatherpin-nivå',
+    nb: 'Mitt Weatherpin-nivå',
+  },
+  badgeCount: {
+    en: '🏅 {count} weather badges',
+    fi: '🏅 {count} säämerkkiä',
+    sv: '🏅 {count} vädermärken',
+    nb: '🏅 {count} værmerker',
+  },
+  pictureFailed: {
+    en: "Couldn't make the picture",
+    fi: 'Kuvaa ei saatu tehtyä',
+    sv: 'Det gick inte att göra bilden',
+    nb: 'Klarte ikke å lage bildet',
+  },
   // Weather badges (award.ts decides when each is earned).
   frost: { en: '−30° frost', fi: '−30° pakkanen', sv: '−30° kyla', nb: '−30° kulde' },
   heat: { en: '+40° heat', fi: '+40° helle', sv: '+40° värme', nb: '+40° hete' },

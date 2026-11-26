@@ -4,7 +4,11 @@
 // find. Also the short toast for a new level.
 
 import { el, iconEl } from '../dom';
+import { formatCoordinates } from '../format';
 import { t } from '../i18n';
+import { sharePicture } from '../share-picture';
+import { statusLine } from '../status-line';
+import type { ShownWeather } from './chip';
 import { savedJourney, type AwardResult } from './award';
 import { LEVELS, TOP_LEVEL_BADGES, levelIndex } from './levels';
 import { journeyText, levelName, type TextName } from './texts';
@@ -22,6 +26,7 @@ const BADGES: [id: TextName, emoji: string][] = [
 const TOAST_MS = 4000;
 
 let dialog: HTMLDialogElement | undefined;
+let weather: ShownWeather = () => undefined;
 
 function createDialog(): HTMLDialogElement {
   const box = el('dialog', 'settings journey');
@@ -108,6 +113,12 @@ function fill(body: HTMLElement) {
     if (!earned) item.append(el('span', 'journey__not-yet', ` · ${journeyText('notYet')}`));
     badges.append(item);
   }
+  const share = el('button', 'button journey__share', journeyText('share'));
+  share.type = 'button';
+  const status = el('p', 'settings__hint journey__status');
+  status.setAttribute('role', 'status');
+  share.addEventListener('click', () => void shareLevel(statusLine(status).say));
+  parts.push(share, status);
   parts.push(
     el('h3', undefined, journeyText('badges')),
     badges,
@@ -117,7 +128,51 @@ function fill(body: HTMLElement) {
   body.replaceChildren(...parts);
 }
 
-export function openJourney(): void {
+/** The level as a picture (postcard.ts), to the share sheet or downloaded. */
+async function shareLevel(say: (text: string) => void) {
+  const journey = savedJourney();
+  const index = levelIndex(journey);
+  const level = LEVELS[index];
+  const next = LEVELS[index + 1] as (typeof LEVELS)[number] | undefined;
+  const shown = weather();
+  let picture: Blob;
+  try {
+    const { drawLevelCard } = await import('../postcard');
+    picture = await drawLevelCard({
+      emoji: level.emoji,
+      level: levelName(index),
+      points: journeyText('points', { points: journey.points }),
+      progress: next
+        ? Math.min(1, (journey.points - level.points) / (next.points - level.points))
+        : 1,
+      next: next
+        ? journeyText('next', {
+            level: `${next.emoji} ${levelName(index + 1)}`,
+            points: next.points,
+          })
+        : journeyText('top'),
+      lines: [
+        journeyText('badgeCount', { count: journey.badges.length }),
+        journeyText('explored', {
+          areas: journey.areas.length,
+          countries: journey.countries.length,
+          continents: journey.continents.length,
+        }),
+      ],
+      weather: shown && {
+        place: shown.point.name ?? formatCoordinates(shown.point.lat, shown.point.lng),
+        forecast: shown.forecast,
+      },
+    });
+  } catch {
+    say(journeyText('pictureFailed'));
+    return;
+  }
+  await sharePicture(picture, 'weatherpin-level.png', journeyText('shareTitle'), say);
+}
+
+export function openJourney(shownWeather?: ShownWeather): void {
+  if (shownWeather) weather = shownWeather;
   dialog ??= createDialog();
   fill(dialog.querySelector<HTMLElement>('.journey__body')!);
   if (!dialog.open) dialog.showModal();

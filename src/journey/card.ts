@@ -9,8 +9,8 @@ import { t } from '../i18n';
 import { sharePicture } from '../share-picture';
 import { statusLine } from '../status-line';
 import type { ShownWeather } from './chip';
-import { savedJourney, type AwardResult } from './award';
-import { LEVELS, TOP_LEVEL_BADGES, levelIndex } from './levels';
+import { SECRETS, savedJourney, type AwardNews, type Journey } from './award';
+import { LEVELS, TOP_LEVEL_BADGES, levelIndex, progressToNext } from './levels';
 import { journeyText, levelName, type TextName } from './texts';
 
 const BADGES: [id: TextName, emoji: string][] = [
@@ -23,7 +23,26 @@ const BADGES: [id: TextName, emoji: string][] = [
   ['belowSea', '🌊'],
   ['high', '🏔️'],
 ];
+const SECRET_EMOJI: Record<string, string> = { sauna: '🧖', santa: '🎅', record: '🏆' };
 const TOAST_MS = 4000;
+
+/** "Next: 🌌 Aurora at 600 points and 30 days of use (12/30)", or the top. */
+function nextText(journey: Journey): string {
+  const index = levelIndex(journey);
+  const next = LEVELS[index + 1] as (typeof LEVELS)[number] | undefined;
+  if (!next) return journeyText('top');
+  let text = journeyText('next', {
+    level: `${next.emoji} ${levelName(index + 1)}`,
+    points: next.points,
+  });
+  if (next.days > 0) {
+    text += ` ${journeyText('needDays', { days: next.days, have: Math.min(journey.daysUsed, next.days) })}`;
+  }
+  if (index + 1 === LEVELS.length - 1) {
+    text += ` ${journeyText('needBadges', { count: TOP_LEVEL_BADGES, have: journey.badges.length })}`;
+  }
+  return text;
+}
 
 let dialog: HTMLDialogElement | undefined;
 let weather: ShownWeather = () => undefined;
@@ -66,22 +85,24 @@ function fill(body: HTMLElement) {
   const parts: HTMLElement[] = [heading, points];
   if (next) {
     const progress = el('progress', 'journey__progress');
-    progress.max = next.points - level.points;
-    progress.value = Math.min(progress.max, journey.points - level.points);
-    let text = journeyText('next', {
-      level: `${next.emoji} ${levelName(index + 1)}`,
-      points: next.points,
-    });
-    if (index + 1 === LEVELS.length - 1) {
-      text += ` ${journeyText('needBadges', { count: TOP_LEVEL_BADGES, have: journey.badges.length })}`;
-    }
-    const nextLine = el('p', 'journey__next', text);
+    progress.max = 100;
+    progress.value = Math.round(progressToNext(journey) * 100);
+    const nextLine = el('p', 'journey__next', nextText(journey));
     nextLine.id = 'journey-next';
     progress.setAttribute('aria-labelledby', 'journey-next');
     parts.push(progress, nextLine);
   } else if (top) {
     parts.push(el('p', 'journey__next', journeyText('top')));
   }
+  parts.push(
+    el(
+      'p',
+      'journey__days',
+      journey.daysUsed === 1
+        ? journeyText('daysUsedOne')
+        : journeyText('daysUsed', { days: journey.daysUsed }),
+    ),
+  );
   if (journey.streak > 0) {
     parts.push(
       el(
@@ -113,6 +134,13 @@ function fill(body: HTMLElement) {
     if (!earned) item.append(el('span', 'journey__not-yet', ` · ${journeyText('notYet')}`));
     badges.append(item);
   }
+  // Secret badges: only the ones found are named.
+  for (const id of SECRETS.filter((secret) => journey.badges.includes(secret))) {
+    const item = el('li', 'journey__badge is-earned');
+    item.append(iconEl(SECRET_EMOJI[id], 'journey__badge-icon'), ` ${journeyText(id as TextName)}`);
+    badges.append(item);
+  }
+  const secretsLeft = SECRETS.filter((secret) => !journey.badges.includes(secret)).length;
   const share = el('button', 'button journey__share', journeyText('share'));
   share.type = 'button';
   const status = el('p', 'settings__hint journey__status');
@@ -122,6 +150,17 @@ function fill(body: HTMLElement) {
   parts.push(
     el('h3', undefined, journeyText('badges')),
     badges,
+    ...(secretsLeft > 0
+      ? [
+          el(
+            'p',
+            'journey__secrets',
+            secretsLeft === 1
+              ? journeyText('secretsLeftOne')
+              : journeyText('secretsLeft', { count: secretsLeft }),
+          ),
+        ]
+      : []),
     el('p', 'settings__hint', journeyText('how')),
     el('p', 'settings__hint', journeyText('device')),
   );
@@ -139,6 +178,7 @@ async function shareLevel(say: (text: string) => void) {
   try {
     const { drawLevelCard } = await import('../postcard');
     picture = await drawLevelCard({
+      heading: journeyText('shareTitle'),
       emoji: level.emoji,
       level: levelName(index),
       points: journeyText('points', { points: journey.points }),
@@ -178,14 +218,22 @@ export function openJourney(shownWeather?: ShownWeather): void {
   if (!dialog.open) dialog.showModal();
 }
 
-/** "New level: ☁️ Cloud!" for a few seconds at the top. */
-export function toast(news: AwardResult): void {
-  if (!news) return;
+/** "New level: ☁️ Cloud!" (and a secret badge found) for a few seconds. */
+export function toast(news: AwardNews[]): void {
+  if (news.length === 0) return;
   const index = levelIndex(savedJourney());
-  const text =
-    news === 'level-up'
-      ? journeyText('levelUp', { level: `${LEVELS[index].emoji} ${levelName(index)}` })
-      : journeyText('welcomeBack');
+  const text = news
+    .map((item) => {
+      if (item === 'level-up') {
+        return journeyText('levelUp', { level: `${LEVELS[index].emoji} ${levelName(index)}` });
+      }
+      if (item === 'welcome-back') return journeyText('welcomeBack');
+      const secret = item.slice('secret:'.length);
+      return journeyText('secretFound', {
+        badge: `${SECRET_EMOJI[secret]} ${journeyText(secret as TextName)}`,
+      });
+    })
+    .join(' ');
   document.querySelector('.journey-toast')?.remove();
   const box = el('p', 'journey-toast');
   box.setAttribute('role', 'status');

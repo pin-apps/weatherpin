@@ -81,6 +81,9 @@ setUpLevelChip(document.querySelector<HTMLButtonElement>('#level-button')!, () =
 noteJourney({ kind: 'day' });
 window.addEventListener('weatherpin:shared', () => noteJourney({ kind: 'share' }));
 window.addEventListener('weatherpin:aurora', () => noteJourney({ kind: 'aurora' }));
+window.addEventListener('weatherpin:secret', (event) =>
+  noteJourney({ kind: 'secret', id: String((event as CustomEvent<string>).detail) }),
+);
 window.addEventListener('weatherpin:quiz', (event) =>
   noteJourney({ kind: 'quiz', day: String((event as CustomEvent<string>).detail) }),
 );

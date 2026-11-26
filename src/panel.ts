@@ -60,6 +60,11 @@ interface PanelHandlers {
 // Local time only shows minutes, so refreshing twice a minute is plenty.
 const CLOCK_REFRESH_MS = 30 * 1000;
 
+/** An easter egg found: a secret badge for the weather levels (main.ts). */
+function secretFound(id: string) {
+  window.dispatchEvent(new CustomEvent('weatherpin:secret', { detail: id }));
+}
+
 export function createPanel(root: HTMLElement, handlers: PanelHandlers): Panel {
   const title = root.querySelector<HTMLElement>('#panel-title')!;
   const body = root.querySelector<HTMLElement>('.panel__body')!;
@@ -144,7 +149,10 @@ export function createPanel(root: HTMLElement, handlers: PanelHandlers): Panel {
       .catch(() => undefined)
       .then((records) => {
         if (!records || shown?.point !== point) return;
-        body.querySelector(':scope > .current')?.before(...records.renderRecord(point));
+        const record = records.renderRecord(point);
+        body.querySelector(':scope > .current')?.before(...record);
+        // A secret badge for the weather levels (journey/, through main.ts).
+        if (record.length > 0) secretFound('record');
       });
   }
 
@@ -163,6 +171,7 @@ export function createPanel(root: HTMLElement, handlers: PanelHandlers): Panel {
         const report =
           'renderSauna' in module ? module.renderSauna(marineShown) : module.renderSanta(forecast);
         body.querySelector(':scope > .record, :scope > .current')?.before(report);
+        secretFound(sauna ? 'sauna' : 'santa');
       });
   }
 

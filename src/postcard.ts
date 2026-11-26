@@ -112,6 +112,8 @@ export function drawPastDayPostcard(point: PickedPoint, day: PastDayCard): Promi
 
 /** The weather level to brag about (texts made by journey/card.ts). */
 export interface LevelCard {
+  /** "My Weatherpin level": says whose and what it is. */
+  heading: string;
   emoji: string;
   /** "Storm" */
   level: string;
@@ -138,8 +140,18 @@ export function drawLevelCard(card: LevelCard): Promise<Blob> {
   const sky = now ? skyFor(now.weather_code, now.is_day === 1) : 'night';
   return paint(sky, (ctx) => {
     const cx = SIZE / 2;
-    const cy = 250;
-    const radius = 160;
+    const width = SIZE - PAD * 2;
+    text(
+      ctx,
+      card.heading,
+      cx,
+      96,
+      fittingSize(ctx, card.heading, width, 52, 32, 700),
+      700,
+      'center',
+    );
+    const cy = 290;
+    const radius = 145;
     // The emblem: a light disc, the ring, the emoji.
     ctx.save();
     ctx.fillStyle = 'rgb(255 255 255 / 0.18)';
@@ -168,10 +180,9 @@ export function drawLevelCard(card: LevelCard): Promise<Blob> {
     ctx.fillText(card.emoji, cx, cy + 8);
     ctx.restore();
 
-    const width = SIZE - PAD * 2;
-    text(ctx, card.level, cx, 510, fittingSize(ctx, card.level, width, 84, 48, 700), 700, 'center');
-    text(ctx, card.points, cx, 570, 44, 600, 'center');
-    text(ctx, card.next, cx, 624, fittingSize(ctx, card.next, width, 36, 24, 400), 400, 'center');
+    text(ctx, card.level, cx, 520, fittingSize(ctx, card.level, width, 84, 48, 700), 700, 'center');
+    text(ctx, card.points, cx, 576, 44, 600, 'center');
+    text(ctx, card.next, cx, 628, fittingSize(ctx, card.next, width, 36, 24, 400), 400, 'center');
 
     ctx.fillStyle = 'rgb(0 0 0 / 0.22)';
     ctx.fillRect(0, 670, SIZE, SIZE - 670);

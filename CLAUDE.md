@@ -239,18 +239,22 @@ Never run `wrangler deploy` by hand; CI deploys `main` (see README).
   Christmas Eve). Only from that search; kept out of About. Both reports
   (`sauna-report.ts`, `santa-report.ts`) load on demand (`panel.ts`)
 - `src/journey/` — weather levels (🌬️ Breeze 0 → ☁️ Cloud 30 → ⛈️ Storm
-  150 → 🌌 Aurora 600 → 💎 Diamond dust 2,000 points + 5 weather badges):
+  150 points + 7 days of use → 🌌 Aurora 600 + 30 days → 💎 Diamond dust
+  2,000 + 100 days + 5 weather badges; days of use in total, not in a row,
+  so no level comes in one day; the highest level reached is kept):
   `chip.ts` (start-up: the round chip next to ⚙ with the level's emoji and
   a progress ring, `--level-progress`; `noteJourney()`), `levels.ts`
   (levels, saved totals, events), `award.ts` (on demand: points for a day
   of use 1, the daily quiz 2, a share 3 once a day, a new ~50 km area 2 (5
-  a day), a new country 10 (search's `country_code` or Nominatim's), a new
+  a day), a new country 10 (3 a day; search's `country_code` or Nominatim's), a new
   continent 25 (by time zone), a badge 15: −30°, +40°, thunder, polar
   night, midnight sun, northern lights, below sea level, above 3,000 m;
-  never goes down; back after 30+ days: "resting" toast, streak from 1),
+  secret badges for the easter eggs (sauna, Santa, a weather record place;
+  named only once found, `weatherpin:secret` from `panel.ts`); never goes
+  down; back after 30+ days: "resting" toast, streak from 1),
   `card.ts` ("Your weather journey" dialog and the level-up toast; "📸
   Share my level": a 1080×1080 picture, `drawLevelCard` in `postcard.ts`,
-  with the level's emblem and ring, points, badges, what's explored and
+  headed "My Weatherpin level", with the level's emblem and ring, points, badges, what's explored and
   the weather of the place shown now and the next 3 days; share sheet or
   download via `share-picture.ts`, which counts as a share),
   `texts.ts` (its texts side by side, out of the start-up language files).

@@ -5,22 +5,28 @@
 // badges for having looked at a place in extreme weather.
 
 import { readStored, writeStored } from '../storage';
-import { JOURNEY_KEY, levelIndex, type JourneyEvent } from './levels';
+import { JOURNEY_KEY, levelIndex, savedTotals, type JourneyEvent } from './levels';
 
 const POINTS = { day: 1, quiz: 2, share: 3, area: 2, country: 10, continent: 25, badge: 15 };
-/** New areas that count in a day. */
+/** New areas and new countries that count in a day. */
 const AREAS_PER_DAY = 5;
+const COUNTRIES_PER_DAY = 3;
 /** Areas kept (the oldest go): enough for years, small to store. */
 const MAX_AREAS = 2000;
 /** An area is a square of half a degree: about 55 km north to south. */
 const AREA_STEP = 0.5;
+/** Secret badges: the easter eggs (sauna, Santa, a weather record place). */
+export const SECRETS = ['sauna', 'santa', 'record'];
 /** Away this long, the level was "resting". */
 const RESTING_DAYS = 30;
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 export interface Journey {
-  version: 1;
+  version: 2;
   points: number;
+  /** Days the app has been used, and the highest level reached. */
+  daysUsed: number;
+  reached: number;
   /** Badge ids (texts.ts names them). */
   badges: string[];
   /** The last day the app was used (this device's date) and days in a row. */
@@ -31,6 +37,8 @@ export interface Journey {
   areasToday: number;
   /** ISO country codes ("FI"), when the place's country is known. */
   countries: string[];
+  countryDay?: string;
+  countriesToday: number;
   continents: string[];
   shareDay?: string;
   quizDay?: string;
@@ -44,9 +52,13 @@ export function savedJourney(): Journey {
   const number = (value: unknown) =>
     typeof value === 'number' && Number.isFinite(value) && value >= 0 ? value : 0;
   const text = (value: unknown) => (typeof value === 'string' ? value : undefined);
+  // Days of use and the level reached (kept from before days counted).
+  const { daysUsed, reached } = savedTotals();
   return {
-    version: 1,
+    version: 2,
     points: number(saved.points),
+    daysUsed,
+    reached,
     badges: strings(saved.badges),
     day: text(saved.day),
     streak: number(saved.streak),
@@ -54,6 +66,8 @@ export function savedJourney(): Journey {
     areaDay: text(saved.areaDay),
     areasToday: number(saved.areasToday),
     countries: strings(saved.countries),
+    countryDay: text(saved.countryDay),
+    countriesToday: number(saved.countriesToday),
     continents: strings(saved.continents),
     shareDay: text(saved.shareDay),
     quizDay: text(saved.quizDay),
@@ -95,15 +109,16 @@ export function badgesFor(event: Extract<JourneyEvent, { kind: 'place' }>): stri
   return badges;
 }
 
-/** What changed for the toast: a new level, or back after a long while. */
-export type AwardResult = 'level-up' | 'welcome-back' | undefined;
+/** What's news for the toast: a secret badge, a new level, back after a while. */
+export type AwardNews = 'level-up' | 'welcome-back' | `secret:${string}`;
 
 /** Adds the points `event` earns, saves, and says whether that's news. */
-export function award(event: JourneyEvent): AwardResult {
+export function award(event: JourneyEvent): AwardNews[] {
   const journey = savedJourney();
   const before = levelIndex(journey);
   const day = today();
   let welcomeBack = false;
+  let secret: string | undefined;
   const badge = (id: string) => {
     if (journey.badges.includes(id)) return;
     journey.badges.push(id);
@@ -116,6 +131,7 @@ export function award(event: JourneyEvent): AwardResult {
       if (journey.day && daysBetween(journey.day, day) >= RESTING_DAYS) welcomeBack = true;
       journey.streak = journey.day && daysBetween(journey.day, day) === 1 ? journey.streak + 1 : 1;
       journey.day = day;
+      journey.daysUsed++;
       journey.points += POINTS.day;
       break;
     case 'share':
@@ -132,9 +148,20 @@ export function award(event: JourneyEvent): AwardResult {
       badge('aurora');
       break;
     case 'country':
+      if (journey.countryDay !== day) {
+        journey.countryDay = day;
+        journey.countriesToday = 0;
+      }
       if (journey.countries.includes(event.code)) break;
+      if (journey.countriesToday >= COUNTRIES_PER_DAY) break;
       journey.countries.push(event.code);
+      journey.countriesToday++;
       journey.points += POINTS.country;
+      break;
+    case 'secret':
+      if (!SECRETS.includes(event.id) || journey.badges.includes(event.id)) break;
+      badge(event.id);
+      secret = event.id;
       break;
     case 'place': {
       if (journey.areaDay !== day) {
@@ -157,7 +184,12 @@ export function award(event: JourneyEvent): AwardResult {
     }
   }
 
+  const after = levelIndex(journey);
+  journey.reached = Math.max(journey.reached, after);
   writeStored(JOURNEY_KEY, journey);
-  if (levelIndex(journey) > before) return 'level-up';
-  return welcomeBack ? 'welcome-back' : undefined;
+  const news: AwardNews[] = [];
+  if (secret) news.push(`secret:${secret}`);
+  if (after > before) news.push('level-up');
+  else if (welcomeBack) news.push('welcome-back');
+  return news;
 }

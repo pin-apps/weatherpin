@@ -164,6 +164,13 @@ function emphasised(className: string, text: string): HTMLElement {
   return paragraph;
 }
 
+/** Share and play again, side by side (wrapping on narrow phones). */
+function actions(...children: HTMLElement[]): HTMLElement {
+  const element = row(...children);
+  element.classList.add('quiz__actions');
+  return element;
+}
+
 /** Side by side: the guess and its button (a compact card leaves more map). */
 function row(...children: HTMLElement[]): HTMLElement {
   const element = el('div', 'quiz__row');
@@ -205,10 +212,12 @@ function showDone(day: string, record: QuizRecord) {
     el('p', 'quiz__lead', q('played', { number: quizNumber(day) })),
     el('p', 'quiz__score', `${record.score} / ${MAX_POINTS}`),
     el('p', 'quiz__boxes', record.boxes ?? ''),
+    actions(
+      shareButton(shareText('daily', record.score ?? 0, record.boxes ?? '', day)),
+      button(q('free'), () => void play('free')),
+    ),
     ...lines,
     el('p', 'quiz__hint', q('nextQuiz', { time: formatDuration(untilNextQuiz() / 1000) })),
-    shareButton(shareText('daily', record.score ?? 0, record.boxes ?? '', day)),
-    button(q('free'), () => void play('free')),
   ]);
 }
 
@@ -432,10 +441,14 @@ function showResults(mode: Mode, day: string, rounds: Round[]) {
     el('p', 'quiz__score', `${total} / ${MAX_POINTS}`),
     el('p', 'quiz__boxes', boxes),
     el('p', 'quiz__lead', verdict(total)),
+    // What people do next, right under the score: on a phone the places
+    // below would push them out of sight.
+    actions(
+      shareButton(shareText(mode, total, boxes, day)),
+      button(mode === 'daily' ? q('free') : q('playAgain'), () => void play('free')),
+    ),
     ...(record ? summaryLines(record) : []),
     list,
-    shareButton(shareText(mode, total, boxes, day)),
-    button(mode === 'daily' ? q('free') : q('playAgain'), () => void play('free')),
   ]);
 }
 

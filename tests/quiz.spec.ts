@@ -186,6 +186,23 @@ test.describe('temperature quiz', () => {
     await expect(page.locator('.current__temp')).toBeVisible();
   });
 
+  test(
+    'the results: Share and play again right under the score',
+    { tag: '@layout' },
+    async ({ page }) => {
+      await openQuiz(page);
+      await playDaily(page);
+      const share = quiz(page).getByRole('button', { name: 'Share' });
+      const again = quiz(page).getByRole('button', { name: 'Free play', exact: true });
+      // In view at once, before the list of places.
+      await expect(share).toBeInViewport();
+      await expect(again).toBeInViewport();
+      const places = (await quiz(page).locator('.quiz__places').boundingBox())!;
+      expect((await share.boundingBox())!.y).toBeLessThan(places.y);
+      await expect(share).toBeFocused();
+    },
+  );
+
   test('closes with × and Escape, and cleans the address', async ({ page }) => {
     await openQuiz(page);
     await page.keyboard.press('Escape');

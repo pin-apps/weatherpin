@@ -65,6 +65,8 @@ export function setUpFavouriteButton(
     switch (addFavourite({ name, lat: point.lat, lng: point.lng })) {
       case 'added':
         say(t('Saved to favourites.'));
+        // A first step for the weather level (journey/, through main.ts).
+        window.dispatchEvent(new CustomEvent('weatherpin:task', { detail: 'favourite' }));
         break;
       case 'full':
         say(

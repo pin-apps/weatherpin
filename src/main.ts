@@ -79,14 +79,22 @@ setUpLevelChip(document.querySelector<HTMLButtonElement>('#level-button')!, () =
   shownWeather && shownWeather.point === currentPoint ? shownWeather : undefined,
 );
 noteJourney({ kind: 'day' });
-window.addEventListener('weatherpin:shared', () => noteJourney({ kind: 'share' }));
+window.addEventListener('weatherpin:shared', () => {
+  noteJourney({ kind: 'share' });
+  noteJourney({ kind: 'task', id: 'share' });
+});
+// First steps (journey/award.ts): features tried, announced by their code.
+window.addEventListener('weatherpin:task', (event) =>
+  noteJourney({ kind: 'task', id: String((event as CustomEvent<string>).detail) }),
+);
 window.addEventListener('weatherpin:aurora', () => noteJourney({ kind: 'aurora' }));
 window.addEventListener('weatherpin:secret', (event) =>
   noteJourney({ kind: 'secret', id: String((event as CustomEvent<string>).detail) }),
 );
-window.addEventListener('weatherpin:quiz', (event) =>
-  noteJourney({ kind: 'quiz', day: String((event as CustomEvent<string>).detail) }),
-);
+window.addEventListener('weatherpin:quiz', (event) => {
+  noteJourney({ kind: 'quiz', day: String((event as CustomEvent<string>).detail) });
+  noteJourney({ kind: 'task', id: 'quiz' });
+});
 
 // The ⋯ menu's actions share one status line under the panel's header.
 const actionStatus = document.querySelector<HTMLElement>('.panel__action-status')!;
@@ -188,6 +196,7 @@ setUpLocateButton(
     // Open the panel first, so the map knows how much space it takes.
     void loadWeather(point);
     worldMap.goTo(point, panelCoveredArea());
+    noteJourney({ kind: 'task', id: 'locate' });
   },
 );
 
@@ -222,6 +231,7 @@ setUpSearch(document.querySelector<HTMLElement>('#search')!, {
     worldMap.goTo(point, panelCoveredArea(), zoomForPlace(place));
     if (place.country_code)
       noteJourney({ kind: 'country', code: place.country_code.toUpperCase() });
+    noteJourney({ kind: 'task', id: 'search' });
   },
   onSelectFavourite: (favourite) => {
     const point = { lat: favourite.lat, lng: favourite.lng, name: favourite.name };
@@ -249,6 +259,7 @@ setUpSearch(document.querySelector<HTMLElement>('#search')!, {
     // Its name follows from Nominatim, as for a tapped point.
     void loadWeather(point);
     worldMap.goTo(point, panelCoveredArea(), RANDOM_PLACE_ZOOM);
+    noteJourney({ kind: 'task', id: 'randomPlace' });
   },
 });
 

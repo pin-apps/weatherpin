@@ -152,6 +152,8 @@ async function show(date: string) {
   }
   const texts = describeDay(day, forecast);
   showResult(renderDay(texts), texts);
+  // A first step for the weather level (journey/, through main.ts).
+  window.dispatchEvent(new CustomEvent('weatherpin:task', { detail: 'pastDay' }));
 }
 
 function describeDay(day: PastDay, forecast: Forecast): DayTexts {

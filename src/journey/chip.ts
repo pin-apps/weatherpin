@@ -46,7 +46,7 @@ export function setUpLevelChip(button: HTMLButtonElement, shownWeather: ShownWea
       .then(({ chipLabel }) => {
         // Points enough but badges missing (the top level): no "of".
         const label = chipLabel(
-          index,
+          level.id,
           totals.points,
           next && next.points > totals.points ? next.points : undefined,
         );

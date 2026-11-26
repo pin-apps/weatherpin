@@ -7,14 +7,19 @@ import { currentLanguage, type Language } from '../i18n';
 
 type Texts = Record<Language, string>;
 
-/** Level names, in order (chip.ts has the points). */
-const LEVEL_NAMES: Texts[] = [
-  { en: 'Breeze', fi: 'Tuulahdus', sv: 'Bris', nb: 'Bris' },
-  { en: 'Cloud', fi: 'Pilvi', sv: 'Moln', nb: 'Sky' },
-  { en: 'Storm', fi: 'Myrsky', sv: 'Storm', nb: 'Storm' },
-  { en: 'Aurora', fi: 'Revontuli', sv: 'Norrsken', nb: 'Nordlys' },
-  { en: 'Diamond dust', fi: 'Timanttipöly', sv: 'Diamantstoft', nb: 'Diamantstøv' },
-];
+/** Level names by id (levels.ts has the ladder). */
+const LEVEL_NAMES: Record<string, Texts> = {
+  dewdrop: { en: 'Dewdrop', fi: 'Kastepisara', sv: 'Daggdroppe', nb: 'Duggdråpe' },
+  breeze: { en: 'Breeze', fi: 'Tuulahdus', sv: 'Bris', nb: 'Bris' },
+  cloud: { en: 'Cloud', fi: 'Pilvi', sv: 'Moln', nb: 'Sky' },
+  shower: { en: 'Shower', fi: 'Sadekuuro', sv: 'Regnskur', nb: 'Regnbyge' },
+  rainbow: { en: 'Rainbow', fi: 'Sateenkaari', sv: 'Regnbåge', nb: 'Regnbue' },
+  snowflake: { en: 'Snowflake', fi: 'Lumihiutale', sv: 'Snöflinga', nb: 'Snøfnugg' },
+  storm: { en: 'Storm', fi: 'Myrsky', sv: 'Storm', nb: 'Storm' },
+  whirlwind: { en: 'Whirlwind', fi: 'Pyörremyrsky', sv: 'Virvelvind', nb: 'Virvelvind' },
+  aurora: { en: 'Aurora', fi: 'Revontuli', sv: 'Norrsken', nb: 'Nordlys' },
+  diamond: { en: 'Diamond dust', fi: 'Timanttipöly', sv: 'Diamantstoft', nb: 'Diamantstøv' },
+};
 
 const TEXTS = {
   label: {
@@ -40,24 +45,6 @@ const TEXTS = {
     fi: '{points} pistettä',
     sv: '{points} poäng',
     nb: '{points} poeng',
-  },
-  next: {
-    en: 'Next: {level} at {points} points',
-    fi: 'Seuraava: {level}, {points} pistettä',
-    sv: 'Nästa: {level} vid {points} poäng',
-    nb: 'Neste: {level} ved {points} poeng',
-  },
-  needBadges: {
-    en: 'and {count} weather badges ({have}/{count})',
-    fi: 'ja {count} säämerkkiä ({have}/{count})',
-    sv: 'och {count} vädermärken ({have}/{count})',
-    nb: 'og {count} værmerker ({have}/{count})',
-  },
-  needDays: {
-    en: 'and {days} days of use ({have}/{days})',
-    fi: 'ja {days} käyttöpäivää ({have}/{days})',
-    sv: 'och {days} dagar med appen ({have}/{days})',
-    nb: 'og {days} dager med appen ({have}/{days})',
   },
   daysUsed: {
     en: '📅 {days} days of use',
@@ -88,6 +75,67 @@ const TEXTS = {
     fi: 'Salainen merkki löytyi: {badge}!',
     sv: 'Hemligt märke hittat: {badge}!',
     nb: 'Hemmelig merke funnet: {badge}!',
+  },
+  nextLevel: {
+    en: 'Next: {level}: {needs}',
+    fi: 'Seuraava: {level}: {needs}',
+    sv: 'Nästa: {level}: {needs}',
+    nb: 'Neste: {level}: {needs}',
+  },
+  morePoints: {
+    en: '{count} more points',
+    fi: '{count} pistettä lisää',
+    sv: '{count} poäng till',
+    nb: '{count} poeng til',
+  },
+  morePointsOne: { en: '1 more point', fi: '1 piste lisää', sv: '1 poäng till', nb: '1 poeng til' },
+  moreDays: {
+    en: '{count} more days of use',
+    fi: '{count} käyttöpäivää lisää',
+    sv: '{count} dagar till med appen',
+    nb: '{count} dager til med appen',
+  },
+  moreDaysOne: {
+    en: '1 more day of use',
+    fi: '1 käyttöpäivä lisää',
+    sv: '1 dag till med appen',
+    nb: '1 dag til med appen',
+  },
+  moreBadges: {
+    en: '{count} more badges',
+    fi: '{count} merkkiä lisää',
+    sv: '{count} märken till',
+    nb: '{count} merker til',
+  },
+  moreBadgesOne: {
+    en: '1 more badge',
+    fi: '1 merkki lisää',
+    sv: '1 märke till',
+    nb: '1 merke til',
+  },
+  firstSteps: {
+    en: '🎒 First steps: {done}/{total}',
+    fi: '🎒 Ensiaskeleet: {done}/{total}',
+    sv: '🎒 Första stegen: {done}/{total}',
+    nb: '🎒 Første steg: {done}/{total}',
+  },
+  firstStepsDone: {
+    en: '🎒 First steps: all done ✓',
+    fi: '🎒 Ensiaskeleet: kaikki tehty ✓',
+    sv: '🎒 Första stegen: alla klara ✓',
+    nb: '🎒 Første steg: alle gjort ✓',
+  },
+  firstStepsHow: {
+    en: 'Try these for 5 points each:',
+    fi: 'Kokeile näitä, 5 pistettä kustakin:',
+    sv: 'Prova dessa, 5 poäng var:',
+    nb: 'Prøv disse, 5 poeng hver:',
+  },
+  firstVisit: {
+    en: 'Your weather level: 💧 Dewdrop. Tap it to see how to grow!',
+    fi: 'Sääsi taso: 💧 Kastepisara. Napauta sitä ja katso, miten kasvat!',
+    sv: 'Din vädernivå: 💧 Daggdroppe. Tryck på den och se hur du växer!',
+    nb: 'Værnivået ditt: 💧 Duggdråpe. Trykk på det og se hvordan du vokser!',
   },
   top: {
     en: 'The top level. Well done!',
@@ -187,6 +235,63 @@ const TEXTS = {
     nb: 'Under havnivå',
   },
   high: { en: 'Above 3,000 m', fi: 'Yli 3 000 m', sv: 'Över 3 000 m', nb: 'Over 3 000 m' },
+  pro: { en: 'Weather pro', fi: 'Sääammattilainen', sv: 'Väderproffs', nb: 'Værproff' },
+  // First steps (award.ts).
+  taskSearch: {
+    en: 'Search for a place',
+    fi: 'Hae paikkaa',
+    sv: 'Sök efter en plats',
+    nb: 'Søk etter et sted',
+  },
+  taskFavourite: {
+    en: 'Save a favourite',
+    fi: 'Tallenna suosikki',
+    sv: 'Spara en favorit',
+    nb: 'Lagre en favoritt',
+  },
+  taskLocate: {
+    en: 'Use My location',
+    fi: 'Käytä sijaintiasi',
+    sv: 'Använd din plats',
+    nb: 'Bruk Min posisjon',
+  },
+  taskRadar: {
+    en: 'Turn on the rain radar',
+    fi: 'Avaa sadetutka',
+    sv: 'Slå på regnradarn',
+    nb: 'Slå på nedbørsradaren',
+  },
+  taskQuiz: {
+    en: 'Play the daily quiz',
+    fi: 'Pelaa päivän visa',
+    sv: 'Spela dagens quiz',
+    nb: 'Spill dagens quiz',
+  },
+  taskShare: { en: 'Share something', fi: 'Jaa jotain', sv: 'Dela något', nb: 'Del noe' },
+  taskPastDay: {
+    en: 'See the weather on a past day',
+    fi: 'Katso menneen päivän sää',
+    sv: 'Se vädret en dag som varit',
+    nb: 'Se været på en tidligere dag',
+  },
+  taskSky: {
+    en: 'Open the Sky section',
+    fi: 'Avaa Taivas-osio',
+    sv: 'Öppna avsnittet Himlen',
+    nb: 'Åpne delen Himmelen',
+  },
+  taskStartPlace: {
+    en: 'Choose a start place',
+    fi: 'Valitse aloituspaikka',
+    sv: 'Välj en startplats',
+    nb: 'Velg et startsted',
+  },
+  taskRandomPlace: {
+    en: 'Try Random place',
+    fi: 'Kokeile satunnaista paikkaa',
+    sv: 'Prova Slumpmässig plats',
+    nb: 'Prøv Tilfeldig sted',
+  },
   // Secret badges: the easter eggs. Named only once found.
   sauna: { en: 'Löyly master', fi: 'Löylymestari', sv: 'Bastumästare', nb: 'Badstuemester' },
   santa: {
@@ -207,13 +312,13 @@ export function journeyText(name: TextName, values: Record<string, string | numb
   );
 }
 
-export function levelName(index: number): string {
-  return LEVEL_NAMES[index][currentLanguage()];
+export function levelName(id: string): string {
+  return LEVEL_NAMES[id][currentLanguage()];
 }
 
-/** "Your level: Storm, 412 of 600 points" (no "of" at the top level). */
-export function chipLabel(index: number, points: number, next: number | undefined): string {
-  const level = levelName(index);
+/** "Your level: Storm, 412 of 600 points" (no "of" when points aren't what's missing). */
+export function chipLabel(id: string, points: number, next: number | undefined): string {
+  const level = levelName(id);
   return next === undefined
     ? journeyText('labelTop', { level, points })
     : journeyText('label', { level, points, next });

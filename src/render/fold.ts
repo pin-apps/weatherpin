@@ -65,6 +65,9 @@ export function makeFoldable(
     const folded = !section.classList.contains('is-folded');
     show(folded);
     saveFolded(id, folded);
+    // Opening the Sky section: a first step for the weather level (main.ts).
+    if (id === 'sky' && !folded)
+      window.dispatchEvent(new CustomEvent('weatherpin:task', { detail: 'sky' }));
   });
   return summary;
 }

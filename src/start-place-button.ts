@@ -48,6 +48,8 @@ export function setUpStartPlaceButton(
       say(t('The app will open at the world map.'));
     } else if (setStartPlace(point)) {
       say(t('The app will open here.'));
+      // A first step for the weather level (journey/, through main.ts).
+      window.dispatchEvent(new CustomEvent('weatherpin:task', { detail: 'startPlace' }));
     } else {
       say(t("This browser didn't let the app save it."));
     }

@@ -301,6 +301,8 @@ export function setUpRainRadar(
     if (on) turnOff();
     else turnOn();
     writeStored(STORAGE_KEY, { version: STORAGE_VERSION, on });
+    // A first step for the weather level (journey/, through main.ts).
+    if (on) window.dispatchEvent(new CustomEvent('weatherpin:task', { detail: 'radar' }));
   });
 
   // Off unless the user turned it on before.

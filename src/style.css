@@ -33,6 +33,107 @@
   --shadow-panel: 0 4px 16px rgb(0 0 0 / 0.6);
 }
 
+/* Colour sets ("skins", chosen in Settings; <html data-skin>, set by
+   public/theme.js and src/theme.ts), each light and dark. Classic is the
+   one above. Every text colour is at least 4.5:1 on its background, and
+   the accent too, both ways (buttons show the surface colour on it). */
+:root[data-skin='nordic'] {
+  --color-text: #10243a;
+  --color-text-muted: #3f566e;
+  --color-bg: #e8f1f6;
+  --color-surface: #f7fbfd;
+  --color-border: #c9d8e3;
+  --color-accent: #0e6a70;
+  --color-error: #b3261e;
+  --color-marker-ring: #ffffff;
+  --color-temp: #b4410f;
+}
+
+:root[data-skin='nordic'][data-theme='dark'] {
+  --color-text: #e3f1f7;
+  --color-text-muted: #9fb7c6;
+  --color-bg: #07131f;
+  --color-surface: #0f2131;
+  --color-border: #23405a;
+  --color-accent: #5fe0b5;
+  --color-error: #ffb4ab;
+  --color-marker-ring: #07131f;
+  --color-temp: #fb923c;
+}
+
+:root[data-skin='sauna'] {
+  --color-text: #2b1d12;
+  --color-text-muted: #5e4636;
+  --color-bg: #f4ebe0;
+  --color-surface: #fffaf3;
+  --color-border: #e0cfbb;
+  --color-accent: #9a3d12;
+  --color-error: #a3221a;
+  --color-marker-ring: #ffffff;
+  --color-temp: #b4410f;
+}
+
+:root[data-skin='sauna'][data-theme='dark'] {
+  --color-text: #f3e6d8;
+  --color-text-muted: #c9ad94;
+  --color-bg: #1a120c;
+  --color-surface: #2a1c13;
+  --color-border: #4a3424;
+  --color-accent: #ff9b54;
+  --color-error: #ffb4ab;
+  --color-marker-ring: #1a120c;
+  --color-temp: #ffb27a;
+}
+
+:root[data-skin='retro'] {
+  --color-text: #2e2016;
+  --color-text-muted: #5b4a3a;
+  --color-bg: #f3e7c9;
+  --color-surface: #fdf6e3;
+  --color-border: #dcc9a0;
+  --color-accent: #a8430c;
+  --color-error: #a3221a;
+  --color-marker-ring: #ffffff;
+  --color-temp: #9c4a00;
+  --radius: 4px;
+}
+
+:root[data-skin='retro'][data-theme='dark'] {
+  --color-text: #f5e9cf;
+  --color-text-muted: #cdb892;
+  --color-bg: #2a1d14;
+  --color-surface: #3a2a1d;
+  --color-border: #5a4330;
+  --color-accent: #ffa940;
+  --color-error: #ffb4ab;
+  --color-marker-ring: #2a1d14;
+  --color-temp: #ffc06b;
+}
+
+:root[data-skin='contrast'] {
+  --color-text: #000000;
+  --color-text-muted: #1f1f1f;
+  --color-bg: #ffffff;
+  --color-surface: #ffffff;
+  --color-border: #000000;
+  --color-accent: #0033cc;
+  --color-error: #a00000;
+  --color-marker-ring: #ffffff;
+  --color-temp: #a03000;
+}
+
+:root[data-skin='contrast'][data-theme='dark'] {
+  --color-text: #ffffff;
+  --color-text-muted: #e6e6e6;
+  --color-bg: #000000;
+  --color-surface: #000000;
+  --color-border: #ffffff;
+  --color-accent: #ffd400;
+  --color-error: #ff8080;
+  --color-marker-ring: #000000;
+  --color-temp: #ffb000;
+}
+
 html,
 body {
   height: 100%;
@@ -1936,6 +2037,21 @@ body:has(.quiz[open]) {
 .settings__label {
   margin: 12px 0 6px;
   font-weight: 600;
+}
+
+/* Wind, rain and pressure, folded away under "More units". */
+.settings__more {
+  margin-top: 8px;
+}
+
+.settings__more > summary {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--color-accent);
+  font-weight: 600;
+  cursor: pointer;
 }
 
 /* Settings: each choice a row of toggle buttons; the one in use filled. */

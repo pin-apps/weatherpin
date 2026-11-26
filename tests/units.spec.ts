@@ -12,7 +12,7 @@ import {
   test,
   waitForTiles,
 } from './helpers';
-import type { Page } from '@playwright/test';
+import type { Locator, Page } from '@playwright/test';
 import { forecastFixture } from './fixtures/forecast';
 
 const OSLO = '/#at=59.91,10.75&name=Oslo,+Norway';
@@ -143,6 +143,9 @@ test.describe('units', () => {
     test('Automatic by default, with what it gives now', async ({ page }) => {
       await openApp(page);
       const settings = await openSettings(page);
+      // Folded away while they're all Automatic.
+      await expect(settings.locator('.settings__more')).not.toHaveAttribute('open', '');
+      await openMoreUnits(settings);
       for (const name of ['Wind', 'Rain and snow', 'Pressure']) {
         await expect(
           settings.getByRole('group', { name }).getByRole('button', { name: 'Automatic' }),
@@ -247,6 +250,7 @@ test.describe('units', () => {
         await page.getByRole('button', { name: 'Asetukset' }).click();
         const settings = page.getByRole('dialog', { name: 'Asetukset' });
         await expect(settings.getByRole('heading', { name: 'Yksiköt' })).toBeVisible();
+        await settings.getByText('Lisää yksiköitä').click();
         await expect(
           settings.getByRole('group', { name: 'Tuuli' }).getByRole('button', { name: 'Solmut' }),
         ).toBeVisible();
@@ -262,10 +266,19 @@ test.describe('units', () => {
 /** Chooses a unit of one's own in Settings ("Wind" → "Knots") and closes it. */
 async function chooseOwn(page: Page, row: string, unit: string) {
   const settings = await openSettings(page);
+  await openMoreUnits(settings);
   await settings
     .getByRole('group', { name: row })
     .getByRole('button', { name: unit, exact: true })
     .click();
   await settings.getByRole('button', { name: 'Close' }).click();
   await expect(settings).toBeHidden();
+}
+
+/** Opens "More units" (wind, rain, pressure) unless it's open already. */
+async function openMoreUnits(settings: Locator) {
+  const more = settings.locator('.settings__more');
+  if (!(await more.evaluate((details) => (details as HTMLDetailsElement).open))) {
+    await more.locator('summary').click();
+  }
 }

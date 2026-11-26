@@ -42,6 +42,13 @@ export const NORWEGIAN: Record<string, string> = {
   Settings: 'Innstillinger',
   Temperature: 'Temperatur',
   Appearance: 'Utseende',
+  Colours: 'Farger',
+  Classic: 'Klassisk',
+  'Nordic night': 'Nordisk natt',
+  Retro: 'Retro',
+  'High contrast': 'Høy kontrast',
+  'Each in light and dark.': 'Hver i lyst og mørkt.',
+  'More units': 'Flere enheter',
   Automatic: 'Automatisk',
   Light: 'Lyst',
   Dark: 'Mørkt',
@@ -115,7 +122,7 @@ export const NORWEGIAN: Record<string, string> = {
   'html:privacy-tracking':
     'Ingen konto, ingen informasjonskapsler og ingen sporing. Besøk telles anonymt med Cloudflare Web Analytics, uten informasjonskapsler eller noe som identifiserer deg.',
   'html:privacy-saved':
-    'Favorittene dine, startstedet (avrundet til omtrent 1 km), valgene av enheter, lyst eller mørkt utseende, språk, innstillingen for nedbørsradaren, hvilke deler du har skjult og quizresultatene dine (dagens resultat, rekke og beste) lagres bare i denne nettleseren, på denne enheten. Det samme gjør værreisen din: poeng, merker og hvilke områder (omtrent 50 km), land og verdensdeler du har sett på. Det samme gjør været for de tre siste stedene du så på (avrundet til omtrent 1 km), slik at det kan vises uten nettforbindelse.',
+    'Favorittene dine, startstedet (avrundet til omtrent 1 km), valgene av enheter, lyst eller mørkt utseende og farger, språk, innstillingen for nedbørsradaren, hvilke deler du har skjult og quizresultatene dine (dagens resultat, rekke og beste) lagres bare i denne nettleseren, på denne enheten. Det samme gjør værreisen din: poeng, merker og hvilke områder (omtrent 50 km), land og verdensdeler du har sett på. Det samme gjør været for de tre siste stedene du så på (avrundet til omtrent 1 km), slik at det kan vises uten nettforbindelse.',
   'html:privacy-sent':
     'For å vise været sendes koordinatene for stedet du velger til værtjenestene ovenfor, og for et sted du trykker på også til OpenStreetMaps Nominatim, for navnet. For Været en bestemt dag sendes også dagen du velger til Open-Meteo, og den lagres ikke. Som for alle nettsteder ser de, kartjenesten og Cloudflare (som er vert for nettstedet) IP-adressen din.',
   'html:privacy-location':

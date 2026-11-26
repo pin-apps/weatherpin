@@ -157,6 +157,10 @@ Built or thought through, then put aside. Revisit only with a clear reason.
 
 Newest first, one line each; the details are in the PRs and git history.
 
+- Colour skins (Classic, Nordic night, Sauna, Retro, High contrast; light and dark); "More units" folded in Settings
+- Weather levels: 10 levels, first steps, badges and secret badges, a chip next to Settings, a picture to share
+- Fishing times (solunar) in the Sky section; snow on the ground at a glance
+
 - Repo moved to pin-apps/weatherpin (public, all rights reserved; gitleaks via its command-line tool); README intro refreshed
 - Quiz: the place's elevation as a clue; the question's key words in bold, the high covers the whole day
 - Quiz: one smooth flight per place (no extra re-centring); a bottom sheet on phones, map credits and buttons kept clear of it

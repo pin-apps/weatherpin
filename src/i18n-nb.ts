@@ -568,6 +568,8 @@ export const NORWEGIAN: Record<string, string> = {
   'Temperature quiz': 'Temperaturquiz',
   'html:sources-elevation':
     '<strong>Høyde over havet:</strong> fra høydemodellen Copernicus DEM (rutenett på 90 m), via Open-Meteo; i bratt terreng kan den avvike med flere titalls meter.',
+  'html:sources-fishing':
+    '<strong>Fisketider:</strong> regnes ut i appen fra månens posisjon (solunarperioder, som i fiskekalendere): en gammel tradisjon, ikke en prognose for hvordan fisken biter.',
   'html:sources-ev':
     '<strong>Elbilens rekkevidde i kulde:</strong> typiske tall fra publiserte vintertester og flåtedata (NAFs El Prix-vintertester, AAA, Geotab) etter temperaturen nå; ikke noen bestemt bil.',
 };

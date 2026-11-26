@@ -87,11 +87,14 @@ const placeholders = (text) =>
     .join(',') + ` *${(text.match(/\*/g) ?? []).length}`;
 let badLines = 0;
 let quipLines = 0;
-const sideBySide = ['src/quips', 'src/quiz'].flatMap((dir) =>
-  readdirSync(dir)
-    .filter((name) => name.endsWith('.ts'))
-    .map((name) => `${dir}/${name}`),
-);
+const sideBySide = [
+  ...['src/quips', 'src/quiz'].flatMap((dir) =>
+    readdirSync(dir)
+      .filter((name) => name.endsWith('.ts'))
+      .map((name) => `${dir}/${name}`),
+  ),
+  'src/render/fishing-texts.ts',
+];
 for (const file of sideBySide) {
   for (const match of readFileSync(file, 'utf8').matchAll(LINE)) {
     quipLines++;

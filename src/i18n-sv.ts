@@ -575,6 +575,8 @@ export const SWEDISH: Record<string, string> = {
   'Temperature quiz': 'Temperaturquiz',
   'html:sources-elevation':
     '<strong>Höjd över havet:</strong> från höjdmodellen Copernicus DEM (rutnät på 90 m), via Open-Meteo; i brant terräng kan den skilja sig med tiotals meter.',
+  'html:sources-fishing':
+    '<strong>Fisketider:</strong> beräknas i appen från månens läge (solunarperioder, som i fiskekalendrar): en gammal tradition, inte en prognos för hur fisken nappar.',
   'html:sources-ev':
     '<strong>Elbilens räckvidd i kyla:</strong> typiska värden från publicerade vintertester och fordonsdata (norska NAF:s vintertester El Prix, AAA, Geotab) efter temperaturen nu; inte någon särskild bil.',
 };

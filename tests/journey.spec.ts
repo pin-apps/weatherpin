@@ -55,6 +55,11 @@ test.describe('weather levels', () => {
     await expect(toast(page)).toHaveText(
       'Your weather level: 💧 Dewdrop. Tap it to see how to grow!',
     );
+    // The ring: 1 of Breeze's 10 points. No glow: that's for a new level.
+    await expect
+      .poll(() => chip(page).evaluate((b) => b.style.getPropertyValue('--level-progress')))
+      .toBe('0.1');
+    await expect(chip(page)).not.toHaveClass(/is-new-level/);
     await openCard(page);
     await expect(card(page).locator('.journey__points')).toHaveText('1 point');
   });
@@ -74,6 +79,11 @@ test.describe('weather levels', () => {
     // 1 + 10 (Norway) + 5 (a first step) + 2 + 25 = 43.
     await expectLevel(page, 'Your level: Cloud, 43 of 50 points', '☁️');
     await expect(toast(page)).toHaveText('New level: ☁️ Cloud!');
+    await expect(chip(page)).toHaveClass(/is-new-level/);
+    // Cloud (30) to Shower (50): 13 of 20.
+    expect(await chip(page).evaluate((b) => b.style.getPropertyValue('--level-progress'))).toBe(
+      '0.65',
+    );
     await expect(toast(page)).toHaveAttribute('role', 'status');
   });
 

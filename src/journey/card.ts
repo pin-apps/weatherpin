@@ -281,7 +281,9 @@ export function toast(news: AwardNews[]): void {
   document.body.append(box);
   // Filled after it's in the page, so screen readers announce it.
   requestAnimationFrame(() => (box.textContent = text));
-  document.querySelector('.level-chip')?.classList.add('is-new-level');
+  // The chip lights up only for a new level.
+  const levelUp = news.includes('level-up');
+  if (levelUp) document.querySelector('.level-chip')?.classList.add('is-new-level');
   window.setTimeout(() => {
     box.remove();
     document.querySelector('.level-chip')?.classList.remove('is-new-level');

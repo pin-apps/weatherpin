@@ -1,6 +1,6 @@
 // The Settings dialog, opened from the ⚙ button next to the search box
 // (main.ts loads this code on the first press):
-// add to home screen, units, light/dark, language, the start place, and clearing
+// add to home screen, light/dark and colours, units, language, the start place, and clearing
 // everything saved. A native <dialog>: Escape closes it and focus stays
 // inside while it's open. Each choice is a row of toggle buttons (the one
 // in use pressed) and takes effect at once.
@@ -10,7 +10,7 @@ import { installPrompt, promptUsed, runsInstalled } from './install-prompt';
 import { currentLanguage, saveLanguage, t, type Language } from './i18n';
 import { clearStartPlace, loadStartPlace, onStartPlaceChange } from './start-place';
 import { clearAllStored, storageAvailable } from './storage';
-import { currentTheme, setTheme, type Theme } from './theme';
+import { currentSkin, currentTheme, setSkin, setTheme, type Skin, type Theme } from './theme';
 import {
   automaticUnits,
   chosenUnits,
@@ -31,6 +31,7 @@ export function setUpSettings(dialog: HTMLDialogElement): () => void {
   const startRemove = dialog.querySelector<HTMLButtonElement>('.settings__start-remove')!;
   const clearButton = dialog.querySelector<HTMLButtonElement>('.settings__clear')!;
   const unitsHint = dialog.querySelector<HTMLElement>('.settings__units-hint')!;
+  const moreUnits = dialog.querySelector<HTMLDetailsElement>('.settings__more')!;
   const installButton = dialog.querySelector<HTMLButtonElement>('.settings__install')!;
   const installHint = dialog.querySelector<HTMLElement>('.settings__install-hint')!;
   const installed = dialog.querySelector<HTMLElement>('.settings__installed')!;
@@ -61,6 +62,8 @@ export function setUpSettings(dialog: HTMLDialogElement): () => void {
     press('temperature', currentUnits().temperature);
     const chosen = chosenUnits();
     for (const kind of UNIT_KINDS) press(kind, chosen[kind] ?? 'auto');
+    // Folded away unless one of them is the user's own.
+    if (UNIT_KINDS.some((kind) => chosen[kind] !== undefined)) moreUnits.open = true;
     unitsHint.textContent = t('Automatic follows °C/°F and your region (now: {units}).', {
       units: automaticUnitNames(),
     });
@@ -77,6 +80,7 @@ export function setUpSettings(dialog: HTMLDialogElement): () => void {
     renderInstall();
     renderUnits();
     press('theme', currentTheme());
+    press('skin', currentSkin());
     press('language', currentLanguage());
     renderStartPlace();
     // Without storage there's nothing saved to show or remove.
@@ -140,6 +144,12 @@ export function setUpSettings(dialog: HTMLDialogElement): () => void {
     button.addEventListener('click', () => {
       setTheme(button.dataset.value as Theme);
       press('theme', currentTheme());
+    }),
+  );
+  buttons('skin').forEach((button) =>
+    button.addEventListener('click', () => {
+      setSkin(button.dataset.value as Skin);
+      press('skin', currentSkin());
     }),
   );
 

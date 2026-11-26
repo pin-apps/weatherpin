@@ -49,9 +49,12 @@ async function levelPicture(page: Page, testInfo: TestInfo, name: string) {
 }
 
 test.describe('weather levels', () => {
-  test('a first visit: Breeze, a point for the day', async ({ page }) => {
+  test('a first visit: Dewdrop, a point for the day, a hint', async ({ page }) => {
     await openApp(page);
-    await expectLevel(page, 'Your level: Breeze, 1 of 30 points', '🌬️');
+    await expectLevel(page, 'Your level: Dewdrop, 1 of 10 points', '💧');
+    await expect(toast(page)).toHaveText(
+      'Your weather level: 💧 Dewdrop. Tap it to see how to grow!',
+    );
   });
 
   test('a place: a new area and a new continent', async ({ page }) => {
@@ -66,8 +69,8 @@ test.describe('weather levels', () => {
     await page.locator('#search-input').fill('Oslo');
     await page.getByRole('option').first().click();
     await expect(page.locator('#panel-title')).toHaveText('Oslo, Norway');
-    // 1 + 10 (Norway) + 2 + 25 = 38.
-    await expectLevel(page, 'Your level: Cloud, 38 of 150 points', '☁️');
+    // 1 + 10 (Norway) + 5 (a first step) + 2 + 25 = 43.
+    await expectLevel(page, 'Your level: Cloud, 43 of 50 points', '☁️');
     await expect(toast(page)).toHaveText('New level: ☁️ Cloud!');
     await expect(toast(page)).toHaveAttribute('role', 'status');
   });
@@ -78,7 +81,7 @@ test.describe('weather levels', () => {
       await expect(page.locator('.current__temp')).toBeVisible();
     }
     // 1 + 25 + 5 × 2.
-    await expectLevel(page, 'Your level: Cloud, 36 of 150 points', '☁️');
+    await expectLevel(page, 'Your level: Cloud, 36 of 50 points', '☁️');
     await openCard(page);
     await expect(card(page)).toContainText('Explored: 5 areas · 0 countries · 1 continents');
   });
@@ -93,7 +96,7 @@ test.describe('weather levels', () => {
     await page.goto(link(59.91));
     await expect(page.locator('.current__temp')).toBeVisible();
     // 28 + 15.
-    await expectLevel(page, 'Your level: Cloud, 43 of 150 points', '☁️');
+    await expectLevel(page, 'Your level: Cloud, 43 of 50 points', '☁️');
     await openCard(page);
     const frost = card(page).locator('.journey__badge', { hasText: '−30° frost' });
     await expect(frost).toHaveClass(/is-earned/);
@@ -104,12 +107,12 @@ test.describe('weather levels', () => {
 
   test('a share counts once a day', async ({ page }) => {
     await openApp(page);
-    await expectLevel(page, 'Your level: Breeze, 1 of 30 points', '🌬️');
+    await expectLevel(page, 'Your level: Dewdrop, 1 of 10 points', '💧');
     await page.evaluate(() => window.dispatchEvent(new Event('weatherpin:shared')));
-    await expectLevel(page, 'Your level: Breeze, 4 of 30 points', '🌬️');
+    await expectLevel(page, 'Your level: Dewdrop, 9 of 10 points', '💧');
     await page.evaluate(() => window.dispatchEvent(new Event('weatherpin:shared')));
     await page.waitForTimeout(500);
-    await expectLevel(page, 'Your level: Breeze, 4 of 30 points', '🌬️');
+    await expectLevel(page, 'Your level: Dewdrop, 9 of 10 points', '💧');
   });
 
   test('the card: level, progress, streak, badges', async ({ page }) => {
@@ -125,13 +128,12 @@ test.describe('weather levels', () => {
       continents: ['europe'],
     });
     await openApp(page);
-    await expectLevel(page, 'Your level: Storm, 413 of 600 points', '⛈️');
+    await expectLevel(page, 'Your level: Storm, 413 points', '⛈️');
     await openCard(page);
     await expect(card(page).locator('.journey__level')).toHaveText('⛈️ Storm');
     await expect(card(page)).toContainText('413 points');
-    await expect(card(page)).toContainText('Next: 🌌 Aurora at 600 points');
+    await expect(card(page)).toContainText('Next: 🌪️ Whirlwind: 44 more days of use, 1 more badge');
     // Saved before days of use counted: Storm stays, the days start now.
-    await expect(card(page)).toContainText('and 30 days of use (1/30)');
     await expect(card(page)).toContainText('📅 1 day of use');
     await expect(card(page).locator('progress')).toHaveAttribute('value', '0');
     // Yesterday and today: 4 days in a row.
@@ -177,11 +179,11 @@ test.describe('weather levels', () => {
     await expectLevel(page, 'Your level: Aurora, 2500 points', '🌌');
     await openCard(page);
     await expect(card(page)).toContainText(
-      'Next: 💎 Diamond dust at 2000 points and 100 days of use (0/100) and 5 weather badges (2/5)',
+      'Next: 💎 Diamond dust: 100 more days of use, 3 more badges',
     );
   });
 
-  test('points alone are not enough: Storm needs 7 days of use', async ({ page }) => {
+  test('points alone are not enough: Rainbow needs 14 days of use', async ({ page }) => {
     await savedJourney(page, {
       version: 2,
       points: 500,
@@ -197,10 +199,10 @@ test.describe('weather levels', () => {
       continents: [],
     });
     await openApp(page);
-    // Today makes 4 days: still Cloud, however many points.
-    await expectLevel(page, 'Your level: Cloud, 501 points', '☁️');
+    // Today makes 4 days: Shower at most, however many points.
+    await expectLevel(page, 'Your level: Shower, 501 points', '🌦️');
     await openCard(page);
-    await expect(card(page)).toContainText('Next: ⛈️ Storm at 150 points and 7 days of use (4/7)');
+    await expect(card(page)).toContainText('Next: 🌈 Rainbow: 10 more days of use');
   });
 
   test('only 3 new countries count in a day', async ({ page }) => {
@@ -222,6 +224,23 @@ test.describe('weather levels', () => {
   });
 
   test('easter eggs are secret badges: the sauna', async ({ page }) => {
+    // No new level to come from it: Europe and today's areas are done.
+    await savedJourney(page, {
+      version: 3,
+      points: 60,
+      reachedId: 'shower',
+      daysUsed: 1,
+      badges: [],
+      tasks: [],
+      day: '2026-11-15',
+      streak: 1,
+      areas: [],
+      areaDay: '2026-11-15',
+      areasToday: 5,
+      countries: [],
+      countriesToday: 0,
+      continents: ['europe'],
+    });
     await openApp(page);
     await openCard(page);
     await expect(card(page)).toContainText('🔒 3 secret badges still to find');
@@ -231,13 +250,74 @@ test.describe('weather levels', () => {
     await page.locator('#search-input').fill('sauna');
     await page.getByRole('option', { name: /Saunalahti/ }).click();
     await expect(page.getByRole('region', { name: 'Sauna', exact: true })).toBeVisible();
-    // 1 + 2 + 25 (Europe) + 15: Cloud too.
-    await expect(toast(page)).toHaveText(
-      'Secret badge found: 🧖 Löyly master! New level: ☁️ Cloud!',
-    );
+    await expect(toast(page)).toHaveText('Secret badge found: 🧖 Löyly master!');
+    await expectLevel(page, 'Your level: Shower, 75 of 80 points', '🌦️');
     await openCard(page);
     await expect(card(page).locator('.journey__badge.is-earned')).toHaveText(['🧖 Löyly master']);
     await expect(card(page)).toContainText('🔒 2 secret badges still to find');
+  });
+
+  test('first steps: a checklist, 5 points each', async ({ page }) => {
+    await openApp(page);
+    await openCard(page);
+    await expect(card(page)).toContainText('🎒 First steps: 0/10');
+    await card(page).getByRole('button', { name: 'Close' }).click();
+    await page.locator('#search-input').fill('Oslo');
+    await page.getByRole('option').first().click();
+    await expect(page.locator('.current__temp')).toBeVisible();
+    await expectLevel(page, 'Your level: Cloud, 43 of 50 points', '☁️');
+    await openCard(page);
+    await expect(card(page)).toContainText('🎒 First steps: 1/10');
+    await expect(card(page).locator('.journey__task.is-done')).toHaveText(['✓ Search for a place']);
+  });
+
+  test('first steps done before they counted are ticked', async ({ page }) => {
+    await page.addInitScript(() => {
+      localStorage.setItem(
+        'nordic-weather:favourites',
+        JSON.stringify({ version: 1, places: [{ name: 'Oslo', lat: 59.91, lng: 10.75 }] }),
+      );
+    });
+    await openApp(page);
+    // 1 + 5.
+    await expectLevel(page, 'Your level: Dewdrop, 6 of 10 points', '💧');
+    await openCard(page);
+    await expect(card(page).locator('.journey__task.is-done')).toHaveText(['✓ Save a favourite']);
+  });
+
+  test('all first steps: the Weather pro badge', async ({ page }) => {
+    await savedJourney(page, {
+      version: 3,
+      points: 100,
+      reachedId: 'shower',
+      daysUsed: 1,
+      badges: [],
+      tasks: [
+        'search',
+        'favourite',
+        'locate',
+        'radar',
+        'quiz',
+        'pastDay',
+        'sky',
+        'startPlace',
+        'randomPlace',
+      ],
+      day: '2026-11-15',
+      streak: 1,
+      areas: [],
+      areasToday: 0,
+      countries: [],
+      countriesToday: 0,
+      continents: [],
+    });
+    await openApp(page);
+    await page.evaluate(() => window.dispatchEvent(new Event('weatherpin:shared')));
+    // 100 + 3 (share) + 5 (the last step) + 15 (the badge).
+    await expectLevel(page, 'Your level: Shower, 123 points', '🌦️');
+    await openCard(page);
+    await expect(card(page)).toContainText('🎒 First steps: all done ✓');
+    await expect(card(page).locator('.journey__badge.is-earned')).toHaveText(['🎓 Weather pro']);
   });
 
   test('a big enough button next to Settings', { tag: '@layout' }, async ({ page }) => {
@@ -260,8 +340,8 @@ test.describe('weather levels', () => {
       1080, 1080,
     ]);
     await expect(card(page).locator('.journey__status')).toHaveText('Picture saved');
-    // Sharing counts too: 28 + 3, up to Cloud.
-    await expectLevel(page, 'Your level: Cloud, 31 of 150 points', '☁️');
+    // Sharing counts too: 28 + 3, and + 5 as a first step: up to Cloud.
+    await expectLevel(page, 'Your level: Cloud, 36 of 50 points', '☁️');
   });
 
   test('the level picture with no place shown', async ({ page }, testInfo) => {
@@ -284,16 +364,16 @@ test.describe('weather levels', () => {
     test('the chip still shows, the weather still works', async ({ page }) => {
       await page.goto(link(59.91));
       await expect(page.locator('.current__temp')).toBeVisible();
-      await expectLevel(page, 'Your level: Breeze, 0 of 30 points', '🌬️');
+      await expectLevel(page, 'Your level: Dewdrop, 0 of 10 points', '💧');
     });
   });
 
   test.describe('in Finnish', () => {
     test.use({ locale: 'fi-FI' });
 
-    test('Tuulahdus', async ({ page }) => {
+    test('Kastepisara', async ({ page }) => {
       await openApp(page);
-      await expectLevel(page, 'Tasosi: Tuulahdus, 1/30 pistettä', '🌬️');
+      await expectLevel(page, 'Tasosi: Kastepisara, 1/10 pistettä', '💧');
       await chip(page).click();
       await expect(page.getByRole('dialog', { name: 'Sääseikkailusi' })).toContainText('Säämerkit');
     });

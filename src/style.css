@@ -2398,6 +2398,28 @@ body:has(.quiz[open]) {
   opacity: 0.45;
 }
 
+/* First steps: ✓ done, ○ still to try. */
+.journey__tasks {
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.journey__task {
+  padding: 2px 0;
+}
+
+.journey__task-mark {
+  display: inline-block;
+  width: 1.2em;
+  color: var(--color-text-muted);
+}
+
+.journey__task.is-done .journey__task-mark {
+  color: var(--color-accent);
+  font-weight: 700;
+}
+
 .journey__not-yet {
   color: var(--color-text-muted);
 }
@@ -2417,6 +2439,8 @@ body:has(.quiz[open]) {
   color: var(--color-text);
   box-shadow: var(--shadow-panel);
   font-weight: 600;
+  /* It never gets in the way of a tap. */
+  pointer-events: none;
 }
 
 .journey-toast:empty {

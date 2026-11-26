@@ -27,7 +27,7 @@ import { loadStartPlace } from './start-place';
 import { setUpStartPlaceButton } from './start-place-button';
 import { fetchAirQuality } from './weather/air-quality';
 import { fetchWarnings, inFinland } from './warnings/warnings';
-import { fetchForecast, WeatherError } from './weather/api';
+import { fetchForecast, WeatherError, type Forecast } from './weather/api';
 import { fetchMarine } from './weather/marine';
 import { formatCoordinates } from './format';
 
@@ -75,7 +75,9 @@ document.querySelector<HTMLButtonElement>('#settings-button')!.addEventListener(
 // Weather levels (journey/): the chip, a point for each day of use, and
 // shares, the daily quiz and northern lights (announced by those parts with
 // window events, so they needn't import the levels' code).
-setUpLevelChip(document.querySelector<HTMLButtonElement>('#level-button')!);
+setUpLevelChip(document.querySelector<HTMLButtonElement>('#level-button')!, () =>
+  shownWeather && shownWeather.point === currentPoint ? shownWeather : undefined,
+);
 noteJourney({ kind: 'day' });
 window.addEventListener('weatherpin:shared', () => noteJourney({ kind: 'share' }));
 window.addEventListener('weatherpin:aurora', () => noteJourney({ kind: 'aurora' }));
@@ -253,6 +255,8 @@ const RANDOM_PLACE_ZOOM = 6;
 // The temperature quiz (quiz/, loaded on demand): from its button or a
 // link to #quiz (what a shared result points to).
 let quizOpen = false;
+// The place shown and its weather (for the level picture, journey/).
+let shownWeather: { point: PickedPoint; forecast: Forecast } | undefined;
 function openQuiz() {
   closePanel();
   quizOpen = true;
@@ -374,6 +378,7 @@ async function loadWeather(
     else panel.showForecast(point, forecast);
     shownAt = forecast.fetchedAt;
     postcardButton.showFor(point, forecast);
+    shownWeather = { point, forecast };
     quipButtons.showFor(point, forecast);
     pastWeatherButton.showFor(point, forecast);
     shownOffline = forecast.offline === true;

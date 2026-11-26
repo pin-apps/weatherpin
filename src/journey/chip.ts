@@ -3,6 +3,8 @@
 // start-up code; the points are worked out in award.ts and the card and
 // texts load on demand. Everything stays on the device.
 
+import type { PickedPoint } from '../map';
+import type { Forecast } from '../weather/api';
 import { LEVELS, levelIndex, savedTotals, type JourneyEvent } from './levels';
 
 export type { JourneyEvent };
@@ -24,7 +26,10 @@ export function noteJourney(event: JourneyEvent): void {
     .catch(() => undefined);
 }
 
-export function setUpLevelChip(button: HTMLButtonElement): void {
+/** The place shown now and its weather, for the level picture. */
+export type ShownWeather = () => { point: PickedPoint; forecast: Forecast } | undefined;
+
+export function setUpLevelChip(button: HTMLButtonElement, shownWeather: ShownWeather): void {
   const emoji = button.querySelector<HTMLElement>('.level-chip__emoji')!;
   refresh = () => {
     const totals = savedTotals();
@@ -52,7 +57,7 @@ export function setUpLevelChip(button: HTMLButtonElement): void {
   };
   button.addEventListener('click', () => {
     void import('./card').then(
-      ({ openJourney }) => openJourney(),
+      ({ openJourney }) => openJourney(shownWeather),
       () => undefined,
     );
   });

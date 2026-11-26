@@ -248,7 +248,11 @@ Never run `wrangler deploy` by hand; CI deploys `main` (see README).
   continent 25 (by time zone), a badge 15: −30°, +40°, thunder, polar
   night, midnight sun, northern lights, below sea level, above 3,000 m;
   never goes down; back after 30+ days: "resting" toast, streak from 1),
-  `card.ts` ("Your weather journey" dialog and the level-up toast),
+  `card.ts` ("Your weather journey" dialog and the level-up toast; "📸
+  Share my level": a 1080×1080 picture, `drawLevelCard` in `postcard.ts`,
+  with the level's emblem and ring, points, badges, what's explored and
+  the weather of the place shown now and the next 3 days; share sheet or
+  download via `share-picture.ts`, which counts as a share),
   `texts.ts` (its texts side by side, out of the start-up language files).
   Shares, the daily quiz and the aurora row announce themselves with
   window events (`weatherpin:shared`, `weatherpin:quiz`,

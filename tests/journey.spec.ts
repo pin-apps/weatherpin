@@ -3,7 +3,8 @@
 // and weather badges, the level-up toast, "Your weather journey", never
 // going down. Every fake forecast is in Europe/Oslo at 4.6 °C, 23 m up.
 
-import type { Page } from '@playwright/test';
+import { readFileSync } from 'node:fs';
+import type { Page, TestInfo } from '@playwright/test';
 import { forecastFixture } from './fixtures/forecast';
 import { expect, openApp, test } from './helpers';
 
@@ -31,6 +32,20 @@ async function savedJourney(page: Page, journey: Record<string, unknown>) {
       localStorage.setItem('nordic-weather:journey', JSON.stringify(saved));
     }
   }, journey);
+}
+
+/** Makes the level picture (downloaded), attaches it, returns its size. */
+async function levelPicture(page: Page, testInfo: TestInfo, name: string) {
+  const download = page.waitForEvent('download');
+  await card(page).getByRole('button', { name: '📸 Share my level' }).click();
+  const file = await download;
+  expect(file.suggestedFilename()).toBe('weatherpin-level.png');
+  const path = testInfo.outputPath(file.suggestedFilename());
+  await file.saveAs(path);
+  const png = readFileSync(path);
+  await testInfo.attach(name, { body: png, contentType: 'image/png' });
+  expect(png.subarray(1, 4).toString()).toBe('PNG');
+  return [png.readUInt32BE(16), png.readUInt32BE(20)];
 }
 
 test.describe('weather levels', () => {
@@ -172,6 +187,25 @@ test.describe('weather levels', () => {
     expect(box.x + box.width).toBeLessThanOrEqual(settings.x);
     // The search box stays usable on the narrowest phones.
     expect((await page.locator('.search__input').boundingBox())!.width).toBeGreaterThanOrEqual(180);
+  });
+
+  test('brag: the level as a picture, with the weather shown', async ({ page }, testInfo) => {
+    await page.goto(link(59.91));
+    await expect(page.locator('.current__temp')).toBeVisible();
+    await expectLevel(page, 'Your level: Breeze, 28 of 30 points', '🌬️');
+    await openCard(page);
+    expect(await levelPicture(page, testInfo, 'level picture, with the weather')).toEqual([
+      1080, 1080,
+    ]);
+    await expect(card(page).locator('.journey__status')).toHaveText('Picture saved');
+    // Sharing counts too: 28 + 3, up to Cloud.
+    await expectLevel(page, 'Your level: Cloud, 31 of 150 points', '☁️');
+  });
+
+  test('the level picture with no place shown', async ({ page }, testInfo) => {
+    await openApp(page);
+    await openCard(page);
+    expect(await levelPicture(page, testInfo, 'level picture, no place')).toEqual([1080, 1080]);
   });
 
   test.describe('when the browser blocks storage', () => {

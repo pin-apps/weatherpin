@@ -130,7 +130,10 @@ test.describe('weather levels', () => {
     await expect(card(page).locator('.journey__level')).toHaveText('⛈️ Storm');
     await expect(card(page)).toContainText('413 points');
     await expect(card(page)).toContainText('Next: 🌌 Aurora at 600 points');
-    await expect(card(page).locator('progress')).toHaveAttribute('value', '263');
+    // Saved before days of use counted: Storm stays, the days start now.
+    await expect(card(page)).toContainText('and 30 days of use (1/30)');
+    await expect(card(page)).toContainText('📅 1 day of use');
+    await expect(card(page).locator('progress')).toHaveAttribute('value', '0');
     // Yesterday and today: 4 days in a row.
     await expect(card(page)).toContainText('🔥 4 days in a row');
     await expect(card(page)).toContainText('0 areas · 2 countries · 1 continents');
@@ -174,8 +177,67 @@ test.describe('weather levels', () => {
     await expectLevel(page, 'Your level: Aurora, 2500 points', '🌌');
     await openCard(page);
     await expect(card(page)).toContainText(
-      'Next: 💎 Diamond dust at 2000 points and 5 weather badges (2/5)',
+      'Next: 💎 Diamond dust at 2000 points and 100 days of use (0/100) and 5 weather badges (2/5)',
     );
+  });
+
+  test('points alone are not enough: Storm needs 7 days of use', async ({ page }) => {
+    await savedJourney(page, {
+      version: 2,
+      points: 500,
+      daysUsed: 3,
+      reached: 1,
+      badges: [],
+      day: '2026-11-14',
+      streak: 3,
+      areas: [],
+      areasToday: 0,
+      countries: [],
+      countriesToday: 0,
+      continents: [],
+    });
+    await openApp(page);
+    // Today makes 4 days: still Cloud, however many points.
+    await expectLevel(page, 'Your level: Cloud, 501 points', '☁️');
+    await openCard(page);
+    await expect(card(page)).toContainText('Next: ⛈️ Storm at 150 points and 7 days of use (4/7)');
+  });
+
+  test('only 3 new countries count in a day', async ({ page }) => {
+    await openApp(page);
+    // Oslo NO, Oslo US, Oslob PH, Oslon FR.
+    for (const index of [0, 1, 2, 3]) {
+      await page.locator('#search-input').fill('Oslo');
+      await page.getByRole('option').nth(index).click();
+      await expect(page.locator('.current__temp')).toBeVisible();
+    }
+    await expect
+      .poll(async () => {
+        await openCard(page);
+        const text = (await card(page).locator('.journey__explored').textContent()) ?? '';
+        await card(page).getByRole('button', { name: 'Close' }).click();
+        return text;
+      })
+      .toContain('3 countries');
+  });
+
+  test('easter eggs are secret badges: the sauna', async ({ page }) => {
+    await openApp(page);
+    await openCard(page);
+    await expect(card(page)).toContainText('🔒 3 secret badges still to find');
+    await expect(card(page)).not.toContainText('Löyly master');
+    await card(page).getByRole('button', { name: 'Close' }).click();
+
+    await page.locator('#search-input').fill('sauna');
+    await page.getByRole('option', { name: /Saunalahti/ }).click();
+    await expect(page.getByRole('region', { name: 'Sauna', exact: true })).toBeVisible();
+    // 1 + 2 + 25 (Europe) + 15: Cloud too.
+    await expect(toast(page)).toHaveText(
+      'Secret badge found: 🧖 Löyly master! New level: ☁️ Cloud!',
+    );
+    await openCard(page);
+    await expect(card(page).locator('.journey__badge.is-earned')).toHaveText(['🧖 Löyly master']);
+    await expect(card(page)).toContainText('🔒 2 secret badges still to find');
   });
 
   test('a big enough button next to Settings', { tag: '@layout' }, async ({ page }) => {

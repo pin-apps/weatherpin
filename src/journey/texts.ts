@@ -53,6 +53,42 @@ const TEXTS = {
     sv: 'och {count} vädermärken ({have}/{count})',
     nb: 'og {count} værmerker ({have}/{count})',
   },
+  needDays: {
+    en: 'and {days} days of use ({have}/{days})',
+    fi: 'ja {days} käyttöpäivää ({have}/{days})',
+    sv: 'och {days} dagar med appen ({have}/{days})',
+    nb: 'og {days} dager med appen ({have}/{days})',
+  },
+  daysUsed: {
+    en: '📅 {days} days of use',
+    fi: '📅 {days} käyttöpäivää',
+    sv: '📅 {days} dagar med appen',
+    nb: '📅 {days} dager med appen',
+  },
+  daysUsedOne: {
+    en: '📅 1 day of use',
+    fi: '📅 1 käyttöpäivä',
+    sv: '📅 1 dag med appen',
+    nb: '📅 1 dag med appen',
+  },
+  secretsLeft: {
+    en: '🔒 {count} secret badges still to find',
+    fi: '🔒 {count} salaista merkkiä vielä löytämättä',
+    sv: '🔒 {count} hemliga märken kvar att hitta',
+    nb: '🔒 {count} hemmelige merker igjen å finne',
+  },
+  secretsLeftOne: {
+    en: '🔒 1 secret badge still to find',
+    fi: '🔒 1 salainen merkki vielä löytämättä',
+    sv: '🔒 1 hemligt märke kvar att hitta',
+    nb: '🔒 1 hemmelig merke igjen å finne',
+  },
+  secretFound: {
+    en: 'Secret badge found: {badge}!',
+    fi: 'Salainen merkki löytyi: {badge}!',
+    sv: 'Hemligt märke hittat: {badge}!',
+    nb: 'Hemmelig merke funnet: {badge}!',
+  },
   top: {
     en: 'The top level. Well done!',
     fi: 'Korkein taso. Hienoa!',
@@ -90,10 +126,10 @@ const TEXTS = {
     nb: 'ikke ennå',
   },
   how: {
-    en: 'Points: a day of use 1 · the daily quiz 2 · a share 3 (once a day) · a new area 2 (5 a day) · a new country 10 · a new continent 25 · a weather badge 15.',
-    fi: 'Pisteet: käyttöpäivä 1 · päivän visa 2 · jakaminen 3 (kerran päivässä) · uusi alue 2 (5 päivässä) · uusi maa 10 · uusi maanosa 25 · säämerkki 15.',
-    sv: 'Poäng: en dag med appen 1 · dagens quiz 2 · en delning 3 (en gång om dagen) · ett nytt område 2 (5 om dagen) · ett nytt land 10 · en ny världsdel 25 · ett vädermärke 15.',
-    nb: 'Poeng: en dag med appen 1 · dagens quiz 2 · en deling 3 (én gang om dagen) · et nytt område 2 (5 om dagen) · et nytt land 10 · en ny verdensdel 25 · et værmerke 15.',
+    en: 'Points: a day of use 1 · the daily quiz 2 · a share 3 (once a day) · a new area 2 (5 a day) · a new country 10 (3 a day) · a new continent 25 · a weather badge 15. Storm also needs 7 days of use, Aurora 30, Diamond dust 100 and 5 badges.',
+    fi: 'Pisteet: käyttöpäivä 1 · päivän visa 2 · jakaminen 3 (kerran päivässä) · uusi alue 2 (5 päivässä) · uusi maa 10 (3 päivässä) · uusi maanosa 25 · säämerkki 15. Myrsky vaatii lisäksi 7 käyttöpäivää, Revontuli 30, Timanttipöly 100 ja 5 merkkiä.',
+    sv: 'Poäng: en dag med appen 1 · dagens quiz 2 · en delning 3 (en gång om dagen) · ett nytt område 2 (5 om dagen) · ett nytt land 10 (3 om dagen) · en ny världsdel 25 · ett vädermärke 15. Storm kräver också 7 dagar med appen, Norrsken 30, Diamantstoft 100 och 5 märken.',
+    nb: 'Poeng: en dag med appen 1 · dagens quiz 2 · en deling 3 (én gang om dagen) · et nytt område 2 (5 om dagen) · et nytt land 10 (3 om dagen) · en ny verdensdel 25 · et værmerke 15. Storm krever også 7 dager med appen, Nordlys 30, Diamantstøv 100 og 5 merker.',
   },
   device: {
     en: 'Saved only on this device. Clearing saved data starts it again.',
@@ -151,6 +187,15 @@ const TEXTS = {
     nb: 'Under havnivå',
   },
   high: { en: 'Above 3,000 m', fi: 'Yli 3 000 m', sv: 'Över 3 000 m', nb: 'Over 3 000 m' },
+  // Secret badges: the easter eggs. Named only once found.
+  sauna: { en: 'Löyly master', fi: 'Löylymestari', sv: 'Bastumästare', nb: 'Badstuemester' },
+  santa: {
+    en: "Santa's helper",
+    fi: 'Joulupukin apuri',
+    sv: 'Tomtens hjälpare',
+    nb: 'Julenissens hjelper',
+  },
+  record: { en: 'Record hunter', fi: 'Ennätysmetsästäjä', sv: 'Rekordjägare', nb: 'Rekordjeger' },
 } satisfies Record<string, Texts>;
 
 export type TextName = keyof typeof TEXTS;

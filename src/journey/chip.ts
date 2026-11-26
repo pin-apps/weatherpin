@@ -5,7 +5,7 @@
 
 import type { PickedPoint } from '../map';
 import type { Forecast } from '../weather/api';
-import { LEVELS, levelIndex, savedTotals, type JourneyEvent } from './levels';
+import { LEVELS, levelIndex, progressToNext, savedTotals, type JourneyEvent } from './levels';
 
 export type { JourneyEvent };
 
@@ -17,7 +17,7 @@ export function noteJourney(event: JourneyEvent): void {
     .then(({ award }) => {
       const news = award(event);
       refresh();
-      if (news)
+      if (news.length > 0)
         void import('./card').then(
           ({ toast }) => toast(news),
           () => undefined,
@@ -37,9 +37,9 @@ export function setUpLevelChip(button: HTMLButtonElement, shownWeather: ShownWea
     const level = LEVELS[index];
     const next = LEVELS[index + 1] as (typeof LEVELS)[number] | undefined;
     emoji.textContent = level.emoji;
-    const progress = next ? (totals.points - level.points) / (next.points - level.points) : 1;
+    const progress = progressToNext(totals);
     // Through the style property, which the CSP allows (unlike style="").
-    button.style.setProperty('--level-progress', String(Math.max(0, Math.min(1, progress))));
+    button.style.setProperty('--level-progress', String(progress));
     // The level's name in words for screen readers, once the texts are in.
     // (Offline before it loaded: the plain "Your level" label stays.)
     void import('./texts')

@@ -317,7 +317,11 @@ Never run `wrangler deploy` by hand; CI deploys `main` (see README).
   day length, "Until/Since midwinter", golden hour (sun 6° to −4°) and
   blue hour (−4° to −6°) still ahead today, stargazing (≥ 2 h dark below
   −12° with ≤ 25 % cloud in the next 18 h), northern/southern lights now,
-  the moon, your shadow (1/tan of the sun's height). Rows only when they
+  the moon, fishing times (solunar periods, `src/weather/solunar.ts`:
+  ~2 h around the moon's highest and lowest point ★, ~1 h at moonrise and
+  moonset, the next four; near a full/new moon or falling pressure "said to
+  be" good; worded as tradition; texts in `src/render/fishing-texts.ts`,
+  out of the start-up language files), your shadow (1/tan of the sun's height). Rows only when they
   say something
 - `src/weather/beer.ts` — "Beer outside" in More details (after
   Pressure), just for fun: how long a 0.5 l lager poured at 4 °C takes to

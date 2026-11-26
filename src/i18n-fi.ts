@@ -571,6 +571,8 @@ export const FINNISH: Record<string, string> = {
   'Temperature quiz': 'Lämpötilavisa',
   'html:sources-elevation':
     '<strong>Korkeus merenpinnasta:</strong> Copernicus DEM -korkeusmallista (90 metrin ruudukko) Open-Meteon kautta; jyrkässä maastossa se voi heittää kymmeniä metrejä.',
+  'html:sources-fishing':
+    '<strong>Kalojen syöntiajat:</strong> lasketaan sovelluksessa kuun asemasta (solunaariajat, kuten kalastuskalentereissa): vanha perinne, ei ennuste kalojen syönnistä.',
   'html:sources-ev':
     '<strong>Sähköauton toimintamatka kylmällä:</strong> tyypilliset luvut julkaistuista talvitesteistä ja ajoneuvodatasta (Norjan autoliiton NAF:n El Prix -talvitestit, AAA, Geotab) nykyisen lämpötilan mukaan; ei mikään tietty auto.',
 };

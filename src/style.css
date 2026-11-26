@@ -993,13 +993,15 @@ body:has(.quiz[open]) {
 
 .details dd.edm__inputs,
 .details dd.ev__detail,
+.details dd.fishing__detail,
 .details dd.estimate-note {
   grid-column: 1 / -1;
   text-align: left;
 }
 
 .edm__inputs,
-.ev__detail {
+.ev__detail,
+.fishing__detail {
   color: var(--color-text-muted);
 }
 

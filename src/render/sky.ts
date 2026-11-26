@@ -21,6 +21,9 @@ import { beerOutside } from '../weather/beer';
 import { rangeLoss } from '../weather/ev';
 import { currentHourIndex, type Forecast } from '../weather/api';
 import { moonPhase } from '../weather/moon';
+import { pressureTrend } from '../weather/pressure';
+import { fishingPeriods } from '../weather/solunar';
+import { fishingText } from './fishing-texts';
 import {
   dayLengthHours,
   highestElevation,
@@ -74,6 +77,10 @@ export function fillSky(list: HTMLElement, forecast: Forecast, point: PickedPoin
     ...shadowRow(point, now),
   ];
   list.replaceChildren(...rows.map(([label, value]) => detailsRow(label, value)));
+  // After the moon, which it comes from.
+  const fishing = fishingRow(forecast, point, now);
+  const moonRow = list.querySelector('.moon')?.closest('.details__row');
+  if (fishing) list.insertBefore(fishing, moonRow?.nextSibling ?? null);
   void addAurora(list, forecast, point, now);
 }
 
@@ -243,6 +250,40 @@ function renderMoon(latitude: number): HTMLElement {
     ` ${moon.name} · ${t('{percent} lit', { percent: formatPercent(moon.litPercent) })}`,
   );
   return value;
+}
+
+/** How many of the next fishing periods to list (about a day's worth). */
+const FISHING_PERIODS = 4;
+
+/**
+ * "Fishing times 16:05–18:05 ★", then "Then 20:01–21:01 · 03:42–05:42 ★ …",
+ * what the periods are, and the day's signs (near a full or new moon,
+ * falling pressure): the fishing calendar's way, worded as tradition.
+ */
+function fishingRow(forecast: Forecast, point: PickedPoint, now: number): HTMLElement | null {
+  const periods = fishingPeriods(point.lat, point.lng, now, now + DAY_MS).slice(0, FISHING_PERIODS);
+  if (periods.length === 0) return null;
+  const span = (period: (typeof periods)[number]) =>
+    `${clockAt(period.start, forecast)}–${clockAt(period.end, forecast)}${period.main ? ' ★' : ''}`;
+  const [first, ...later] = periods;
+
+  const notes: string[] = [];
+  if (later.length > 0) notes.push(fishingText('then', { times: later.map(span).join(' · ') }));
+  notes.push(fishingText('legend'));
+  const lit = moonPhase(now, point.lat).litPercent;
+  if (lit >= 90) notes.push(fishingText('fullMoon'));
+  else if (lit <= 10) notes.push(fishingText('newMoon'));
+  if (pressureTrend(forecast) === 'falling') {
+    notes.push(fishingText('falling'));
+  }
+
+  const row = el('div', 'details__row details__row--estimate fishing');
+  row.append(
+    el('dt', undefined, fishingText('label')),
+    el('dd', 'fishing__next', span(first)),
+    el('dd', 'fishing__detail', notes.join(' ')),
+  );
+  return row;
 }
 
 /** "10× your height": 1 / tan(the sun's height). Nothing at night. */

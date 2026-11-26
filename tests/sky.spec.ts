@@ -76,6 +76,7 @@ test.describe('sky', () => {
       'Blue hour',
       'Stargazing',
       'Moon',
+      'Fishing times',
       'Your shadow',
     ]);
     await expect(row(page, 'Until midwinter')).toHaveText('1 h 40 min less daylight by 21 Dec');
@@ -200,6 +201,44 @@ test.describe('sky', () => {
           .locator('dd');
         await expect(finnish).toHaveText('Todennäköisyys nyt 35 % · NOAA');
         await expect(page.locator('.sky .fold__title')).toHaveText('Taivas');
+      });
+    });
+  });
+
+  // Solunar periods from src/weather/solunar.ts for Oslo from 14:05: the
+  // moon sets 13:51 (a short period still on), is lowest at 05:28 tomorrow
+  // and highest at 17:05. The fake pressure falls 1.8 hPa in 3 hours.
+  test.describe('fishing times', () => {
+    const fishing = (page: Page) => row(page, 'Fishing times');
+
+    test('the next period, the rest of the day, what they mean', async ({ page }) => {
+      await openPlace(page, OSLO);
+      await expect(fishing(page).first()).toHaveText('13:21–14:21');
+      const detail = sky(page).locator('.fishing__detail');
+      await expect(detail).toContainText('Then 16:05–18:05 ★ · 20:01–21:01 · 04:28–06:28 ★.');
+      await expect(detail).toContainText('★ main period (the moon highest or lowest)');
+      await expect(detail).toContainText('an old fishing tradition.');
+      await expect(detail).toContainText('Falling pressure: said to get fish biting.');
+      // A young moon: no "best days".
+      await expect(detail).not.toContainText('best days');
+    });
+
+    test('near the full moon: "the best days"', async ({ page }) => {
+      await page.clock.setSystemTime(new Date('2026-11-24T13:05:00Z'));
+      await openPlace(page, OSLO);
+      await expect(sky(page).locator('.fishing__detail')).toContainText(
+        'Near the full moon: said to be the best days.',
+      );
+    });
+
+    test.describe('in Finnish', () => {
+      test.use({ locale: 'fi-FI' });
+
+      test('Kalojen syöntiajat', async ({ page }) => {
+        await page.goto(OSLO);
+        await expect(page.locator('.current__temp')).toBeVisible();
+        await expect(row(page, 'Kalojen syöntiajat').first()).toHaveText('13:21–14:21');
+        await expect(sky(page).locator('.fishing__detail')).toContainText('vanha kalastusperinne.');
       });
     });
   });

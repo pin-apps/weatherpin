@@ -107,7 +107,7 @@ test.describe('weather levels', () => {
 
   test('a share counts once a day', async ({ page }) => {
     await openApp(page);
-    await expectLevel(page, 'Your level: Breeze, 1 of 30 points', '🌬️');
+    await expectLevel(page, 'Your level: Dewdrop, 1 of 10 points', '💧');
     await page.evaluate(() => window.dispatchEvent(new Event('weatherpin:shared')));
     await expectLevel(page, 'Your level: Dewdrop, 9 of 10 points', '💧');
     await page.evaluate(() => window.dispatchEvent(new Event('weatherpin:shared')));

@@ -298,7 +298,8 @@ Never run `wrangler deploy` by hand; CI deploys `main` (see README).
   `expand()` for the ⋯ menu)
 - `src/render/` — builds the panel content, in order of how often people
   need it: `current.ts` (big temperature, "Rain starting around 14:45",
-  "Updated 14:05" + at a glance: wind, rain, UV, AQI badge), `hourly.ts`
+  "Updated 14:05" + at a glance: wind, rain, snow on the ground from 1 cm
+  ("about 23 cm", the model's `snow_depth`), UV, AQI badge), `hourly.ts`
   (graph + hour strip with wind arrows), `daily.ts` (each day opens
   its own graph and hours), `air-quality.ts` (full section), then "Sky"
   (`sky.ts`, below), then "More details" (humidity, pressure, the
@@ -538,6 +539,8 @@ Never run `wrangler deploy` by hand; CI deploys `main` (see README).
   places ask nobody, no name keeps the coordinates
 - `tests/sauna.spec.ts` — the sauna easter egg: search, report, sea, °F,
   stays a secret, Finnish
+- `tests/snow-depth.spec.ts` — snow on the ground: cm, none under 1 cm,
+  inches, Finnish
 - `tests/sea.spec.ts` — the Sea section at sea, none inland or on failure,
   units
 - `tests/nowcast.spec.ts` — rain starting/stopping, snow, a few drops,

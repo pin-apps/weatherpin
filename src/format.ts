@@ -110,6 +110,19 @@ export function formatElevation(metres: number): string {
   return `${number.format(value)} ${feet ? 'ft' : 'm'}`;
 }
 
+/**
+ * Snow on the ground from Open-Meteo's metres: "23 cm", or inches for those
+ * who use inches ("9.1 in", whole from 10 in).
+ */
+export function formatSnowDepth(metres: number): string {
+  const cm = metres * 100;
+  if (currentUnits().precipitation === 'inch') {
+    const inches = cm / 2.54;
+    return inches >= 10 ? `${roundWhole(inches)} in` : `${fixed(inches, 1)} in`;
+  }
+  return `${roundWhole(cm)} cm`;
+}
+
 /** Snow depth from Open-Meteo's cm: "2.1 cm", or "0.8 in" with °F. */
 export function formatSnow(cm: number): string {
   if (currentUnits().precipitation === 'inch') return `${fixed(cm / 2.54, 1)} in`;

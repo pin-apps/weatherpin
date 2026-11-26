@@ -325,6 +325,8 @@ export const FINNISH: Record<string, string> = {
   'Local time': 'Paikallinen aika',
   Coordinates: 'Koordinaatit',
   Elevation: 'Korkeus merenpinnasta',
+  'Snow on the ground': 'Lunta maassa',
+  'about {depth}': 'noin {depth}',
 
   // Warnings
   'Weather warnings': 'Säävaroitukset',

@@ -19,6 +19,8 @@ const CURRENT_VARIABLES = [
   // Snow in cm: precipitation counts it as melted water, which hides that
   // 3 mm of precipitation can be 3 cm of snow.
   'snowfall',
+  // Snow already on the ground, in metres (a model value, not measured).
+  'snow_depth',
   'is_day',
   // Sea-level pressure: what forecasts and barometers quote. (Surface
   // pressure drops with altitude, so mountain towns would always look stormy.)
@@ -79,6 +81,8 @@ export interface CurrentWeather {
   wind_gusts_10m?: number | null;
   /** Snow in the last hour, in cm. */
   snowfall?: number | null;
+  /** Snow on the ground, in metres (model); missing in older saved copies. */
+  snow_depth?: number | null;
   /** Direction the wind blows from, in degrees (0 = north). */
   wind_direction_10m: number;
   /** 1 during daylight, 0 at night. */

@@ -63,6 +63,7 @@ export function forecastFixture(kind: ForecastKind = 'normal') {
       wind_gusts_10m: polar ? 14.0 : 11.2,
       // Snow falling only in the polar fixture (cm in the last hour).
       snowfall: polar ? 0.4 : 0,
+      snow_depth: 0,
       is_day: polar ? 0 : 1,
       // 1.8 hPa below 3 hours earlier (hourly[11]): "falling".
       pressure_msl: 1003.6,

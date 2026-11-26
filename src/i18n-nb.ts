@@ -323,6 +323,8 @@ export const NORWEGIAN: Record<string, string> = {
   'Local time': 'Lokal tid',
   Coordinates: 'Koordinater',
   Elevation: 'Høyde over havet',
+  'Snow on the ground': 'Snø på bakken',
+  'about {depth}': 'omtrent {depth}',
 
   // Warnings
   'Weather warnings': 'Farevarsler',

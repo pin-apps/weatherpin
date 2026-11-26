@@ -55,6 +55,13 @@ test.describe('weather levels', () => {
     await expect(toast(page)).toHaveText(
       'Your weather level: 💧 Dewdrop. Tap it to see how to grow!',
     );
+    // The ring: 1 of Breeze's 10 points. No glow: that's for a new level.
+    await expect
+      .poll(() => chip(page).evaluate((b) => b.style.getPropertyValue('--level-progress')))
+      .toBe('0.1');
+    await expect(chip(page)).not.toHaveClass(/is-new-level/);
+    await openCard(page);
+    await expect(card(page).locator('.journey__points')).toHaveText('1 point');
   });
 
   test('a place: a new area and a new continent', async ({ page }) => {
@@ -72,6 +79,11 @@ test.describe('weather levels', () => {
     // 1 + 10 (Norway) + 5 (a first step) + 2 + 25 = 43.
     await expectLevel(page, 'Your level: Cloud, 43 of 50 points', '☁️');
     await expect(toast(page)).toHaveText('New level: ☁️ Cloud!');
+    await expect(chip(page)).toHaveClass(/is-new-level/);
+    // Cloud (30) to Shower (50): 13 of 20.
+    expect(await chip(page).evaluate((b) => b.style.getPropertyValue('--level-progress'))).toBe(
+      '0.65',
+    );
     await expect(toast(page)).toHaveAttribute('role', 'status');
   });
 
@@ -83,7 +95,7 @@ test.describe('weather levels', () => {
     // 1 + 25 + 5 × 2.
     await expectLevel(page, 'Your level: Cloud, 36 of 50 points', '☁️');
     await openCard(page);
-    await expect(card(page)).toContainText('Explored: 5 areas · 0 countries · 1 continents');
+    await expect(card(page)).toContainText('Explored: 5 areas · 0 countries · 1 continent');
   });
 
   test('a weather badge: −30° frost', async ({ page }) => {
@@ -138,7 +150,7 @@ test.describe('weather levels', () => {
     await expect(card(page).locator('progress')).toHaveAttribute('value', '0');
     // Yesterday and today: 4 days in a row.
     await expect(card(page)).toContainText('🔥 4 days in a row');
-    await expect(card(page)).toContainText('0 areas · 2 countries · 1 continents');
+    await expect(card(page)).toContainText('0 areas · 2 countries · 1 continent');
     await expect(card(page).locator('.journey__badge.is-earned')).toHaveText(['⛈️ Thunderstorm']);
     await card(page).getByRole('button', { name: 'Close' }).click();
     await expect(card(page)).toBeHidden();

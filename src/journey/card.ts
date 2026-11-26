@@ -11,7 +11,7 @@ import { statusLine } from '../status-line';
 import type { ShownWeather } from './chip';
 import { SECRETS, TASKS, savedJourney, type AwardNews, type Journey } from './award';
 import { LEVELS, levelIndex, progressToNext, type JourneyTotals, type Level } from './levels';
-import { journeyText, levelName, type TextName } from './texts';
+import { counted, exploredText, journeyText, levelName, type TextName } from './texts';
 
 const BADGES: [id: TextName, emoji: string][] = [
   ['frost', '🥶'],
@@ -125,7 +125,11 @@ function fill(body: HTMLElement) {
 
   const heading = el('p', 'journey__level');
   heading.append(iconEl(level.emoji, 'journey__emoji'), ` ${levelName(level.id)}`);
-  const points = el('p', 'journey__points', journeyText('points', { points: journey.points }));
+  const points = el(
+    'p',
+    'journey__points',
+    counted('points', 'pointsOne', journey.points, 'points'),
+  );
 
   const parts: HTMLElement[] = [heading, points];
   if (next) {
@@ -163,11 +167,7 @@ function fill(body: HTMLElement) {
     el(
       'p',
       'journey__explored',
-      journeyText('explored', {
-        areas: journey.areas.length,
-        countries: journey.countries.length,
-        continents: journey.continents.length,
-      }),
+      exploredText(journey.areas.length, journey.countries.length, journey.continents.length),
     ),
   );
 
@@ -230,16 +230,12 @@ async function shareLevel(say: (text: string) => void) {
       heading: journeyText('shareTitle'),
       emoji: level.emoji,
       level: levelName(level.id),
-      points: journeyText('points', { points: journey.points }),
+      points: counted('points', 'pointsOne', journey.points, 'points'),
       progress: progressToNext(journey),
       next: nextText(journey),
       lines: [
-        journeyText('badgeCount', { count: journey.badges.length }),
-        journeyText('explored', {
-          areas: journey.areas.length,
-          countries: journey.countries.length,
-          continents: journey.continents.length,
-        }),
+        counted('badgeCount', 'badgeCountOne', journey.badges.length),
+        exploredText(journey.areas.length, journey.countries.length, journey.continents.length),
       ],
       weather: shown && {
         place: shown.point.name ?? formatCoordinates(shown.point.lat, shown.point.lng),
@@ -285,7 +281,9 @@ export function toast(news: AwardNews[]): void {
   document.body.append(box);
   // Filled after it's in the page, so screen readers announce it.
   requestAnimationFrame(() => (box.textContent = text));
-  document.querySelector('.level-chip')?.classList.add('is-new-level');
+  // The chip lights up only for a new level.
+  const levelUp = news.includes('level-up');
+  if (levelUp) document.querySelector('.level-chip')?.classList.add('is-new-level');
   window.setTimeout(() => {
     box.remove();
     document.querySelector('.level-chip')?.classList.remove('is-new-level');

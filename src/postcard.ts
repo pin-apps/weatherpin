@@ -161,17 +161,13 @@ export function drawLevelCard(card: LevelCard): Promise<Blob> {
     ctx.beginPath();
     ctx.arc(cx, cy, radius, 0, Math.PI * 2);
     ctx.stroke();
-    ctx.strokeStyle = '#ffd34d';
-    ctx.lineCap = 'round';
-    ctx.beginPath();
-    ctx.arc(
-      cx,
-      cy,
-      radius,
-      -Math.PI / 2,
-      -Math.PI / 2 + Math.PI * 2 * Math.max(0.02, card.progress),
-    );
-    ctx.stroke();
+    // Square ends, so the arc is exactly the progress; none at 0.
+    if (card.progress > 0) {
+      ctx.strokeStyle = '#ffd34d';
+      ctx.beginPath();
+      ctx.arc(cx, cy, radius, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * card.progress);
+      ctx.stroke();
+    }
     ctx.restore();
     ctx.save();
     ctx.font = `150px ${FONT}`;

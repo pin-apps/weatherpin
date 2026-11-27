@@ -399,6 +399,27 @@ Never run `wrangler deploy` by hand; CI deploys `main` (see README).
   - a link to `#quiz`), `texts.ts` (its texts in all four languages, out
     of the start-up language files). main.ts passes the map and the place
     name lookup in (importing them would split start-up code)
+- `src/balloon/` — "🎈 Launch a balloon" in the ⋯ menu (loaded on demand;
+  main.ts passes the map and the place name lookup in): a balloon from the
+  place shown rides the forecast winds at a height (low 850 hPa ≈ 1.5 km,
+  middle 700 ≈ 3 km, high 500 ≈ 5.5 km) for up to 5 days, worked out at
+  once (`flight.ts`: hour by hour; brought down by thunder below, heavy
+  snow or rain, or torn by 60 m/s), then drawn on the map in ~15 s (at
+  once with reduced motion; Pause/tap the balloon, Skip to the end) with
+  the weather up there and below. `winds.ts`: one Open-Meteo request per
+  point (`hourly=wind_speed_500hPa,…`, UTC), a new one ~250 km on (45 at
+  most a flight), cached 10 min; the launch place's asks all three heights
+  (their winds now on the launch card). The card is a `<dialog id="balloon"
+class="quiz balloon">` (the quiz card's look and place). Result: distance
+  (km, or miles with °F or mph), time in the air, top speed, how it ended,
+  where it landed (Nominatim), best flight; "Share result" = text + a link
+  `#balloon=1.6017,2494.2026111513.500.red.120.landed.<path>.<name>`
+  (`link.ts`: launch place in centidegrees, UTC hour, height, colour,
+  hours, ending, a point every 3 h as base64url centidegree steps, the
+  optional name, 20 characters; distances always from that path; odd or
+  impossible links ignored). Opening one replays it (no winds asked) with
+  "Launch from … too". Saved: `nordic-weather:balloon` (name, colour, best
+  km; in About's privacy text). Texts side by side in `texts.ts`
 - `src/weather/solar.ts` — the sun's height for a place and moment (NOAA's
   simplified formulas), day length on a date, spans of sun heights
 - `src/weather/aurora.ts` — NOAA SWPC's OVATION aurora nowcast (30–90 min
@@ -553,6 +574,12 @@ Never run `wrangler deploy` by hand; CI deploys `main` (see README).
 - `tests/small-talk.spec.ts` — small talk: the lines that fit the test
   weather, tomorrow colder / the weekend / rain later, sharing, one card
   at a time, fits the panel, Finnish
+- `tests/balloon.spec.ts` — the balloon: the launch card (winds now per
+  height, name, colour), a flight (progress, weather up there and below,
+  pause, skip, result, request count, saved name/colour/best), a
+  thunderstorm, reduced motion, sharing and opening the link, broken
+  links ignored, a new place closes it, fits, Finnish (winds made up in
+  `tests/fixtures/balloon.ts`)
 - `tests/haiku.spec.ts` — the weather haiku: three lines from the right
   groups (rain in Oslo, polar night and snow, a clear southern spring
   night, heat near the equator with no season), a round, sharing, one card

@@ -91,6 +91,19 @@ test.describe('accessibility (WCAG 2.2 AA)', { tag: '@layout' }, () => {
     expect(await violations(page)).toEqual([]);
   });
 
+  test('the balloon: launch, and where it landed', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.goto('/#at=59.91,10.75&name=Oslo');
+    await expect(page.locator('.current__temp')).toBeVisible();
+    await placeAction(page, 'Launch a balloon');
+    const card = page.locator('#balloon');
+    await expect(card.getByRole('group', { name: 'Height' }).getByRole('button')).toHaveCount(3);
+    expect(await violations(page)).toEqual([]);
+    await card.getByRole('button', { name: 'Launch' }).click();
+    await expect(card.locator('.balloon__distance')).toBeVisible();
+    expect(await violations(page)).toEqual([]);
+  });
+
   test('the temperature quiz: start and a round', async ({ page }) => {
     await page.goto('/#quiz');
     const quiz = page.getByRole('dialog', { name: 'Temperature quiz' });

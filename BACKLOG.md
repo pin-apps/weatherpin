@@ -122,6 +122,15 @@ which the check used to skip): ask before adding to start-up.
   "Rain starting around"), from weather codes 95–99 in the next 12 hours;
   no new requests. Discussed 2026-11-22, left for later.
 
+- Balloon, step 2 (planned 2026-11-27): a share picture (like the
+  postcard, the path on a plain background), "Challenge a friend" race links
+  (`#race=1.lat,lng.hour`: same place and hour, pick a height; open 24 h,
+  Open-Meteo's `past_days=1` covers it), a race table and all opened
+  balloons on one map (kept on the device, last 30), a 🎈 badge for
+  3,000 km. Later maybe: a "✓ checked" mark (re-fly from Open-Meteo's
+  historical forecast API; one more CSP host) and a live mode (flies in
+  real time over the days, each phone working out where it is now).
+
 ## Maybe
 
 Built or thought through, then put aside. Revisit only with a clear reason.
@@ -157,6 +166,7 @@ Built or thought through, then put aside. Revisit only with a clear reason.
 
 Newest first, one line each; the details are in the PRs and git history.
 
+- 🎈 Launch a balloon: forecast winds at a height, flight on the map, weather up there, a share link
 - 🍃 Weather haiku in the ⋯ menu (90 lines in four languages, Finnish syllables checked)
 - Colour skins (Classic, Nordic night, Sauna, Retro, High contrast; light and dark); "More units" folded in Settings
 - Weather levels: 10 levels, first steps, badges and secret badges, a chip next to Settings, a picture to share

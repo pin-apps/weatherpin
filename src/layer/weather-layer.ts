@@ -299,16 +299,18 @@ function badge(city: City, reading: Reading, open: () => void): L.Marker {
   );
   const temperatureClass = degrees < 0 ? 'cold' : degrees > 0 ? 'warm' : 'zero';
   const element = el('span', 'weather-badge__box');
-  element.append(
-    el('span', 'weather-badge__icon', icon),
-    el('span', `weather-badge__temp weather-badge__temp--${temperatureClass}`, `${degrees}°`),
-    el('span', 'weather-badge__name', city.name),
-  );
   const label = w('label', {
     place: city.name,
     weather: description,
     temperature: formatTemperature(reading.temperature),
   });
+  // Named by what it shows, with the full words for screen readers.
+  element.append(
+    el('span', 'weather-badge__icon', icon),
+    el('span', `weather-badge__temp weather-badge__temp--${temperatureClass}`, `${degrees}°`),
+    el('span', 'weather-badge__name', city.name),
+    el('span', 'visually-hidden', ` (${label})`),
+  );
   const marker = L.marker([city.lat, city.lng], {
     icon: L.divIcon({
       className: 'weather-badge',
@@ -317,9 +319,7 @@ function badge(city: City, reading: Reading, open: () => void): L.Marker {
       iconAnchor: [38, 18],
     }),
     keyboard: true,
-    title: label,
   });
-  marker.on('add', () => marker.getElement()?.setAttribute('aria-label', label));
   marker.on('click', open);
   return marker;
 }

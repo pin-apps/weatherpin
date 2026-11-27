@@ -439,11 +439,10 @@ body:has(.quiz[open]) {
   color: var(--color-surface);
 }
 
-/* Weather symbols button (layer/): the same round button, above the
-   radar button. On: filled with the accent colour. */
+/* Weather symbols button (layer/): the same round button, left of the
+   radar button (above it on phones). On: filled with the accent colour. */
 .layer-button {
-  right: calc(var(--covered-right) + 72px);
-  bottom: calc(var(--covered-bottom) + 96px);
+  right: calc(var(--covered-right) + 132px);
 }
 
 .layer-button[aria-pressed='true'],
@@ -1597,6 +1596,7 @@ body:has(.quiz[open]) {
   }
 
   .layer-button {
+    right: calc(var(--covered-right) + 72px);
     bottom: calc(var(--covered-bottom) + 104px);
   }
 

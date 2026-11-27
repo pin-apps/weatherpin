@@ -2715,11 +2715,6 @@ body:has(.quiz[open]) {
   background: var(--balloon-colour);
 }
 
-.balloon__launch {
-  width: 100%;
-  margin-top: 8px;
-}
-
 .balloon__note,
 .balloon__up,
 .balloon__below {

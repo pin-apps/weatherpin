@@ -144,7 +144,7 @@ function showLaunch(place: PickedPoint) {
   colours.append(...colourButtons);
   pressOnly(colourButtons, colourButtons[COLOURS.indexOf(colour)]);
 
-  const launchButton = el('button', 'button quiz__primary balloon__launch', b('launch'));
+  const launchButton = el('button', 'button quiz__primary', b('launch'));
   launchButton.type = 'button';
   launchButton.disabled = true;
 
@@ -159,7 +159,7 @@ function showLaunch(place: PickedPoint) {
       nameInput,
       colourLabel,
       colours,
-      launchButton,
+      actionRow(launchButton),
       el('p', 'balloon__note', b('game')),
     ],
     launchButton,
@@ -292,8 +292,7 @@ function play(
   pauseButton.type = 'button';
   const skipButton = el('button', 'button balloon__skip', b('skip'));
   skipButton.type = 'button';
-  const actions = el('div', 'quiz__actions balloon__actions');
-  actions.append(pauseButton, skipButton);
+  const actions = actionRow(pauseButton, skipButton);
   setTitle(shared.name || b('yourBalloon'));
   setBody([progress, upThere, below, actions], pauseButton);
 
@@ -388,8 +387,7 @@ function showResult(shared: SharedFlight, place: PickedPoint, topSpeed: number) 
   shareButton.type = 'button';
   const againButton = el('button', 'button', b('flyAgain'));
   againButton.type = 'button';
-  const actions = el('div', 'quiz__actions balloon__actions');
-  actions.append(shareButton, againButton);
+  const actions = actionRow(shareButton, againButton);
   const shareStatus = el('p', 'balloon__status');
   shareStatus.setAttribute('role', 'status');
 
@@ -483,7 +481,7 @@ function showShared(shared: SharedFlight) {
         ...(saved.bestKm
           ? [el('p', 'balloon__best', b('yourBest', { distance: distanceText(saved.bestKm) }))]
           : []),
-        launchButton,
+        actionRow(launchButton),
         el('p', 'balloon__note', b('game')),
       ],
       launchButton,
@@ -600,6 +598,13 @@ function setBody(children: Node[], focus?: HTMLElement) {
   (focus ?? body.querySelector<HTMLElement>('button') ?? host!.dialog).focus({
     preventScroll: true,
   });
+}
+
+/** Buttons side by side, as on the quiz card (wrapping on narrow phones). */
+function actionRow(...buttons: HTMLButtonElement[]): HTMLElement {
+  const row = el('div', 'quiz__row quiz__actions');
+  row.append(...buttons);
+  return row;
 }
 
 function pressOnly(buttons: HTMLButtonElement[], pressed: HTMLButtonElement) {

@@ -7,21 +7,22 @@ import { readStored } from '../storage';
 export const JOURNEY_KEY = 'journey';
 
 /**
- * The ladder, easy first: the first four levels need only points (a busy
- * first day gets there), from Rainbow on days of use too (in total, not in
- * a row: a missed day costs nothing), and the top three weather badges.
+ * The ladder, small steps first: Breeze on day one, then a level every 1–3
+ * days of use up to Storm (2, 3, 5, 7, 10), longer after (20, 45, 100).
+ * Days of use count in total, not in a row (a missed day costs nothing);
+ * points come with them, and the top three need weather badges too.
  * texts.ts has the names, by id.
  */
 export const LEVELS = [
   { id: 'dewdrop', emoji: '💧', points: 0, days: 0, badges: 0 },
   { id: 'breeze', emoji: '🌬️', points: 10, days: 0, badges: 0 },
-  { id: 'cloud', emoji: '☁️', points: 30, days: 0, badges: 0 },
-  { id: 'shower', emoji: '🌦️', points: 50, days: 0, badges: 0 },
-  { id: 'rainbow', emoji: '🌈', points: 80, days: 14, badges: 0 },
-  { id: 'snowflake', emoji: '❄️', points: 120, days: 21, badges: 0 },
-  { id: 'storm', emoji: '⛈️', points: 180, days: 30, badges: 0 },
-  { id: 'whirlwind', emoji: '🌪️', points: 300, days: 45, badges: 2 },
-  { id: 'aurora', emoji: '🌌', points: 600, days: 60, badges: 3 },
+  { id: 'cloud', emoji: '☁️', points: 30, days: 2, badges: 0 },
+  { id: 'shower', emoji: '🌦️', points: 50, days: 3, badges: 0 },
+  { id: 'rainbow', emoji: '🌈', points: 80, days: 5, badges: 0 },
+  { id: 'snowflake', emoji: '❄️', points: 120, days: 7, badges: 0 },
+  { id: 'storm', emoji: '⛈️', points: 180, days: 10, badges: 0 },
+  { id: 'whirlwind', emoji: '🌪️', points: 300, days: 20, badges: 2 },
+  { id: 'aurora', emoji: '🌌', points: 600, days: 45, badges: 3 },
   { id: 'diamond', emoji: '💎', points: 2000, days: 100, badges: 5 },
 ] as const;
 export type Level = (typeof LEVELS)[number];
@@ -66,7 +67,9 @@ export function savedTotals(): JourneyTotals {
   const totals: JourneyTotals = {
     points: count(saved?.points),
     badges: Array.isArray(saved?.badges) ? saved.badges : [],
-    daysUsed: count(saved?.daysUsed),
+    // Never fewer days of use than days in a row: saves from before days
+    // were counted had a streak but no days (the day already seen).
+    daysUsed: Math.max(count(saved?.daysUsed), count((saved as { streak?: unknown })?.streak)),
     reached: 0,
   };
   if (!saved) return totals;

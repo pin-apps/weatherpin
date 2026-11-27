@@ -71,18 +71,18 @@ test.describe('weather levels', () => {
     await expectLevel(page, 'Your level: Breeze, 28 of 30 points', '🌬️');
   });
 
-  test('a searched place adds its country: up to Cloud, with a toast', async ({ page }) => {
+  test('a searched place adds its country: up to Breeze, with a toast', async ({ page }) => {
     await openApp(page);
     await page.locator('#search-input').fill('Oslo');
     await page.getByRole('option').first().click();
     await expect(page.locator('#panel-title')).toHaveText('Oslo, Norway');
-    // 1 + 10 (Norway) + 5 (a first step) + 2 + 25 = 43.
-    await expectLevel(page, 'Your level: Cloud, 43 of 50 points', '☁️');
-    await expect(toast(page)).toHaveText('New level: ☁️ Cloud!');
+    // 1 + 10 (Norway) + 5 (a first step) + 2 + 25 = 43: Breeze (Cloud needs 2 days).
+    await expectLevel(page, 'Your level: Breeze, 43 points', '🌬️');
+    await expect(toast(page)).toHaveText('New level: 🌬️ Breeze!');
     await expect(chip(page)).toHaveClass(/is-new-level/);
-    // Cloud (30) to Shower (50): 13 of 20.
+    // Towards Cloud: the points are there, 1 of its 2 days.
     expect(await chip(page).evaluate((b) => b.style.getPropertyValue('--level-progress'))).toBe(
-      '0.65',
+      '0.5',
     );
     await expect(toast(page)).toHaveAttribute('role', 'status');
   });
@@ -93,7 +93,7 @@ test.describe('weather levels', () => {
       await expect(page.locator('.current__temp')).toBeVisible();
     }
     // 1 + 25 + 5 × 2.
-    await expectLevel(page, 'Your level: Cloud, 36 of 50 points', '☁️');
+    await expectLevel(page, 'Your level: Breeze, 36 points', '🌬️');
     await openCard(page);
     await expect(card(page)).toContainText('Explored: 5 areas · 0 countries · 1 continent');
   });
@@ -108,7 +108,7 @@ test.describe('weather levels', () => {
     await page.goto(link(59.91));
     await expect(page.locator('.current__temp')).toBeVisible();
     // 28 + 15.
-    await expectLevel(page, 'Your level: Cloud, 43 of 50 points', '☁️');
+    await expectLevel(page, 'Your level: Breeze, 43 points', '🌬️');
     await openCard(page);
     const frost = card(page).locator('.journey__badge', { hasText: '−30° frost' });
     await expect(frost).toHaveClass(/is-earned/);
@@ -144,9 +144,9 @@ test.describe('weather levels', () => {
     await openCard(page);
     await expect(card(page).locator('.journey__level')).toHaveText('⛈️ Storm');
     await expect(card(page)).toContainText('413 points');
-    await expect(card(page)).toContainText('Next: 🌪️ Whirlwind: 44 more days of use, 1 more badge');
+    await expect(card(page)).toContainText('Next: 🌪️ Whirlwind: 16 more days of use, 1 more badge');
     // Saved before days of use counted: Storm stays, the days start now.
-    await expect(card(page)).toContainText('📅 1 day of use');
+    await expect(card(page)).toContainText('📅 4 days of use');
     await expect(card(page).locator('progress')).toHaveAttribute('value', '0');
     // Yesterday and today: 4 days in a row.
     await expect(card(page)).toContainText('🔥 4 days in a row');
@@ -156,11 +156,11 @@ test.describe('weather levels', () => {
     const levels = card(page).locator('.journey__level-row');
     await expect(levels).toHaveCount(10);
     await expect(levels.first()).toHaveText('✓ 💧 Dewdrop: the start');
-    await expect(levels.nth(4)).toHaveText('✓ 🌈 Rainbow: 80 points · 14 days');
+    await expect(levels.nth(4)).toHaveText('✓ 🌈 Rainbow: 80 points · 5 days');
     await expect(card(page).locator('[aria-current="step"]')).toHaveText(
-      '✓ ⛈️ Storm: 180 points · 30 days',
+      '✓ ⛈️ Storm: 180 points · 10 days',
     );
-    await expect(levels.nth(7)).toHaveText('○ 🌪️ Whirlwind: 300 points · 45 days · 2 badges');
+    await expect(levels.nth(7)).toHaveText('○ 🌪️ Whirlwind: 300 points · 20 days · 2 badges');
     await expect(levels.locator('.journey__task-mark', { hasText: '✓' })).toHaveCount(7);
     await expect(card(page)).not.toContainText('Storm also needs 7 days');
     await card(page).getByRole('button', { name: 'Close' }).click();
@@ -202,11 +202,11 @@ test.describe('weather levels', () => {
     await expectLevel(page, 'Your level: Aurora, 2500 points', '🌌');
     await openCard(page);
     await expect(card(page)).toContainText(
-      'Next: 💎 Diamond dust: 100 more days of use, 3 more badges',
+      'Next: 💎 Diamond dust: 99 more days of use, 3 more badges',
     );
   });
 
-  test('points alone are not enough: Rainbow needs 14 days of use', async ({ page }) => {
+  test('points alone are not enough: Rainbow needs 5 days of use', async ({ page }) => {
     await savedJourney(page, {
       version: 2,
       points: 500,
@@ -225,7 +225,7 @@ test.describe('weather levels', () => {
     // Today makes 4 days: Shower at most, however many points.
     await expectLevel(page, 'Your level: Shower, 501 points', '🌦️');
     await openCard(page);
-    await expect(card(page)).toContainText('Next: 🌈 Rainbow: 10 more days of use');
+    await expect(card(page)).toContainText('Next: 🌈 Rainbow: 1 more day of use');
   });
 
   test('only 3 new countries count in a day', async ({ page }) => {
@@ -288,7 +288,7 @@ test.describe('weather levels', () => {
     await page.locator('#search-input').fill('Oslo');
     await page.getByRole('option').first().click();
     await expect(page.locator('.current__temp')).toBeVisible();
-    await expectLevel(page, 'Your level: Cloud, 43 of 50 points', '☁️');
+    await expectLevel(page, 'Your level: Breeze, 43 points', '🌬️');
     await openCard(page);
     await expect(card(page)).toContainText('🎒 First steps: 1/10');
     await expect(card(page).locator('.journey__task.is-done')).toHaveText(['✓ Search for a place']);
@@ -343,6 +343,25 @@ test.describe('weather levels', () => {
     await expect(card(page).locator('.journey__badge.is-earned')).toHaveText(['🎓 Weather pro']);
   });
 
+  test('a save with a streak but no days of use counts the day already seen', async ({ page }) => {
+    // Saved the day levels came, before days of use were counted.
+    await savedJourney(page, {
+      version: 1,
+      points: 30,
+      badges: [],
+      day: '2026-11-15',
+      streak: 1,
+      areas: [],
+      areasToday: 0,
+      countries: [],
+      continents: [],
+    });
+    await openApp(page);
+    await openCard(page);
+    await expect(card(page).locator('.journey__days')).toHaveText('📅 1 day of use');
+    await expect(card(page).locator('.journey__streak')).toHaveText('🔥 1 day in a row');
+  });
+
   test('a big enough button next to Settings', { tag: '@layout' }, async ({ page }) => {
     await openApp(page);
     const box = (await chip(page).boundingBox())!;
@@ -363,8 +382,8 @@ test.describe('weather levels', () => {
       1080, 1080,
     ]);
     await expect(card(page).locator('.journey__status')).toHaveText('Picture saved');
-    // Sharing counts too: 28 + 3, and + 5 as a first step: up to Cloud.
-    await expectLevel(page, 'Your level: Cloud, 36 of 50 points', '☁️');
+    // Sharing counts too: 28 + 3, and + 5 as a first step (Cloud needs 2 days).
+    await expectLevel(page, 'Your level: Breeze, 36 points', '🌬️');
   });
 
   test('the level picture with no place shown', async ({ page }, testInfo) => {

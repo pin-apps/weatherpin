@@ -209,10 +209,10 @@ const TEXTS = {
   },
   allLevels: { en: 'All levels', fi: 'Kaikki tasot', sv: 'Alla nivåer', nb: 'Alle nivåer' },
   allLevelsHow: {
-    en: 'Days of use count in total, not in a row: a missed day costs nothing, and a level once reached stays.',
-    fi: 'Käyttöpäivät lasketaan yhteensä, ei putkeen: väliin jäänyt päivä ei maksa mitään, ja saavutettu taso pysyy.',
-    sv: 'Dagar med appen räknas totalt, inte i rad: en missad dag kostar inget, och en nivå du nått behåller du.',
-    nb: 'Dager med appen telles totalt, ikke på rad: en dag du hopper over koster ingenting, og et nivå du har nådd beholder du.',
+    en: 'A level needs both its points and its days of use. Days count in total, not in a row: a missed day costs nothing, and a level once reached stays.',
+    fi: 'Taso vaatii sekä pisteensä että käyttöpäivänsä. Päivät lasketaan yhteensä, ei putkeen: väliin jäänyt päivä ei maksa mitään, ja saavutettu taso pysyy.',
+    sv: 'En nivå kräver både sina poäng och sina dagar med appen. Dagarna räknas totalt, inte i rad: en missad dag kostar inget, och en nivå du nått behåller du.',
+    nb: 'Et nivå krever både poengene og dagene med appen. Dagene telles totalt, ikke på rad: en dag du hopper over koster ingenting, og et nivå du har nådd beholder du.',
   },
   needPoints: {
     en: '{count} points',

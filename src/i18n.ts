@@ -69,6 +69,23 @@ export async function loadTranslations(): Promise<void> {
   }
 }
 
+/**
+ * The About dialog's texts, kept out of the start-up language file: loaded
+ * when About is first opened (about.ts). In English, or if they can't
+ * load, About stays in English.
+ */
+export async function loadAboutTexts(): Promise<void> {
+  try {
+    if (language === 'fi') texts = { ...texts, ...(await import('./i18n-about-fi')).FINNISH_ABOUT };
+    else if (language === 'sv')
+      texts = { ...texts, ...(await import('./i18n-about-sv')).SWEDISH_ABOUT };
+    else if (language === 'nb')
+      texts = { ...texts, ...(await import('./i18n-about-nb')).NORWEGIAN_ABOUT };
+  } catch {
+    // Offline before it was ever loaded: About in English this time.
+  }
+}
+
 export function currentLanguage(): Language {
   return language;
 }
@@ -116,15 +133,21 @@ export function translatePage(root: ParentNode = document): void {
   document.documentElement.lang = language;
   if (language === 'en') return;
   const key = (text: string) => text.replace(/\s+/g, ' ').trim();
+  // Parts whose texts load later (data-i18n-later, e.g. About) are left
+  // for then: translatePage(that part) once its texts are here.
+  const now = (element: Element) => root !== document || !element.closest('[data-i18n-later]');
   root.querySelectorAll<HTMLElement>('[data-i18n]').forEach((element) => {
+    if (!now(element)) return;
     element.textContent = t(key(element.textContent ?? ''));
   });
   root.querySelectorAll<HTMLElement>('[data-i18n-html]').forEach((element) => {
+    if (!now(element)) return;
     const name = `html:${element.dataset.i18nHtml}`;
     if (texts[name] === undefined) missing.add(name);
     else element.innerHTML = texts[name];
   });
   root.querySelectorAll<HTMLElement>('[data-i18n-attrs]').forEach((element) => {
+    if (!now(element)) return;
     for (const name of element.dataset.i18nAttrs!.split(' ')) {
       const value = element.getAttribute(name);
       if (value) element.setAttribute(name, t(key(value)));

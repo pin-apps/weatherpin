@@ -12,13 +12,16 @@ import { exit } from 'node:process';
 import { FINNISH } from '../src/i18n-fi.ts';
 import { SWEDISH } from '../src/i18n-sv.ts';
 import { NORWEGIAN } from '../src/i18n-nb.ts';
+import { FINNISH_ABOUT } from '../src/i18n-about-fi.ts';
+import { SWEDISH_ABOUT } from '../src/i18n-about-sv.ts';
+import { NORWEGIAN_ABOUT } from '../src/i18n-about-nb.ts';
 import { OPENINGS, VERSES } from '../src/quips/haiku-lines.ts';
 
 function sourceFiles(dir) {
   return readdirSync(dir).flatMap((name) => {
     const path = join(dir, name);
     if (statSync(path).isDirectory()) return sourceFiles(path);
-    return path.endsWith('.ts') && !/i18n-[a-z]+\.ts$/.test(path) ? [path] : [];
+    return path.endsWith('.ts') && !/i18n-(about-)?[a-z]+\.ts$/.test(path) ? [path] : [];
   });
 }
 
@@ -66,9 +69,10 @@ if (cssTexts.length > 0) {
 }
 
 const LANGUAGES = [
-  { name: 'Finnish', file: 'src/i18n-fi.ts', texts: FINNISH },
-  { name: 'Swedish', file: 'src/i18n-sv.ts', texts: SWEDISH },
-  { name: 'Norwegian', file: 'src/i18n-nb.ts', texts: NORWEGIAN },
+  // About's texts load when it's opened (src/i18n-about-*.ts): one language each way.
+  { name: 'Finnish', file: 'src/i18n-fi.ts', texts: { ...FINNISH, ...FINNISH_ABOUT } },
+  { name: 'Swedish', file: 'src/i18n-sv.ts', texts: { ...SWEDISH, ...SWEDISH_ABOUT } },
+  { name: 'Norwegian', file: 'src/i18n-nb.ts', texts: { ...NORWEGIAN, ...NORWEGIAN_ABOUT } },
 ];
 
 // The weather excuses and small talk (src/quips/) and the quiz (src/quiz/)

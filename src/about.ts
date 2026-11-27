@@ -3,9 +3,16 @@
 // Settings, or a link to #about. A native <dialog>: Escape closes it and
 // focus stays inside while it's open. (Settings are in settings.ts.)
 
+import { loadAboutTexts, translatePage } from './i18n';
+
 export function setUpAbout(dialog: HTMLDialogElement): void {
+  // Its texts load on the first opening (i18n.ts), translated once.
+  let ready: Promise<void> | undefined;
   function open() {
-    if (!dialog.open) dialog.showModal();
+    ready ??= loadAboutTexts().then(() => translatePage(dialog));
+    void ready.then(() => {
+      if (!dialog.open) dialog.showModal();
+    });
   }
 
   // Any link to #about, now or later (Leaflet redraws its credit line).

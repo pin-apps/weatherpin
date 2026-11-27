@@ -244,36 +244,36 @@ Never run `wrangler deploy` by hand; CI deploys `main` (see README).
   conditions from gusts, reindeer visibility from fog/snow, days to
   Christmas Eve). Only from that search; kept out of About. Both reports
   (`sauna-report.ts`, `santa-report.ts`) load on demand (`panel.ts`)
-- `src/journey/` — weather levels, 10, easy first: 💧 Dewdrop 0, 🌬️ Breeze
-  10, ☁️ Cloud 30, 🌦️ Shower 50 points (points only: a busy first day
-  gets there), then also days of use (in total, not in a row): 🌈 Rainbow
-  80 + 14 days, ❄️ Snowflake 120 + 21, ⛈️ Storm 180 + 30, 🌪️ Whirlwind
-  300 + 45 + 2 badges, 🌌 Aurora 600 + 60 + 3, 💎 Diamond dust 2,000 + 100
-  - 5 (`levels.ts`); the highest level reached is kept, saved by name
-    (`reachedId`; older saves mapped by name in `award.ts`). First steps:
-    10 features to try, 5 points each once (search, favourite, My location,
-    radar, quiz, share, a past day, opening Sky, start place, Random place;
-    `weatherpin:task` events; a favourite, start place or radar already
-    there counts), all 10 → 🎓 Weather pro badge. `chip.ts` (start-up: the round chip next to ⚙ with the level's emoji and
-    a progress ring, `--level-progress`; `noteJourney()`), `levels.ts`
-    (levels, saved totals, events), `award.ts` (on demand: points for a day
-    of use 1, the daily quiz 2, a share 3 once a day, a new ~50 km area 2 (5
-    a day), a new country 10 (3 a day; search's `country_code` or Nominatim's), a new
-    continent 25 (by time zone), a badge 15: −30°, +40°, thunder, polar
-    night, midnight sun, northern lights, below sea level, above 3,000 m;
-    secret badges for the easter eggs (sauna, Santa, a weather record place;
-    named only once found, `weatherpin:secret` from `panel.ts`); never goes
-    down; back after 30+ days: "resting" toast, streak from 1),
-    `card.ts` ("Your weather journey" dialog and the level-up toast; "📸
-    Share my level": a 1080×1080 picture, `drawLevelCard` in `postcard.ts`,
-    headed "My Weatherpin level", with the level's emblem and ring, points, badges, what's explored and
-    the weather of the place shown now and the next 3 days; share sheet or
-    download via `share-picture.ts`, which counts as a share),
-    `texts.ts` (its texts side by side, out of the start-up language files).
-    Shares, the daily quiz and the aurora row announce themselves with
-    window events (`weatherpin:shared`, `weatherpin:quiz`,
-    `weatherpin:aurora`); `main.ts` passes them on. Saved as
-    `nordic-weather:journey` (in About's privacy text)
+- `src/journey/` — weather levels, 10, small steps first (points + days
+  of use, in total, not in a row): 💧 Dewdrop 0, 🌬️ Breeze 10 (day one),
+  ☁️ Cloud 30 + 2 days, 🌦️ Shower 50 + 3, 🌈 Rainbow 80 + 5, ❄️ Snowflake
+  120 + 7, ⛈️ Storm 180 + 10, 🌪️ Whirlwind 300 + 20 + 2 badges, 🌌 Aurora
+  600 + 45 + 3, 💎 Diamond dust 2,000 + 100 + 5; days of use never fewer
+  than the streak (repairs older saves) (`levels.ts`); the highest level reached is kept, saved by name
+  (`reachedId`; older saves mapped by name in `award.ts`). First steps:
+  10 features to try, 5 points each once (search, favourite, My location,
+  radar, quiz, share, a past day, opening Sky, start place, Random place;
+  `weatherpin:task` events; a favourite, start place or radar already
+  there counts), all 10 → 🎓 Weather pro badge. `chip.ts` (start-up: the round chip next to ⚙ with the level's emoji and
+  a progress ring, `--level-progress`; `noteJourney()`), `levels.ts`
+  (levels, saved totals, events), `award.ts` (on demand: points for a day
+  of use 1, the daily quiz 2, a share 3 once a day, a new ~50 km area 2 (5
+  a day), a new country 10 (3 a day; search's `country_code` or Nominatim's), a new
+  continent 25 (by time zone), a badge 15: −30°, +40°, thunder, polar
+  night, midnight sun, northern lights, below sea level, above 3,000 m;
+  secret badges for the easter eggs (sauna, Santa, a weather record place;
+  named only once found, `weatherpin:secret` from `panel.ts`); never goes
+  down; back after 30+ days: "resting" toast, streak from 1),
+  `card.ts` ("Your weather journey" dialog and the level-up toast; "📸
+  Share my level": a 1080×1080 picture, `drawLevelCard` in `postcard.ts`,
+  headed "My Weatherpin level", with the level's emblem and ring, points, badges, what's explored and
+  the weather of the place shown now and the next 3 days; share sheet or
+  download via `share-picture.ts`, which counts as a share),
+  `texts.ts` (its texts side by side, out of the start-up language files).
+  Shares, the daily quiz and the aurora row announce themselves with
+  window events (`weatherpin:shared`, `weatherpin:quiz`,
+  `weatherpin:aurora`); `main.ts` passes them on. Saved as
+  `nordic-weather:journey` (in About's privacy text)
 - `src/records.ts` — weather records: a point near a record place (Vostok,
   Death Valley, Mawsynram, the Nordic national records…) gets a 🏆 line
   above the real weather; facts built in (WMO's extremes archive and the

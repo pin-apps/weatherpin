@@ -2522,6 +2522,27 @@ body:has(.quiz[open]) {
   opacity: 0.45;
 }
 
+/* All levels: reached ones ticked, the current one highlighted. */
+.journey__levels {
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.journey__level-row {
+  padding: 3px 6px;
+  border-radius: 6px;
+}
+
+.journey__level-row.is-reached .journey__task-mark {
+  color: var(--color-accent);
+  font-weight: 700;
+}
+
+.journey__level-row.is-current {
+  background: color-mix(in srgb, var(--color-accent) 14%, transparent);
+}
+
 /* First steps: ✓ done, ○ still to try. */
 .journey__tasks {
   margin: 8px 0 0;

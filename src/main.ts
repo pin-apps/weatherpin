@@ -9,6 +9,7 @@ import type { FavouritesEditor } from './favourites/editor';
 import { setUpLocateButton } from './locate';
 import { createMap, normaliseLongitude, type CoveredArea, type PickedPoint } from './map';
 import { createPanel } from './panel';
+import type { PanelActions } from './panel-actions';
 import { setUpPanelMenu } from './panel-menu';
 import { placeFromHash, placeHash } from './place-link';
 import { placeLabel, zoomForPlace } from './places/geocoding';
@@ -17,13 +18,8 @@ import { samePlace } from './places/same-place';
 import { SAUNA_ZOOM, saunaPoint } from './sauna';
 import { SANTA_ZOOM, santaPoint } from './santa';
 import { setUpSearch } from './search';
-import { setUpPastWeatherButton } from './past-weather-button';
-import { setUpPostcardButton } from './postcard-button';
-import { setUpQuipButtons } from './quip-buttons';
-import { setUpShareButton } from './share-button';
 import { setUpSheet } from './sheet';
 import { loadStartPlace } from './start-place';
-import { setUpStartPlaceButton } from './start-place-button';
 import { fetchAirQuality } from './weather/air-quality';
 import { fetchWarnings, inFinland } from './warnings/warnings';
 import { fetchForecast, WeatherError, type Forecast } from './weather/api';
@@ -95,34 +91,22 @@ window.addEventListener('weatherpin:quiz', (event) => {
   noteJourney({ kind: 'task', id: 'quiz' });
 });
 
-// The ⋯ menu's actions share one status line under the panel's header.
-const actionStatus = document.querySelector<HTMLElement>('.panel__action-status')!;
-const startPlaceButton = setUpStartPlaceButton(
-  document.querySelector<HTMLButtonElement>('.panel__start')!,
-  document.querySelector<HTMLElement>('.panel__start-mark')!,
-  actionStatus,
-);
-
-const shareButton = setUpShareButton(
-  document.querySelector<HTMLButtonElement>('.panel__share')!,
-  actionStatus,
-);
-
-const postcardButton = setUpPostcardButton(
-  document.querySelector<HTMLButtonElement>('.panel__postcard')!,
-  actionStatus,
-);
-
-const quipButtons = setUpQuipButtons(
-  document.querySelector<HTMLButtonElement>('.panel__excuse')!,
-  document.querySelector<HTMLButtonElement>('.panel__small-talk')!,
-  document.querySelector<HTMLButtonElement>('.panel__haiku')!,
-  actionStatus,
-);
-
-const pastWeatherButton = setUpPastWeatherButton(
-  document.querySelector<HTMLButtonElement>('.panel__past')!,
-  actionStatus,
+// The ⋯ menu's actions (panel-actions.ts) load right after start-up, not
+// with it (start-up size budget). Until they're here, the place and
+// weather shown are kept and handed over when they arrive.
+let panelActions: PanelActions | undefined;
+let actionsFor: [PickedPoint, Forecast?] | undefined;
+function showActions(point?: PickedPoint, forecast?: Forecast) {
+  actionsFor = point && [point, forecast];
+  if (point) panelActions?.show(point, forecast);
+  else panelActions?.hide();
+}
+void import('./panel-actions').then(
+  ({ setUpPanelActions }) => {
+    panelActions = setUpPanelActions(document.querySelector<HTMLElement>('.panel__action-status')!);
+    if (actionsFor) showActions(...actionsFor);
+  },
+  () => undefined,
 );
 
 // The page's own title for the plain map ("Weatherpin – weather anywhere
@@ -344,11 +328,7 @@ function closePanel() {
   panelMenu.close();
   panel.hide();
   favouriteButton.hide();
-  startPlaceButton.hide();
-  shareButton.hide();
-  postcardButton.hide();
-  quipButtons.hide();
-  pastWeatherButton.hide();
+  showActions();
   worldMap.clearMarker();
   document.title = APP_TITLE;
 }
@@ -399,12 +379,8 @@ async function loadWeather(
     panelMenu.close();
     panel.showLoading(point);
     favouriteButton.showFor(point);
-    startPlaceButton.showFor(point);
-    shareButton.showFor(point);
-    // Back once there's weather to draw.
-    postcardButton.hide();
-    quipButtons.hide();
-    pastWeatherButton.hide();
+    // Those that draw from the weather come back once it's here.
+    showActions(point);
   }
 
   // Both requests start at once; air quality must not slow down the weather.
@@ -422,10 +398,8 @@ async function loadWeather(
     if (quiet) panel.refreshForecast(point, forecast);
     else panel.showForecast(point, forecast);
     shownAt = forecast.fetchedAt;
-    postcardButton.showFor(point, forecast);
     shownWeather = { point, forecast };
-    quipButtons.showFor(point, forecast);
-    pastWeatherButton.showFor(point, forecast);
+    showActions(point, forecast);
     shownOffline = forecast.offline === true;
     // A place looked at counts towards the level (not a quiet refresh).
     if (!quiet) {

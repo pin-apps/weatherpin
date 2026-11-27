@@ -9,9 +9,8 @@ Live at https://weatherpin.app and working; development continues. The
 repo is `pin-apps/weatherpin` (public, main protected by a ruleset, CodeQL
 and secret scanning on). Recently shipped: snow on the ground, fishing
 times, weather levels, colour skins, the weather haiku and the 🎈 balloon
-(Beta, step 1; see Done). **Start-up code is 74.8/75 KB (texts 8.9/12 KB
-since #24): free code space before adding anything at start-up** (Next). Good first picks: request timeouts and start-up
-space (Next), the security fixes, balloon step 2 and the sky viewer
+(Beta, step 1; see Done). Start-up code 73.6/75 KB, texts 8.9/12 KB, CSS 13.8/14 KB (after
+#20, #24 and the ⋯ menu actions on demand). Good first picks: request timeouts (Next), the TV forecast, the security fixes, balloon step 2 and the sky viewer
 (Ideas). Decided: no EDM calculator with typed-in readings; no emails to
 outside organisations (2026-11-27), so nothing waits on a reply: plans
 that needed one (WMO's re-use terms for its warnings list, asking FMI for
@@ -28,10 +27,6 @@ CORS) are dropped.
 - Flaky test: "Beaufort forces at the band edges" (`tests/units.spec.ts`)
   fails now and then on the iPhone in WebKit and passes on its retry (3
   times by 2026-11-27): find the race and fix it.
-- Free start-up space: About's texts load on demand since #24 (Finnish
-  start-up texts 12.2 → 8.9 KB); code is still 74.8/75 KB. Next: the ⋯ menu's actions on demand (~1–1.5 KB), as place names were
-  in #20, before the next start-up feature (TV forecast button, thunder
-  heads-up, race links…).
 - Screenshot comparisons in CI ("stage b" of the browser tests): approved
   baseline images in the repo, made in Playwright's Docker image, plus a
   manual "Update visual baselines" workflow.

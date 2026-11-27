@@ -337,6 +337,11 @@ Never run `wrangler deploy` by hand; CI deploys `main` (see README).
 - `src/geolocation.ts` — browser location as a promise, friendly errors
 - `src/locate.ts` — "My location" button and its status message
 - `src/panel.ts` — weather panel states: loading, error, forecast
+- `src/panel-actions.ts` — the ⋯ menu's actions (Start here and the ⌂
+  mark, Share this place, Share as a picture, excuse/small talk/haiku,
+  Weather on a day) set up together; loaded right after start-up, not
+  with it (`main.ts` keeps the place and weather shown and hands them
+  over: `showActions()`), start-up size budget
 - `src/panel-menu.ts` — the ⋯ button in the panel header (☆ ⋯ ×) and its
   menu of the place's actions (Share this place, Start here): a
   disclosure of plain buttons; closes on Escape (not the panel), outside

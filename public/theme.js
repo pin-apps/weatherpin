@@ -22,6 +22,7 @@
     sauna: ['#9a3d12', '#2a1c13'],
     retro: ['#a8430c', '#3a2a1d'],
     contrast: ['#000000', '#000000'],
+    nineties: ['#000080', '#000000'],
   };
   // Only a name from the list (not e.g. "__proto__" from damaged storage).
   if (typeof skin !== 'string' || !Object.prototype.hasOwnProperty.call(bars, skin)) {

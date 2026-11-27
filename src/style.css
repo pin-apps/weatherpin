@@ -110,6 +110,37 @@
   --color-temp: #ffc06b;
 }
 
+:root[data-skin='nineties'] {
+  --color-text: #000000;
+  --color-text-muted: #333333;
+  --color-bg: #dfdfdf;
+  --color-surface: #c0c0c0;
+  --color-border: #808080;
+  --color-accent: #000080;
+  --color-error: #8b0000;
+  --color-marker-ring: #ffffff;
+  --color-temp: #800000;
+  --shadow-panel: 2px 2px 0 #000000;
+  --radius: 0;
+  --bevel:
+    inset -1px -1px #000000, inset 1px 1px #ffffff, inset -2px -2px #808080, inset 2px 2px #dfdfdf;
+}
+
+/* Dark: a DOS terminal, green on black. */
+:root[data-skin='nineties'][data-theme='dark'] {
+  --color-text: #33ff66;
+  --color-text-muted: #22cc55;
+  --color-bg: #0a0a0a;
+  --color-surface: #000000;
+  --color-border: #22aa44;
+  --color-accent: #ffff55;
+  --color-error: #ff6666;
+  --color-marker-ring: #000000;
+  --color-temp: #ffaa33;
+  --shadow-panel: 0 0 0 1px #22aa44;
+  --bevel: 0 0 0 1px #22aa44;
+}
+
 :root[data-skin='contrast'] {
   --color-text: #000000;
   --color-text-muted: #1f1f1f;
@@ -2817,4 +2848,39 @@ body:has(.quiz[open]) {
   letter-spacing: 0.04em;
   text-transform: uppercase;
   vertical-align: middle;
+}
+
+/* The 1990s skin (variables above): an old desktop's fonts, square 3D
+   buttons and, in light, the weather panel's header as a navy title bar. */
+:root[data-skin='nineties'] body {
+  font-family: Tahoma, Verdana, Geneva, sans-serif;
+}
+
+:root[data-skin='nineties'] :is(h1, h2, h3, .current__temp) {
+  font-family: 'Courier New', Courier, monospace;
+}
+
+:root[data-skin='nineties'] :is(.button, .toolbar__button, .search__quiz) {
+  border: none;
+  border-radius: 0;
+  box-shadow: var(--bevel);
+}
+
+:root[data-skin='nineties'] .button:active {
+  box-shadow:
+    inset 1px 1px #000000,
+    inset -1px -1px #ffffff;
+}
+
+:root[data-skin='nineties']:not([data-theme='dark']) .panel__header {
+  background: #000080;
+}
+
+/* White on the navy bar; the ⋯ menu that opens from it keeps the
+   window's colours. */
+:root[data-skin='nineties']:not([data-theme='dark']) .panel__header > :not(.panel__menu) {
+  --color-text: #ffffff;
+  --color-text-muted: #ffffff;
+  --color-accent: #ffffff;
+  color: #ffffff;
 }

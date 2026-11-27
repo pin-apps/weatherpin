@@ -49,10 +49,12 @@ const STORAGE_KEY = 'balloon';
 // The flight plays at 8 hours a second: 5 days in 15 s.
 const HOURS_PER_SECOND = 8;
 // The map first shows the first day's stretch, then follows the balloon:
-// checked a few times a second, panned when it nears the edge.
+// when it reaches the edge of the free part of the map, a short pan puts
+// it back in the middle (room ahead), as a camera following it would.
 const FIRST_VIEW_HOURS = 24;
-const FOLLOW_EVERY_MS = 250;
 const EDGE_PX = 48;
+// Above the map's top edge: the search bar.
+const TOP_BAR_PX = 40;
 const LEVEL_TEXT: Record<Level, TextName> = { 850: 'low', 700: 'middle', 500: 'high' };
 const HINT_TEXT: Record<Level, TextName> = { 850: 'lowHint', 700: 'middleHint', 500: 'highHint' };
 const ENDING_TEXT: Record<Ending, TextName> = {
@@ -68,6 +70,8 @@ let host: BalloonHost | undefined;
 let screen = 0;
 let layers: L.Layer[] = [];
 let stopPlaying: (() => void) | undefined;
+// While the map pans or zooms, following waits for it.
+let mapMoving = false;
 
 /** Opens the card: the launch for a place, or a flight from a link's #hash. */
 export function openBalloon(newHost: BalloonHost, target: PickedPoint | string): void {
@@ -102,6 +106,8 @@ function setUp(newHost: BalloonHost) {
   });
   new ResizeObserver(publishCoveredArea).observe(dialog);
   window.addEventListener('resize', publishCoveredArea);
+  newHost.map.on('movestart', () => (mapMoving = true));
+  newHost.map.on('moveend', () => (mapMoving = false));
 }
 
 // ── Screens ──
@@ -292,7 +298,6 @@ function play(
   // balloon, and shows the whole flight at the end.
   const firstDay = latLngs.filter((_, index) => track[index].hour <= FIRST_VIEW_HOURS);
   fitFlight(firstDay.length > 1 ? firstDay : latLngs, false);
-  let lastFollow = 0;
 
   const progress = el('p', 'balloon__progress');
   const upThere = el('p', 'balloon__up');
@@ -327,10 +332,7 @@ function play(
     casing.setLatLngs(drawn);
     line.setLatLngs(drawn);
     marker.setLatLng(here);
-    if (!reduced && performance.now() - lastFollow > FOLLOW_EVERY_MS) {
-      lastFollow = performance.now();
-      follow(here);
-    }
+    if (!reduced) follow(here);
     const km = (cumulative[i] + (cumulative[next] - cumulative[i]) * fraction) * scale;
     const wholeHours = Math.floor(hour);
     progress.textContent = b('progress', {
@@ -578,16 +580,28 @@ function fitFlight(latLngs: L.LatLng[], animate: boolean) {
   host!.map.fitBounds(L.latLngBounds(latLngs), { ...freeArea(), maxZoom: 6, animate });
 }
 
-/** Pans the map, if needed, so the balloon stays in the free part of it. */
+/** At the edge of the free part of the map: pans it back to the middle. */
 function follow(here: L.LatLng) {
-  host!.map.panInside(here, { ...freeArea(), animate: true, duration: 0.3 });
+  const map = host!.map;
+  if (mapMoving) return;
+  const size = map.getSize();
+  const { right, bottom } = coveredByCard();
+  const at = map.latLngToContainerPoint(here);
+  const inside =
+    at.x >= EDGE_PX &&
+    at.y >= EDGE_PX + TOP_BAR_PX &&
+    at.x <= size.x - right - EDGE_PX &&
+    at.y <= size.y - bottom - EDGE_PX;
+  if (inside) return;
+  const middle = L.point((size.x - right) / 2, (TOP_BAR_PX + size.y - bottom) / 2);
+  map.panBy(at.subtract(middle), { animate: true, duration: 0.5 });
 }
 
 /** Leaflet padding for the map outside the card (and the search bar on top). */
 function freeArea(): { paddingTopLeft: L.PointTuple; paddingBottomRight: L.PointTuple } {
   const { right, bottom } = coveredByCard();
   return {
-    paddingTopLeft: [EDGE_PX, EDGE_PX + 40],
+    paddingTopLeft: [EDGE_PX, EDGE_PX + TOP_BAR_PX],
     paddingBottomRight: [EDGE_PX + right, EDGE_PX + bottom],
   };
 }

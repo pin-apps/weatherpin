@@ -79,7 +79,7 @@ test.describe('Finnish', () => {
       const dialog = page.getByRole('dialog', { name: 'Tietoa Weatherpinistä' });
       await expect(dialog).toContainText('Ei tiliä, ei evästeitä');
       await expect(dialog).toContainText('Käyttö omalla vastuulla');
-      await expect(dialog).toContainText('Säätekosyyt ja jutun juurta ovat huvin vuoksi.');
+      await expect(dialog).toContainText('Säätekosyyt, jutun juurta ja haikut ovat huvin vuoksi.');
       await page.keyboard.press('Escape');
 
       await page.getByRole('button', { name: 'Asetukset' }).click();

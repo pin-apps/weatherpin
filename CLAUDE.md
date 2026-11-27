@@ -240,7 +240,10 @@ Never run `wrangler deploy` by hand; CI deploys `main` (see README).
   `loadTranslations()` fetches the language's texts (a separate file per
   language; `main.ts` awaits it before anything else)
 - `src/i18n-fi.ts`, `src/i18n-sv.ts`, `src/i18n-nb.ts` — the Finnish,
-  Swedish and Norwegian (bokmål) texts
+  Swedish and Norwegian (bokmål) texts; About's texts apart in `src/i18n-about-fi.ts`
+  (`-sv`, `-nb`), loaded when About is first opened (`loadAboutTexts()`,
+  about.ts; the dialog has `data-i18n-later`, so `translatePage()` leaves
+  it until then): most visitors never open it (start-up texts budget)
 - `scripts/check-i18n.mjs` — finds every text in `src/` and `index.html`
   and fails if one has no Finnish or no Swedish
 - `src/sauna.ts` — easter egg: searching "sauna" offers Saunalahti, Espoo

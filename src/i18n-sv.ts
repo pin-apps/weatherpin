@@ -562,6 +562,7 @@ export const SWEDISH: Record<string, string> = {
   'Small talk': 'Småprat',
   'Weather haiku': 'Väderhaiku',
   'Launch a balloon': 'Skicka iväg en ballong',
+  Beta: 'Beta',
   Copied: 'Kopierat',
   'html:fun-disclaimer':
     'Väderursäkter, småprat och haiku är på skoj. De bygger på prognosen för platsen; resultatet kan inte garanteras. Vi tar inget ansvar om chefen inte godtar ursäkten, samtalet dör efter en mening eller om din katt inte håller med.',

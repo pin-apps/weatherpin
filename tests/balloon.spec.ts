@@ -38,6 +38,9 @@ function countWinds(page: Page): () => number {
 }
 
 test.describe('balloon', () => {
+  // Points get a name ("Espoo, Finland"), as from Nominatim.
+  test.use({ placeNameMode: 'town' });
+
   test('launch: the winds at each height now, a name and a colour', async ({ page }) => {
     await openLaunch(page);
     // The weather panel gives way to the card.
@@ -77,7 +80,7 @@ test.describe('balloon', () => {
       /^Day \d · \d+ h · [\d,]+ mi$/,
     );
     await expect(card(page).locator('.balloon__up')).toHaveText(
-      /^5\.5 km up: −30 °C, wind 78 mph from W, in cloud \(80 %\)$/,
+      /^5\.5 km up: -30 °C, wind 78 mph from W, in cloud \(80 %\)$/,
     );
     await expect(card(page).locator('.balloon__below')).toHaveText('Below: overcast, 2 °C');
     await expect(page.locator('.balloon-marker--blue')).toBeVisible();
@@ -235,7 +238,7 @@ test.describe('balloon', () => {
         .click();
       await expect(card(page)).toContainText('Paikasta Oslo, Norja, nyt.');
       await expect(card(page).getByRole('button', { name: /^Korkea · 5,5 km/ })).toContainText(
-        'nyt 35 m/s lännestä',
+        'nyt 35,0 m/s lännestä',
       );
       await card(page).getByLabel('Pallon nimi (vapaaehtoinen)').fill('Puhti');
       await card(page).getByRole('button', { name: 'Matkaan!' }).click();

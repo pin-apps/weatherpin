@@ -330,6 +330,7 @@
               <button type="button" class="panel__menu-item panel__balloon">
                 <span class="panel__menu-icon" aria-hidden="true">🎈</span>
                 <span data-i18n>Launch a balloon</span>
+                <span class="beta-tag" data-i18n>Beta</span>
               </button>
               <!-- The weather on a past day, in a dialog (past-weather.ts). -->
               <button type="button" class="panel__menu-item panel__past" hidden>
@@ -560,7 +561,10 @@
          modal, so the map shows the flight. Filled by the code. -->
     <dialog id="balloon" class="quiz balloon" aria-labelledby="balloon-title">
       <header class="quiz__header">
-        <h2 id="balloon-title" class="quiz__title"></h2>
+        <h2 id="balloon-title" class="quiz__title">
+          <span class="balloon__title"></span>
+          <span class="beta-tag" data-i18n>Beta</span>
+        </h2>
         <button type="button" class="quiz__close" aria-label="Close" data-i18n-attrs="aria-label">
           <span aria-hidden="true">×</span>
         </button>

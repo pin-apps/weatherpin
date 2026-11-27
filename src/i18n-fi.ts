@@ -559,6 +559,7 @@ export const FINNISH: Record<string, string> = {
   'Small talk': 'Jutun juurta',
   'Weather haiku': 'Säähaiku',
   'Launch a balloon': 'Lähetä pallo matkaan',
+  Beta: 'Beta',
   Copied: 'Kopioitu',
   'html:fun-disclaimer':
     'Säätekosyyt, jutun juurta ja haikut ovat huvin vuoksi. Ne perustuvat paikan sääennusteeseen, eikä niiden tehoa voida taata. Emme vastaa, jos esihenkilö ei hyväksy tekosyytä, keskustelu tyrehtyy ensimmäiseen lauseeseen tai kissasi on eri mieltä.',

@@ -591,7 +591,7 @@ function publishCoveredArea() {
 // ── Card helpers ──
 
 function setTitle(text: string) {
-  host!.dialog.querySelector('#balloon-title')!.textContent = text;
+  host!.dialog.querySelector('.balloon__title')!.textContent = text;
 }
 
 function setBody(children: Node[], focus?: HTMLElement) {

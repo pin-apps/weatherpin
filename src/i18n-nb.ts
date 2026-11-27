@@ -557,6 +557,7 @@ export const NORWEGIAN: Record<string, string> = {
   'Small talk': 'Småprat',
   'Weather haiku': 'Værhaiku',
   'Launch a balloon': 'Send av gårde en ballong',
+  Beta: 'Beta',
   Copied: 'Kopiert',
   'html:fun-disclaimer':
     'Værunnskyldninger, småprat og haiku er for moro skyld. De bygger på værmeldingen for stedet; resultatet kan ikke garanteres. Vi tar ikke ansvar hvis sjefen ikke godtar unnskyldningen, samtalen dør etter én setning, eller katten din er uenig.',

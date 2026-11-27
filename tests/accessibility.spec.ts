@@ -314,7 +314,7 @@ test.describe('accessibility (WCAG 2.2 AA)', { tag: '@layout' }, () => {
 
   // The colour sets (Settings → Colours): each on this device's light or
   // dark, with the weather and the air quality badges.
-  for (const skin of ['nordic', 'sauna', 'retro', 'contrast']) {
+  for (const skin of ['nordic', 'sauna', 'retro', 'contrast', 'nineties']) {
     test(`the "${skin}" colours`, async ({ page }) => {
       await page.addInitScript((chosen) => {
         localStorage.setItem('nordic-weather:skin', JSON.stringify(chosen));

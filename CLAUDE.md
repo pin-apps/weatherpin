@@ -220,7 +220,7 @@ Never run `wrangler deploy` by hand; CI deploys `main` (see README).
   there is one, else how to do it: iPhone/iPad Share → Add to Home
   Screen, Firefox ⋮ → Install, others the menu; "Added to the home
   screen." once installed), appearance (Automatic/Light/Dark) and colours
-  (Classic, Nordic night, Sauna, Retro, High contrast), °C/°F with wind,
+  (Classic, Nordic night, Sauna, Retro, High contrast, 1990s), °C/°F with wind,
   rain and pressure under "More units" (a `<details>`, open when one is
   the user's own), language, the
   start place (shown, can be removed), "Clear saved data", a link to

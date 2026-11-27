@@ -46,6 +46,7 @@ export const SWEDISH: Record<string, string> = {
   'Nordic night': 'Nordisk natt',
   Retro: 'Retro',
   'High contrast': 'Hög kontrast',
+  '1990s': '1990-tal',
   'Each in light and dark.': 'Var och en i ljust och mörkt.',
   'More units': 'Fler enheter',
   Automatic: 'Automatiskt',

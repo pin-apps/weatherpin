@@ -47,6 +47,7 @@ export const FINNISH: Record<string, string> = {
   'Nordic night': 'Pohjolan yö',
   Retro: 'Retro',
   'High contrast': 'Suuri kontrasti',
+  '1990s': '1990-luku',
   'Each in light and dark.': 'Jokainen vaaleana ja tummana.',
   'More units': 'Lisää yksiköitä',
   Automatic: 'Automaattinen',

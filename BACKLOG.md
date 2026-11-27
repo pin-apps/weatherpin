@@ -225,6 +225,7 @@ Built or thought through, then put aside. Revisit only with a clear reason.
 
 Newest first, one line each; the details are in the PRs and git history.
 
+- 💾 1990s colours: a light "Windows 95" look (grey, navy title bar, 3D buttons) and a dark DOS terminal (green on black)
 - 🎈 Launch a balloon: forecast winds at a height, flight on the map, weather up there, a share link
 - 🍃 Weather haiku in the ⋯ menu (90 lines in four languages, Finnish syllables checked)
 - Colour skins (Classic, Nordic night, Sauna, Retro, High contrast; light and dark); "More units" folded in Settings

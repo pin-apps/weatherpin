@@ -10,8 +10,8 @@ import { onStoredChange, readStored, writeStored } from './storage';
 
 export type Theme = 'auto' | 'light' | 'dark';
 /** Colour sets (style.css), each with a light and a dark version. */
-export type Skin = 'classic' | 'nordic' | 'sauna' | 'retro' | 'contrast';
-const SKINS: readonly Skin[] = ['classic', 'nordic', 'sauna', 'retro', 'contrast'];
+export type Skin = 'classic' | 'nordic' | 'sauna' | 'retro' | 'contrast' | 'nineties';
+const SKINS: readonly Skin[] = ['classic', 'nordic', 'sauna', 'retro', 'contrast', 'nineties'];
 
 // Stored as nordic-weather:theme = "auto" | "light" | "dark", and
 // nordic-weather:skin = a Skin (none: classic).
@@ -25,6 +25,7 @@ const BAR_COLOURS: Record<Skin, { light: string; dark: string }> = {
   sauna: { light: '#9a3d12', dark: '#2a1c13' },
   retro: { light: '#a8430c', dark: '#3a2a1d' },
   contrast: { light: '#000000', dark: '#000000' },
+  nineties: { light: '#000080', dark: '#000000' },
 };
 
 const deviceDark = window.matchMedia('(prefers-color-scheme: dark)');

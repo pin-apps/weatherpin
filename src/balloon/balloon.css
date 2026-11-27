@@ -1,0 +1,208 @@
+/* The balloon's own styles (balloon.ts), loaded with it, not at start-up
+   (start-up CSS budget). Its card is the quiz card (.quiz, style.css); the
+   "Beta" tag stays in style.css (the ⋯ menu shows it). */
+
+/* The balloon (balloon/): its card shares the quiz card's look and place
+   (.quiz); these are its own parts. */
+.balloon__lead,
+.balloon__route,
+.balloon__ending,
+.balloon__best,
+.balloon__launched,
+.balloon__progress {
+  font-size: 1rem;
+}
+
+.balloon__label {
+  margin-top: 6px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--color-text-muted);
+}
+
+.balloon__status:empty {
+  display: none;
+}
+
+.balloon__heights,
+.balloon__stats {
+  display: grid;
+  gap: 8px;
+  width: 100%;
+  margin: 0;
+}
+
+.balloon__height {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 2px 12px;
+  min-height: 56px;
+  padding: 8px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.balloon__height[aria-pressed='true'] {
+  border: 2px solid var(--color-accent);
+  padding: 7px 11px;
+}
+
+.balloon__height-name,
+.balloon__height-wind {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.balloon__height-hint {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+}
+
+.balloon__name {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+  font-size: 1rem;
+}
+
+.balloon__colours {
+  display: flex;
+  gap: 10px;
+}
+
+.balloon__colour {
+  width: 44px;
+  height: 44px;
+  border: 3px solid var(--color-surface);
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px var(--color-border);
+  cursor: pointer;
+}
+
+.balloon__colour[aria-pressed='true'] {
+  box-shadow: 0 0 0 3px var(--color-text);
+}
+
+.balloon__colour--red,
+.balloon-marker--red {
+  --balloon-colour: #d93025;
+}
+
+.balloon__colour--blue,
+.balloon-marker--blue {
+  --balloon-colour: #1a73e8;
+}
+
+.balloon__colour--yellow,
+.balloon-marker--yellow {
+  --balloon-colour: #f9ab00;
+}
+
+.balloon__colour--green,
+.balloon-marker--green {
+  --balloon-colour: #188038;
+}
+
+.balloon__colour {
+  background: var(--balloon-colour);
+}
+
+.balloon__note,
+.balloon__up,
+.balloon__below {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+}
+
+.balloon__up:empty,
+.balloon__below:empty {
+  display: none;
+}
+
+.balloon__progress,
+.balloon__flew {
+  font-weight: 700;
+}
+
+.balloon__distance {
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1.1;
+  color: var(--color-accent);
+}
+
+.balloon__stats {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.balloon__stat {
+  padding: 8px 10px;
+  border-radius: var(--radius);
+  background: var(--color-bg);
+}
+
+.balloon__stat dt {
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+}
+
+.balloon__stat dd {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+/* On the map: the balloon (a divIcon), its path and where it came down. */
+.balloon-marker {
+  background: none;
+  border: none;
+}
+
+.balloon-marker__envelope {
+  fill: var(--balloon-colour);
+  stroke: #ffffff;
+  stroke-width: 2;
+}
+
+.balloon-marker__ropes {
+  stroke: #5b3a1a;
+  stroke-width: 1;
+}
+
+.balloon-marker__basket {
+  fill: #7a4a1e;
+}
+
+.balloon-path--red {
+  stroke: #d93025;
+}
+
+.balloon-path--blue {
+  stroke: #1a73e8;
+}
+
+.balloon-path--yellow {
+  stroke: #f9ab00;
+}
+
+.balloon-path--green {
+  stroke: #188038;
+}
+
+.balloon-landing {
+  box-sizing: border-box;
+  border: 3px solid #d93025;
+  border-radius: 50%;
+  background: #ffffff;
+}

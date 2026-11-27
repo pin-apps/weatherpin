@@ -127,10 +127,3 @@
     bottom: calc(var(--covered-bottom) + 58px + var(--radar-bar-space, 0px));
   }
 }
-
-/* A phone on its side: left of the round buttons, which sit in one row. */
-@media (max-width: 767px) and (max-height: 500px) {
-  .weather-bar {
-    right: 192px;
-  }
-}

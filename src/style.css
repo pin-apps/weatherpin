@@ -427,28 +427,67 @@ body:has(.quiz[open]) {
   animation: locate-pulse 1s ease-in-out infinite alternate;
 }
 
-/* Rain radar button: same round button, one place to the left. Pressed:
-   filled with the accent colour. */
+/* Map layers button (the rain radar or the weather symbols): the same
+   round button, one place to the left; filled with the accent colour
+   while one is on. Its menu opens to its left, at the same height. */
 .radar-button {
   right: calc(var(--covered-right) + 72px);
 }
 
-.radar-button[aria-pressed='true'],
-.radar-button[aria-pressed='true']:hover {
+.radar-button.is-on,
+.radar-button.is-on:hover {
   background: var(--color-accent);
   color: var(--color-surface);
 }
 
-/* Weather symbols button (layer/): the same round button, left of the
-   radar button (above it on phones). On: filled with the accent colour. */
-.layer-button {
+.layers-menu {
+  position: absolute;
+  z-index: 1100;
   right: calc(var(--covered-right) + 132px);
+  bottom: calc(var(--covered-bottom) + 36px);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 6px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-panel);
 }
 
-.layer-button[aria-pressed='true'],
-.layer-button[aria-pressed='true']:hover {
+.layers-menu[hidden] {
+  display: none;
+}
+
+.layers-menu__item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 0 12px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--color-text);
+  font: inherit;
+  font-size: 0.9375rem;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.layers-menu__icon {
+  width: 22px;
+  height: 22px;
+  color: var(--color-accent);
+}
+
+.layers-menu__item[aria-pressed='true'] {
   background: var(--color-accent);
   color: var(--color-surface);
+}
+
+.layers-menu__item[aria-pressed='true'] .layers-menu__icon {
+  color: inherit;
 }
 
 /* Radar history bar (radar.ts): bottom left, which is free (zoom buttons
@@ -1591,13 +1630,9 @@ body:has(.quiz[open]) {
     font-size: 11px;
   }
 
-  .locate {
+  .locate,
+  .layers-menu {
     bottom: calc(var(--covered-bottom) + 44px);
-  }
-
-  .layer-button {
-    right: calc(var(--covered-right) + 72px);
-    bottom: calc(var(--covered-bottom) + 104px);
   }
 
   /* Left of the round buttons, the time under the slider. */
@@ -1635,30 +1670,12 @@ body:has(.quiz[open]) {
   }
 }
 
-/* A phone on its side: too little height to stack the weather symbols
-   button above the radar button, so it goes left of it, and the radar's
-   bar one button further left (layer/weather-layer.css does the same for
-   its own bar). */
-@media (max-width: 767px) and (max-height: 500px) {
-  .layer-button {
-    right: calc(var(--covered-right) + 132px);
-    bottom: calc(var(--covered-bottom) + 44px);
-  }
-
-  .radar-bar {
-    right: 192px;
-  }
-}
-
 /* Very narrow phones: the credits (with the radar's) take two lines. */
 @media (max-width: 359px) {
   .locate,
+  .layers-menu,
   .radar-bar {
     bottom: calc(var(--covered-bottom) + 58px);
-  }
-
-  .layer-button {
-    bottom: calc(var(--covered-bottom) + 118px);
   }
 }
 
@@ -2664,211 +2681,6 @@ body:has(.quiz[open]) {
 
 .journey-toast:empty {
   display: none;
-}
-
-/* The balloon (balloon/): its card shares the quiz card's look and place
-   (.quiz); these are its own parts. */
-.balloon__lead,
-.balloon__route,
-.balloon__ending,
-.balloon__best,
-.balloon__launched,
-.balloon__progress {
-  font-size: 1rem;
-}
-
-.balloon__label {
-  margin-top: 6px;
-  font-size: 0.875rem;
-  font-weight: 700;
-  color: var(--color-text-muted);
-}
-
-.balloon__status:empty {
-  display: none;
-}
-
-.balloon__heights,
-.balloon__stats {
-  display: grid;
-  gap: 8px;
-  width: 100%;
-  margin: 0;
-}
-
-.balloon__height {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 2px 12px;
-  min-height: 56px;
-  padding: 8px 12px;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  background: var(--color-surface);
-  color: var(--color-text);
-  font: inherit;
-  text-align: left;
-  cursor: pointer;
-}
-
-.balloon__height[aria-pressed='true'] {
-  border: 2px solid var(--color-accent);
-  padding: 7px 11px;
-}
-
-.balloon__height-name,
-.balloon__height-wind {
-  font-size: 1rem;
-  font-weight: 600;
-}
-
-.balloon__height-hint {
-  font-size: 0.875rem;
-  color: var(--color-text-muted);
-}
-
-.balloon__name {
-  box-sizing: border-box;
-  width: 100%;
-  min-height: 44px;
-  padding: 0 12px;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  background: var(--color-surface);
-  color: var(--color-text);
-  font: inherit;
-  font-size: 1rem;
-}
-
-.balloon__colours {
-  display: flex;
-  gap: 10px;
-}
-
-.balloon__colour {
-  width: 44px;
-  height: 44px;
-  border: 3px solid var(--color-surface);
-  border-radius: 50%;
-  box-shadow: 0 0 0 1px var(--color-border);
-  cursor: pointer;
-}
-
-.balloon__colour[aria-pressed='true'] {
-  box-shadow: 0 0 0 3px var(--color-text);
-}
-
-.balloon__colour--red,
-.balloon-marker--red {
-  --balloon-colour: #d93025;
-}
-
-.balloon__colour--blue,
-.balloon-marker--blue {
-  --balloon-colour: #1a73e8;
-}
-
-.balloon__colour--yellow,
-.balloon-marker--yellow {
-  --balloon-colour: #f9ab00;
-}
-
-.balloon__colour--green,
-.balloon-marker--green {
-  --balloon-colour: #188038;
-}
-
-.balloon__colour {
-  background: var(--balloon-colour);
-}
-
-.balloon__note,
-.balloon__up,
-.balloon__below {
-  font-size: 0.875rem;
-  color: var(--color-text-muted);
-}
-
-.balloon__up:empty,
-.balloon__below:empty {
-  display: none;
-}
-
-.balloon__progress,
-.balloon__flew {
-  font-weight: 700;
-}
-
-.balloon__distance {
-  font-size: 2rem;
-  font-weight: 800;
-  line-height: 1.1;
-  color: var(--color-accent);
-}
-
-.balloon__stats {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-
-.balloon__stat {
-  padding: 8px 10px;
-  border-radius: var(--radius);
-  background: var(--color-bg);
-}
-
-.balloon__stat dt {
-  font-size: 0.8125rem;
-  color: var(--color-text-muted);
-}
-
-.balloon__stat dd {
-  margin: 0;
-  font-size: 1rem;
-  font-weight: 700;
-}
-
-/* On the map: the balloon (a divIcon), its path and where it came down. */
-.balloon-marker {
-  background: none;
-  border: none;
-}
-
-.balloon-marker__envelope {
-  fill: var(--balloon-colour);
-  stroke: #ffffff;
-  stroke-width: 2;
-}
-
-.balloon-marker__ropes {
-  stroke: #5b3a1a;
-  stroke-width: 1;
-}
-
-.balloon-marker__basket {
-  fill: #7a4a1e;
-}
-
-.balloon-path--red {
-  stroke: #d93025;
-}
-
-.balloon-path--blue {
-  stroke: #1a73e8;
-}
-
-.balloon-path--yellow {
-  stroke: #f9ab00;
-}
-
-.balloon-path--green {
-  stroke: #188038;
-}
-
-.balloon-landing {
-  box-sizing: border-box;
-  border: 3px solid #d93025;
-  border-radius: 50%;
-  background: #ffffff;
 }
 
 /* "Beta" after the balloon's menu item and card title: still being tuned. */

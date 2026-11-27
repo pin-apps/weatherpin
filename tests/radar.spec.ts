@@ -4,6 +4,7 @@
 
 import type { Page } from '@playwright/test';
 import {
+  chooseLayer,
   expect,
   openApp,
   pickPoint,
@@ -13,7 +14,8 @@ import {
   waitForTiles,
 } from './helpers';
 
-const radarButton = (page: Page) => page.getByRole('button', { name: 'Rain radar' });
+// The menu item (hidden while the layers menu is closed).
+const radarButton = (page: Page) => page.locator('#radar-button');
 const radarTiles = (page: Page) => page.locator('.radar-tiles img');
 
 test.describe('rain radar', () => {
@@ -32,7 +34,7 @@ test.describe('rain radar', () => {
     page,
   }, testInfo) => {
     await openApp(page);
-    await radarButton(page).click();
+    await chooseLayer(page, 'Rain radar');
     await expect(radarButton(page)).toHaveAttribute('aria-pressed', 'true');
 
     // Tiles of the newest frame (13:00 UTC), in the one free colour scheme.
@@ -53,7 +55,7 @@ test.describe('rain radar', () => {
     await expect(radarButton(page)).toHaveAttribute('aria-pressed', 'true');
     await expect(radarTiles(page).first()).toBeVisible();
 
-    await radarButton(page).click();
+    await chooseLayer(page, 'Rain radar');
     await expect(radarButton(page)).toHaveAttribute('aria-pressed', 'false');
     await expect(radarTiles(page)).toHaveCount(0);
     await expect(page.locator('.leaflet-control-attribution')).not.toContainText('RainViewer');
@@ -66,7 +68,7 @@ test.describe('rain radar', () => {
       if (match) zooms.add(Number(match[1]));
     });
     await openApp(page);
-    await radarButton(page).click();
+    await chooseLayer(page, 'Rain radar');
     await expect(radarTiles(page).first()).toBeVisible();
     // Opening a place zooms the map in to street level.
     await page.locator('#search-input').fill('Oslo');
@@ -80,7 +82,7 @@ test.describe('rain radar', () => {
 
   test('the map can still be clicked through the radar', async ({ page }) => {
     await openApp(page);
-    await radarButton(page).click();
+    await chooseLayer(page, 'Rain radar');
     await expect(radarTiles(page).first()).toBeVisible();
     await pickPoint(page);
     await expect(page.locator('.current__temp')).toBeVisible();
@@ -91,7 +93,7 @@ test.describe('rain radar', () => {
 
     test('says so and switches back off', async ({ page }, testInfo) => {
       await openApp(page);
-      await radarButton(page).click();
+      await chooseLayer(page, 'Rain radar');
       await expect(page.locator('#locate-message')).toHaveText(
         'Rain radar is unavailable right now. Try again later.',
       );
@@ -240,7 +242,7 @@ test.describe('rain radar', () => {
       }, hidden);
 
     await setHidden(true);
-    await radarButton(page).click();
+    await chooseLayer(page, 'Rain radar');
     await expect(radarButton(page)).toHaveAttribute('aria-pressed', 'true');
     await page.waitForTimeout(500);
     expect(frameRequests).toEqual([]);

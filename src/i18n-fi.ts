@@ -20,6 +20,7 @@ export const FINNISH: Record<string, string> = {
   'Weather at my location': 'Sää sijainnissani',
   'Rain radar': 'Sadetutka',
   'Weather symbols': 'Sääsymbolit',
+  'Map layers': 'Karttatasot',
   Tonight: 'Tänä yönä',
   'Weather details': 'Säätiedot',
   Weather: 'Sää',

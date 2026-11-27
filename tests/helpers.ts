@@ -359,6 +359,16 @@ async function fakeNetwork(
   });
 }
 
+/**
+ * Turns a map layer on or off: the layers button (by My location) opens
+ * its menu, the item toggles that layer (and the menu closes).
+ */
+export async function chooseLayer(page: Page, name: 'Rain radar' | 'Weather symbols') {
+  const menu = page.locator('#layers-menu');
+  if (await menu.isHidden()) await page.getByRole('button', { name: 'Map layers' }).click();
+  await menu.getByRole('button', { name }).click();
+}
+
 /** Presses one of the place's actions in the weather panel's ⋯ menu. */
 export async function placeAction(
   page: Page,

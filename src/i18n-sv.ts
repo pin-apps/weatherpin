@@ -19,6 +19,7 @@ export const SWEDISH: Record<string, string> = {
   'Weather at my location': 'Vädret där jag är',
   'Rain radar': 'Regnradar',
   'Weather symbols': 'Vädersymboler',
+  'Map layers': 'Kartlager',
   Tonight: 'I natt',
   'Weather details': 'Väderuppgifter',
   Weather: 'Väder',

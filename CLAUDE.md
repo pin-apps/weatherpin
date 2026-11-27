@@ -62,7 +62,9 @@ licence: all rights reserved).
   a link). Since 2026: past ~2 h only, no forecast frames, colour scheme 2,
   zoom ≤ 7 (stretch above), 100 requests/IP/min: the newest frame at
   once, the past 2 h only on ▶ (loaded slowly, `src/radar/player.ts`). Off
-  by default; a toggle next to "My location".
+  by default; in the map layers menu next to "My location" (the button
+  `#layers-button` opens `#layers-menu`: Rain radar or Weather symbols,
+  one at a time; `main.ts`).
 - Radar over North America: Environment and Climate Change Canada's
   [MSC GeoMet](https://eccc-msc.github.io/open-data/msc-geomet/readme_en/)
   WMS, layer `RADAR_1KM_RRAI` (rain rates), or `RADAR_1KM_RSNO` (snow
@@ -306,8 +308,8 @@ Never run `wrangler deploy` by hand; CI deploys `main` (see README).
   page title keep the place name), ↑/↓ to reorder, remove with Undo. New
   favourites go to the end of the list. Its code loads the first time
   it's opened (start-up size budget)
-- `src/layer/` — the weather symbols layer: the round button above the
-  radar button (`#layer-button`, start-up; the rest loads when first
+- `src/layer/` — the weather symbols layer: "Weather symbols" in the map
+  layers menu (`#layer-button`, start-up; the rest loads when first
   turned on, or just after start-up if it was left on) shows the weather
   at the bigger cities in view as badges (symbol, temperature, name;
   Leaflet divIcons built with `el()`): **Now · Tonight (03:00) ·
@@ -424,7 +426,8 @@ Never run `wrangler deploy` by hand; CI deploys `main` (see README).
   - a link to `#quiz`), `texts.ts` (its texts in all four languages, out
     of the start-up language files). main.ts passes the map and the place
     name lookup in (importing them would split start-up code)
-- `src/balloon/` — "🎈 Launch a balloon" in the ⋯ menu (loaded on demand;
+- `src/balloon/` — "🎈 Launch a balloon" in the ⋯ menu (loaded on demand, its
+  CSS too, `balloon.css`;
   main.ts passes the map and the place name lookup in): a balloon from the
   place shown rides the forecast winds at a height (low 850 hPa ≈ 1.5 km,
   middle 700 ≈ 3 km, high 500 ≈ 5.5 km) for up to 5 days, worked out at

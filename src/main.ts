@@ -145,6 +145,43 @@ const worldMap = createMap(mapElement, (point) => {
   worldMap.revealMarker(panelCoveredArea());
 });
 
+// Map layers (the button by My location): the rain radar or the weather
+// symbols, one at a time, picked from a small menu that closes after a
+// choice, on Escape or a click elsewhere. The button is filled while one is
+// on (their own code sets each item's aria-pressed).
+const layersButton = document.querySelector<HTMLButtonElement>('#layers-button')!;
+const layersMenu = document.querySelector<HTMLElement>('#layers-menu')!;
+const layerItems = [...layersMenu.querySelectorAll<HTMLButtonElement>('button')];
+function showLayersMenu(open: boolean) {
+  layersMenu.hidden = !open;
+  layersButton.setAttribute('aria-expanded', String(open));
+  if (open) layerItems[0].focus();
+}
+layersButton.addEventListener('click', () => showLayersMenu(layersMenu.hidden));
+layersMenu.addEventListener('click', () => showLayersMenu(false));
+layersMenu.addEventListener('keydown', (event) => {
+  if (event.key !== 'Escape') return;
+  showLayersMenu(false);
+  layersButton.focus();
+});
+document.addEventListener('click', (event) => {
+  const target = event.target as Node;
+  if (!layersMenu.hidden && !layersMenu.contains(target) && !layersButton.contains(target)) {
+    showLayersMenu(false);
+  }
+});
+const pressed = (item: HTMLButtonElement) => item.getAttribute('aria-pressed') === 'true';
+for (const item of layerItems) {
+  new MutationObserver(() => {
+    // One at a time: turning one on turns the other off.
+    if (pressed(item))
+      layerItems
+        .filter((other) => other !== item && pressed(other))
+        .forEach((other) => other.click());
+    layersButton.classList.toggle('is-on', layerItems.some(pressed));
+  }).observe(item, { attributes: true, attributeFilter: ['aria-pressed'] });
+}
+
 // The rain radar's code loads right after start-up, not with it (the radar
 // is off by default; this keeps the start-up code in its size budget). A
 // press of the button in that moment is kept and handled once it's ready.

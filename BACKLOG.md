@@ -3,36 +3,40 @@
 Light list of ideas and loose ends. Add freely; move items to **Done** (or
 delete them) when they ship. Newest ideas at the bottom of each section.
 
-## Status (2026-11-25)
+## Status (2026-11-27)
 
-Live at https://weatherpin.app and working; **development on a pause**
-from 2026-11-25. The repo moved to `pin-apps/weatherpin` (public, fresh
-start, main protected by a ruleset, CodeQL and secret scanning on, no
-open alerts or PRs). Recently shipped: the quiz's smooth flights, bottom
-sheet on phones, bold question words and elevation clue; elevation in
-More details (see Done). Good first picks when picking up again: the
-security fixes (Next), the thunder heads-up and "today vs tomorrow"
-(Ideas); the warnings work waits on the WMO email. Decided: no EDM calculator with
-typed-in readings. Start-up JS is
-74.4/75 KB (since 2026-11-26 counting `src/i18n.ts`'s own chunk,
-which the check used to skip): ask before adding to start-up.
+Live at https://weatherpin.app and working; development continues. The
+repo is `pin-apps/weatherpin` (public, main protected by a ruleset, CodeQL
+and secret scanning on). Recently shipped: snow on the ground, fishing
+times, weather levels, colour skins, the weather haiku and the 🎈 balloon
+(Beta, step 1; see Done). **Start-up code is 74.7/75 KB and the Finnish
+texts ~90 bytes from their 12 KB limit: free space before adding anything
+at start-up** (Next). Good first picks: request timeouts and start-up
+space (Next), the security fixes, balloon step 2 and the sky viewer
+(Ideas). Decided: no EDM calculator with typed-in readings; no emails to
+outside organisations (2026-11-27), so nothing waits on a reply: plans
+that needed one (WMO's re-use terms for its warnings list, asking FMI for
+CORS) are dropped.
 
 ## Next
 
 - Security review and tests (planned; notes kept outside the repo).
+- Request timeouts: no request to Open-Meteo (or the others) has a time
+  limit, so one that never answers leaves "Loading…" up for good (seen
+  2026-11-27 on a bad connection). Give up after ~15 s: the normal error,
+  or the saved weather, with a way to retry; the balloon says it couldn't
+  get the winds.
+- Free start-up space: code 74.7/75 KB, Finnish texts ~90 bytes from
+  12 KB. Move rarely used start-up code on demand (as place names were in
+  #20), and About's long texts out of the start-up language files, before
+  the next start-up feature (thunder heads-up, race links…).
 - Screenshot comparisons in CI ("stage b" of the browser tests): approved
   baseline images in the repo, made in Playwright's Docker image, plus a
   manual "Update visual baselines" workflow.
 - More warning areas: the rest of Europe (MeteoAlarm: no CORS headers).
-  Finland has a link and an email to FMI asking for CORS; a broker
-  only on the Workers free tier (10 ms CPU per request), never a paid plan.
-  Best broker candidate: WMO's Severe Weather Information Centre list
-  (`severeweather.wmo.int/v2/json/wmo_all.json`, ~1,300 official warnings
-  from national services worldwide, ~625 KB, no CORS, checked 2026-11-21).
-  Its entries have only area text, no shapes: matching a point needs each
-  warning's CAP file (`capURL`) and its polygons, so the broker would
-  fetch and index them and answer per point. One broker could then give
-  most of the world official warnings, not just Finland.
+  Finland has FMI's warnings through the site's own broker; more countries
+  only through a broker on the Workers free tier (10 ms CPU per request),
+  never a paid plan (option A below).
 - Warnings broker for Europe ("option A", agreed 2026-11-21, not built):
   a Cloudflare Worker on the **free plan only** that reads MeteoAlarm's
   keyless country feeds (`feeds.meteoalarm.org/api/v1/warnings/feeds-<country>`,
@@ -131,6 +135,33 @@ which the check used to skip): ask before adding to start-up.
   historical forecast API; one more CSP host) and a live mode (flies in
   real time over the days, each phone working out where it is now).
 
+- 🔭 Sky viewer (discussed 2026-11-27, liked): "Show in the sky" in the
+  Sky section. Step 1, a sky dome: a flat circle (N/E/S/W) with today's
+  sun path and hour marks, sunrise/sunset directions, golden hour, the
+  moon (phase, rise/set), the northern lights' direction when there's a
+  chance, and a time slider (18:00 today, midsummer, midwinter); works
+  everywhere, no camera. Step 2, the camera view: the same drawn over the
+  back camera, by the compass and tilt. Uses `weather/solar.ts` (needs the
+  sun's azimuth too) and `moonPlace` in `weather/solunar.ts`; on demand,
+  ~6–10 KB, no new data or server. Android (Chrome, Samsung Internet):
+  `deviceorientationabsolute` or `AbsoluteOrientationSensor`, no motion
+  prompt; iPhone: `webkitCompassHeading` after a motion permission tap;
+  Firefox Android: check on a device. Compasses can be 5–20° off (figure 8
+  tip, "tap the sun" to line up); no compass (some budget phones,
+  computers) → the sky dome. Needs `camera=(self)` in `public/_headers`'
+  Permissions-Policy and a line in About (the picture stays on the
+  phone). Tests: fake camera and orientation events (Pixel 7, iPhone).
+- More playful ideas (2026-11-27): 🎼 a weather symphony (the weather
+  there as music made by the browser: rain as piano drops, wind as pads,
+  thunder as drums, key by temperature; also a calm rain-sounds mode);
+  🐧 a weather pet at the start place that dresses for the weather and
+  goes on trips (on the device only, ties in with the levels); 🍾 message
+  in a bottle drifting on real currents, found by whoever taps near where
+  it lands (needs shared storage on the Worker's free plan and set phrases
+  only, no typed text; the hardest).
+- Australia (a user asked, 2026-11-22): the Bureau of Meteorology's
+  licence forbids re-use; the "not covered" line could link to the BoM.
+
 ## Maybe
 
 Built or thought through, then put aside. Revisit only with a clear reason.
@@ -149,13 +180,6 @@ Built or thought through, then put aside. Revisit only with a clear reason.
 
 ## Waiting on others
 
-- WMO's re-use terms: before building the WMO warnings broker (Next),
-  confirm by email that the app may show SWIC warnings automatically (the
-  SWIC page says "free for re-use by media or other websites", WMO's
-  general terms are stricter). The owner sends it; Claude can draft it. A
-  user asked for radar and warnings in Australia (2026-11-22): the Bureau
-  of Meteorology's licence forbids re-use, so WMO is the way; meanwhile
-  the not-covered line could link to the BoM (not decided).
 - Owner's to-do: Google Search Console and Bing Webmaster Tools (verify the
   domain with a DNS record in Cloudflare, submit the sitemap), if not done.
 

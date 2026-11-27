@@ -2884,3 +2884,46 @@ body:has(.quiz[open]) {
   --color-accent: #ffffff;
   color: #ffffff;
 }
+
+/* Leaflet's own controls in the 1990s skin: the +/- buttons as square 3D
+   buttons, the credits row as a grey (or terminal) strip. */
+:root[data-skin='nineties'] .leaflet-container {
+  font-family: Tahoma, Verdana, Geneva, sans-serif;
+}
+
+:root[data-skin='nineties'] .leaflet-bar,
+:root[data-skin='nineties'] .leaflet-touch .leaflet-bar {
+  border: none;
+  border-radius: 0;
+  box-shadow: var(--shadow-panel);
+}
+
+:root[data-skin='nineties'] .leaflet-bar a,
+:root[data-skin='nineties'] .leaflet-bar a:hover {
+  border: none;
+  border-radius: 0;
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: var(--bevel);
+}
+
+:root[data-skin='nineties'] .leaflet-bar a:active {
+  box-shadow:
+    inset 1px 1px #000000,
+    inset -1px -1px #ffffff;
+}
+
+:root[data-skin='nineties'] .leaflet-bar a.leaflet-disabled {
+  background: var(--color-bg);
+  color: var(--color-text-muted);
+}
+
+:root[data-skin='nineties'] .leaflet-container .leaflet-control-attribution {
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: var(--bevel);
+}
+
+:root[data-skin='nineties'] .leaflet-container .leaflet-control-attribution a {
+  color: var(--color-accent);
+}

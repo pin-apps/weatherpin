@@ -9,9 +9,8 @@ Live at https://weatherpin.app and working; development continues. The
 repo is `pin-apps/weatherpin` (public, main protected by a ruleset, CodeQL
 and secret scanning on). Recently shipped: snow on the ground, fishing
 times, weather levels, colour skins, the weather haiku and the 🎈 balloon
-(Beta, step 1; see Done). **Start-up code is 74.7/75 KB and the Finnish
-texts ~90 bytes from their 12 KB limit: free space before adding anything
-at start-up** (Next). Good first picks: request timeouts and start-up
+(Beta, step 1; see Done). **Start-up code is 74.8/75 KB (texts 8.9/12 KB
+since #24): free code space before adding anything at start-up** (Next). Good first picks: request timeouts and start-up
 space (Next), the security fixes, balloon step 2 and the sky viewer
 (Ideas). Decided: no EDM calculator with typed-in readings; no emails to
 outside organisations (2026-11-27), so nothing waits on a reply: plans
@@ -26,10 +25,13 @@ CORS) are dropped.
   2026-11-27 on a bad connection). Give up after ~15 s: the normal error,
   or the saved weather, with a way to retry; the balloon says it couldn't
   get the winds.
-- Free start-up space: code 74.7/75 KB, Finnish texts ~90 bytes from
-  12 KB. Move rarely used start-up code on demand (as place names were in
-  #20), and About's long texts out of the start-up language files, before
-  the next start-up feature (thunder heads-up, race links…).
+- Flaky test: "Beaufort forces at the band edges" (`tests/units.spec.ts`)
+  fails now and then on the iPhone in WebKit and passes on its retry (3
+  times by 2026-11-27): find the race and fix it.
+- Free start-up space: About's texts load on demand since #24 (Finnish
+  start-up texts 12.2 → 8.9 KB); code is still 74.8/75 KB. Next: the ⋯ menu's actions on demand (~1–1.5 KB), as place names were
+  in #20, before the next start-up feature (TV forecast button, thunder
+  heads-up, race links…).
 - Screenshot comparisons in CI ("stage b" of the browser tests): approved
   baseline images in the repo, made in Playwright's Docker image, plus a
   manual "Update visual baselines" workflow.
@@ -135,7 +137,29 @@ CORS) are dropped.
   historical forecast API; one more CSP host) and a live mode (flies in
   real time over the days, each phone working out where it is now).
 
-- 🔭 Sky viewer (discussed 2026-11-27, liked): "Show in the sky" in the
+- 📺 TV forecast with a voice (2026-11-27, the favourite of the new
+  ideas): ▶ "Forecast" (⋯ menu or by the radar button; needs start-up
+  space, Next) hides the panel and buttons, zooms out to the region and
+  plays the next 24–48 h on 10–20 well-known cities (a built-in list per
+  region): big weather symbols and temperatures, wind arrows, a time bar
+  ("Tonight", "Tomorrow morning"…), ~25–30 s in 4 steps (6–12 h apart),
+  ~15 s without the voice. One Open-Meteo request for all the cities
+  (hourly; one call per city, ~15–20), cached; no server. Stops when the
+  map is touched; still steps with reduced motion; back to the normal map
+  at the end. Step 2, the voice: the browser's speech (Web Speech API) in
+  all four languages reads one short sentence per step, made from the
+  forecast ("Tomorrow rain spreads from the west…"); all sentences queued
+  at the ▶ tap (iPhone allows speech only from a tap), each sentence's
+  `start` event switches the map to its step (sentence-level sync; word
+  events are unreliable), captions always shown (silent phones, deaf
+  users), a safety timer per step if events don't come, no voice for the
+  language → captions on timing (never Finnish in an English voice), ⏸
+  restarts the current sentence (pause is unreliable on Android), ⏭ the
+  next; never starts sound by itself, a mute button. Later: Retro skin
+  symbols, a "tomorrow at noon" picture. Not smooth cloud/rain sweeps (no
+  free gridded images); the radar's ▶ shows the past 2 h. Tests: fake
+  speech events.
+  "Show in the sky" in the
   Sky section. Step 1, a sky dome: a flat circle (N/E/S/W) with today's
   sun path and hour marks, sunrise/sunset directions, golden hour, the
   moon (phase, rise/set), the northern lights' direction when there's a
@@ -151,6 +175,17 @@ CORS) are dropped.
   computers) → the sky dome. Needs `camera=(self)` in `public/_headers`'
   Permissions-Policy and a line in About (the picture stays on the
   phone). Tests: fake camera and orientation events (Pixel 7, iPhone).
+- More new ideas (2026-11-27, lower): 🎂 the weather of your life (the
+  weather on every birthday since 1940 from the archive, as a poster;
+  reuses past-weather and postcard code); 📻 radio only (the TV forecast's
+  voice without the map, sea-bulletin style); 🌍 "where is it perfect right
+  now?" (surf, ski, sauna and ice swim, barbecue, stargazing, golden hour:
+  a few hundred cities in one many-place request, then fly there); 🃏
+  weather duel cards (cities as cards with live stats, a daily deck like
+  the quiz, played over links). Dropped: a living map with snow and rain
+  over the whole map (too busy beside the labels, radar and panel); kept
+  as a small idea: a few flakes or drops around the marker for 2–3 s when
+  a place opens.
 - More playful ideas (2026-11-27): 🎼 a weather symphony (the weather
   there as music made by the browser: rain as piano drops, wind as pads,
   thunder as drums, key by temperature; also a calm rain-sounds mode);

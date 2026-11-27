@@ -86,6 +86,18 @@ test.describe('balloon', () => {
     await expect(page.locator('.balloon-marker--blue')).toBeVisible();
     await expect(page.locator('path.balloon-path--blue')).toHaveCount(1);
 
+    // The map follows: well into day 3 (thousands of km east), the balloon
+    // is still on screen.
+    await expect(card(page).locator('.balloon__progress')).toHaveText(/^Day [3-5] /, {
+      timeout: 15_000,
+    });
+    const viewport = page.viewportSize()!;
+    const balloon = (await page.locator('.balloon-marker--blue').boundingBox())!;
+    expect(balloon.x).toBeGreaterThanOrEqual(0);
+    expect(balloon.y).toBeGreaterThanOrEqual(0);
+    expect(balloon.x + balloon.width).toBeLessThanOrEqual(viewport.width);
+    expect(balloon.y + balloon.height).toBeLessThanOrEqual(viewport.height);
+
     // Paused: the balloon stays where it is.
     await card(page).getByRole('button', { name: 'Pause' }).click();
     await expect(card(page).getByRole('button', { name: 'Continue' })).toBeVisible();

@@ -357,6 +357,7 @@ export async function placeAction(
     | 'Share as a picture'
     | 'Weather excuse'
     | 'Small talk'
+    | 'Weather haiku'
     | 'Weather on a day…'
     | 'Start here',
 ) {

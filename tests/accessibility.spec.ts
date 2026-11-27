@@ -83,6 +83,14 @@ test.describe('accessibility (WCAG 2.2 AA)', { tag: '@layout' }, () => {
     expect(await violations(page)).toEqual([]);
   });
 
+  test('the weather haiku card', async ({ page }) => {
+    await page.goto('/#at=59.91,10.75&name=Oslo');
+    await expect(page.locator('.current__temp')).toBeVisible();
+    await placeAction(page, 'Weather haiku');
+    await expect(page.locator('.quip__text--poem')).toBeVisible();
+    expect(await violations(page)).toEqual([]);
+  });
+
   test('the temperature quiz: start and a round', async ({ page }) => {
     await page.goto('/#quiz');
     const quiz = page.getByRole('dialog', { name: 'Temperature quiz' });

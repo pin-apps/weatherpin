@@ -557,9 +557,10 @@ export const FINNISH: Record<string, string> = {
     'sateenvarjo myöhemmäksi (sadetta noin klo {time} alkaen)',
   'no umbrella needed today': 'sateenvarjoa ei tarvita tänään',
   'Small talk': 'Jutun juurta',
+  'Weather haiku': 'Säähaiku',
   Copied: 'Kopioitu',
   'html:fun-disclaimer':
-    'Säätekosyyt ja jutun juurta ovat huvin vuoksi. Ne perustuvat paikan sääennusteeseen, eikä niiden tehoa voida taata. Emme vastaa, jos esihenkilö ei hyväksy tekosyytä, keskustelu tyrehtyy ensimmäiseen lauseeseen tai kissasi on eri mieltä.',
+    'Säätekosyyt, jutun juurta ja haikut ovat huvin vuoksi. Ne perustuvat paikan sääennusteeseen, eikä niiden tehoa voida taata. Emme vastaa, jos esihenkilö ei hyväksy tekosyytä, keskustelu tyrehtyy ensimmäiseen lauseeseen tai kissasi on eri mieltä.',
   // ── Add to home screen (settings.ts) ──
   App: 'Sovellus',
   'Add to home screen': 'Lisää aloitusnäytölle',

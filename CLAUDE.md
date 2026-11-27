@@ -110,7 +110,7 @@ licence: all rights reserved).
   visitor gets one), CSS 14 KB; files loaded on demand are listed, not
   counted; after a build; CI runs it
 - `npm run check:i18n` — every text has a Finnish, a Swedish and a
-  Norwegian translation (CI runs it)
+  Norwegian translation, and the Finnish haiku lines are 5-7-5 (CI runs it)
 - `npm run test:worker` — the warnings broker's unit tests (`worker/`,
   Node's own test runner, no network; CI runs it)
 - `npm run format` — format with Prettier
@@ -158,8 +158,9 @@ Never run `wrangler deploy` by hand; CI deploys `main` (see README).
   weatherpin.app; sky colours by the weather). Share sheet with the file
   where there is one, else downloaded (`src/share-picture.ts`, shared
   with the past day's card). The drawing code loads on demand
-- `src/quip-buttons.ts` + `src/quips/` — "🎲 Weather excuse" and "💬 Small
-  talk" in the ⋯ menu, for fun: a card at the top of the panel
+- `src/quip-buttons.ts` + `src/quips/` — "🎲 Weather excuse", "💬 Small
+  talk" and "🍃 Weather haiku" in the ⋯ menu, for fun (the card takes its
+  icon and title from the button's own text): a card at the top of the panel
   (`card.ts`, one at a time) with a line made from the real weather there
   ("My cat is now a kite. Gusts of 25 mph from SW…"; small talk, in
   Finnish "Jutun juurta", sv/nb "Småprat": one opener about the real
@@ -175,7 +176,15 @@ Never run `wrangler deploy` by hand; CI deploys `main` (see README).
   languages side by side (`Record<Language, string>`, so a missing one
   won't compile; `check:i18n` checks the placeholders match): they load
   on demand, not in the start-up language files. Nothing asked for or
-  saved
+  saved. The haiku (`haiku.ts`, lines in `haiku-lines.ts`, data only): an
+  opening for the light (dawn, day, dusk, night, polar night, midnight
+  sun) or the season (by hemisphere; none within 23.5° of the equator),
+  then a middle and a closing line from the one weather group that fits
+  best (thunder, snow, rain, fog, wind, −10° frost, 28° heat, clear
+  night/day, grey), so a poem keeps to one subject; no numbers. English
+  and Finnish 5-7-5 (`check:i18n` counts the Finnish syllables), Swedish
+  and Norwegian short-long-short. A round shows each middle line once; the
+  card keeps a poem's line breaks (a text with `\n`)
 - `src/past-weather-button.ts` + `src/past-weather.ts` — "🎂 Weather on
   a day…" in the ⋯ menu: a dialog (`#past-weather` in `index.html`, apart
   from the forecast so an old day can't pass for today) with 1/10/50
@@ -543,6 +552,10 @@ Never run `wrangler deploy` by hand; CI deploys `main` (see README).
   copy, closing, fits the panel, Finnish
 - `tests/small-talk.spec.ts` — small talk: the lines that fit the test
   weather, tomorrow colder / the weekend / rain later, sharing, one card
+  at a time, fits the panel, Finnish
+- `tests/haiku.spec.ts` — the weather haiku: three lines from the right
+  groups (rain in Oslo, polar night and snow, a clear southern spring
+  night, heat near the equator with no season), a round, sharing, one card
   at a time, fits the panel, Finnish
 - `tests/quiz.spec.ts` — the quiz: from the button and `#quiz`, a full
   daily (scores and boxes, saved, shared, no second go), the answer

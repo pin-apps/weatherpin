@@ -555,9 +555,10 @@ export const NORWEGIAN: Record<string, string> = {
   'umbrella for later (rain from about {time})': 'paraply til senere (regn fra rundt kl. {time})',
   'no umbrella needed today': 'ingen paraply trengs i dag',
   'Small talk': 'Småprat',
+  'Weather haiku': 'Værhaiku',
   Copied: 'Kopiert',
   'html:fun-disclaimer':
-    'Værunnskyldninger og småprat er for moro skyld. De bygger på værmeldingen for stedet; resultatet kan ikke garanteres. Vi tar ikke ansvar hvis sjefen ikke godtar unnskyldningen, samtalen dør etter én setning, eller katten din er uenig.',
+    'Værunnskyldninger, småprat og haiku er for moro skyld. De bygger på værmeldingen for stedet; resultatet kan ikke garanteres. Vi tar ikke ansvar hvis sjefen ikke godtar unnskyldningen, samtalen dør etter én setning, eller katten din er uenig.',
   // ── Add to home screen (settings.ts) ──
   App: 'App',
   'Add to home screen': 'Legg til på startskjermen',

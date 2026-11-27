@@ -27,7 +27,7 @@ function countRequests(page: Page): () => number {
   let count = 0;
   page.on('request', (request) => {
     const url = new URL(request.url());
-    if (url.searchParams.get('hourly') === 'temperature_2m,weather_code,is_day') count++;
+    if (url.searchParams.get('hourly') === 'temperature_2m,weather_code') count++;
   });
   return () => count;
 }
@@ -54,7 +54,7 @@ test.describe('weather symbols layer', () => {
     await turnOn(page);
     const count = await badges(page).count();
     expect(count).toBeGreaterThanOrEqual(4);
-    expect(count).toBeLessThanOrEqual(24);
+    expect(count).toBeLessThanOrEqual(12);
     expect(requests()).toBe(1);
     // Every badge has a city's name.
     for (const name of await badges(page).locator('.weather-badge__name').allTextContents()) {
@@ -147,6 +147,24 @@ test.describe('weather symbols layer', () => {
     expect(requests()).toBe(2);
   });
 
+  test('remembered across visits: reopening asks for nothing', async ({ page }) => {
+    const requests = countRequests(page);
+    await openApp(page);
+    await turnOn(page);
+    expect(requests()).toBe(1);
+    const temps = await temperatures(page);
+    await page.goto('/');
+    await expect(badges(page).first()).toBeVisible();
+    expect(await temperatures(page)).toEqual(temps);
+    expect(requests()).toBe(1);
+    // Only temperature and weather code, 2 days: a lean request.
+    const saved = await page.evaluate(() =>
+      JSON.parse(localStorage.getItem('nordic-weather:weather-layer-cache')!),
+    );
+    expect(saved.version).toBe(1);
+    expect(Object.keys(saved.places).length).toBeGreaterThanOrEqual(4);
+  });
+
   test('hidden while the quiz is open', async ({ page }) => {
     await page.addInitScript(() => {
       localStorage.setItem(
@@ -169,7 +187,7 @@ test.describe('weather symbols layer', () => {
   test('a failure says so', async ({ page }) => {
     await page.route('https://api.open-meteo.com/v1/forecast**', (route) => {
       const url = new URL(route.request().url());
-      if (url.searchParams.get('hourly') !== 'temperature_2m,weather_code,is_day') {
+      if (url.searchParams.get('hourly') !== 'temperature_2m,weather_code') {
         return route.fallback();
       }
       // A broken answer (an HTTP error would log a console error).

@@ -6,9 +6,12 @@
 // left on (main.ts); hidden during the quiz, which it would give away.
 //
 // The cities (cities.ts, GeoNames) are taken biggest first, as many as fit
-// apart on screen; their weather comes in one Open-Meteo request for all
-// the places not already known (each counts as a call), kept 30 minutes,
-// so panning back asks for nothing.
+// apart on screen (12 at most); their weather comes in one lean Open-Meteo
+// request for all the places not already known (each counts as a call:
+// only temperature and weather code, hourly, 2 days), asked once the map
+// has stopped for a second, and kept 2 hours on the device, across visits
+// too, so panning back or reopening the app asks for nothing. Day or night
+// comes from the sun's height, not the request.
 
 import L from 'leaflet';
 import './weather-layer.css';
@@ -16,6 +19,7 @@ import { el } from '../dom';
 import type { PickedPoint } from '../map';
 import { readStored, writeStored } from '../storage';
 import { currentUnits } from '../units';
+import { sunElevation } from '../weather/solar';
 import { describeWeather } from '../weather/wmo';
 import { formatTemperature } from '../format';
 import { CITIES } from './cities';
@@ -58,19 +62,35 @@ interface Saved {
 }
 
 const STORAGE_KEY = 'weather-layer';
-const CACHE_MS = 30 * 60 * 1000;
+const CACHE_MS = 2 * 60 * 60 * 1000;
+const CACHE_KEY = 'weather-layer-cache';
+const MAX_KEPT = 200;
+const HOUR_MS = 3600 * 1000;
+// The sun's centre this far below the horizon: sunrise/sunset.
+const SUNSET_ELEVATION = -0.833;
 const TIMEOUT_MS = 15_000;
 // A badge's room on screen (px): cities closer than this are left out.
 const APART_X = 88;
 const APART_Y = 56;
 const EDGE = 24;
-const MAX_BADGES = 24;
-const MOVE_SETTLE_MS = 400;
+const MAX_BADGES = 12;
+const MOVE_SETTLE_MS = 1000;
 
-const cache = new Map<string, { at: number; readings: Partial<Record<Time, Reading>> }>();
+/** A city's hourly forecast, as asked: local times from `first`. */
+interface Known {
+  at: number;
+  /** Seconds from UTC to the place's local time. */
+  offset: number;
+  first: string;
+  temps: (number | null)[];
+  codes: (number | null)[];
+}
+const cache = new Map<string, Known>();
+let cacheLoaded = false;
 let cities: City[] | undefined;
 
 export function setUpWeatherLayer(host: WeatherLayerHost): WeatherLayer {
+  loadCache();
   const saved = loadSaved();
   let on = false;
   let paused = false;
@@ -153,7 +173,7 @@ export function setUpWeatherLayer(host: WeatherLayerHost): WeatherLayer {
   function draw(shown: City[]) {
     group.clearLayers();
     for (const city of shown) {
-      const reading = cache.get(key(city))!.readings[time];
+      const reading = readingFor(city, cache.get(key(city))!, time);
       if (!reading) continue;
       const place = { lat: city.lat, lng: wrapped(city.lng), name: city.name };
       group.addLayer(badge(city, reading, () => host.openPlace(place)));
@@ -234,24 +254,22 @@ const fresh = (city: City) => {
 };
 
 interface Answer {
-  current?: { time: string; temperature_2m: number; weather_code: number; is_day: number };
+  utc_offset_seconds?: number;
   hourly?: {
     time: string[];
     temperature_2m: (number | null)[];
     weather_code: (number | null)[];
-    is_day?: (number | null)[];
   };
 }
 
-/** The weather now, tonight and tomorrow at these cities: one request. */
+/** The hourly temperature and weather of these cities, 2 days: one request. */
 async function fetchReadings(list: City[]): Promise<void> {
   const params = new URLSearchParams({
     latitude: list.map((city) => city.lat.toFixed(2)).join(','),
     longitude: list.map((city) => wrapped(city.lng).toFixed(2)).join(','),
-    current: 'temperature_2m,weather_code,is_day',
-    hourly: 'temperature_2m,weather_code,is_day',
+    hourly: 'temperature_2m,weather_code',
     timezone: 'auto',
-    forecast_days: '3',
+    forecast_days: '2',
   });
   const response = await fetch(`https://api.open-meteo.com/v1/forecast?${params}`, {
     signal: AbortSignal.timeout(TIMEOUT_MS),
@@ -260,32 +278,70 @@ async function fetchReadings(list: City[]): Promise<void> {
   const data = (await response.json()) as Answer | Answer[];
   const answers = Array.isArray(data) ? data : [data];
   list.forEach((city, i) => {
-    const answer = answers[i];
-    if (!answer?.current || !answer.hourly) return;
-    cache.set(key(city), { at: Date.now(), readings: readingsOf(answer) });
+    const hourly = answers[i]?.hourly;
+    if (!hourly?.time?.length) return;
+    cache.set(key(city), {
+      at: Date.now(),
+      offset: answers[i].utc_offset_seconds ?? 0,
+      first: hourly.time[0],
+      temps: hourly.temperature_2m,
+      codes: hourly.weather_code,
+    });
   });
+  saveCache();
 }
 
-/** Now; tonight 03:00 (tomorrow's, unless it's before 03:00); tomorrow 15:00. Local times. */
-function readingsOf({ current, hourly }: Answer): Partial<Record<Time, Reading>> {
-  const now = current!;
-  const date = now.time.slice(0, 10);
-  const next = new Date(`${date}T00:00:00Z`);
-  next.setUTCDate(next.getUTCDate() + 1);
-  const tomorrow = next.toISOString().slice(0, 10);
-  const at = (stamp: string): Reading | undefined => {
-    const i = hourly!.time.indexOf(stamp);
-    const temperature = hourly!.temperature_2m[i];
-    const code = hourly!.weather_code[i];
-    if (i < 0 || temperature == null || code == null) return undefined;
-    return { temperature, code, isDay: (hourly!.is_day?.[i] ?? 1) === 1 };
-  };
-  const hour = Number(now.time.slice(11, 13));
+/**
+ * Now (this hour), tonight 03:00 (tomorrow's, unless it's before 03:00) or
+ * tomorrow 15:00, local time at the city; day or night by the sun there.
+ */
+function readingFor(city: City, known: Known, time: Time): Reading | undefined {
+  // Local wall-clock times, as if UTC.
+  const first = Date.parse(`${known.first}Z`);
+  const localNow = Date.now() + known.offset * 1000;
+  const midnight = Math.floor(localNow / (24 * HOUR_MS)) * 24 * HOUR_MS;
+  const localHour = new Date(localNow).getUTCHours();
+  const target =
+    time === 'now'
+      ? first + Math.floor((localNow - first) / HOUR_MS) * HOUR_MS
+      : midnight + (time === 'tonight' ? (localHour < 3 ? 3 : 27) : 39) * HOUR_MS;
+  const i = Math.round((target - first) / HOUR_MS);
+  const temperature = known.temps[i];
+  const code = known.codes[i];
+  if (i < 0 || temperature == null || code == null) return undefined;
+  const utc = target - known.offset * 1000;
   return {
-    now: { temperature: now.temperature_2m, code: now.weather_code, isDay: now.is_day === 1 },
-    tonight: at(`${hour < 3 ? date : tomorrow}T03:00`),
-    tomorrow: at(`${tomorrow}T15:00`),
+    temperature,
+    code,
+    isDay: sunElevation(city.lat, wrapped(city.lng), utc) > SUNSET_ELEVATION,
   };
+}
+
+/** The cities' weather kept from earlier visits, still fresh. */
+function loadCache() {
+  if (cacheLoaded) return;
+  cacheLoaded = true;
+  const stored = readStored(CACHE_KEY) as { version?: number; places?: unknown } | undefined;
+  if (stored?.version !== 1 || typeof stored.places !== 'object' || !stored.places) return;
+  for (const [place, known] of Object.entries(stored.places as Record<string, Known>)) {
+    const sound =
+      typeof known?.at === 'number' &&
+      Date.now() - known.at < CACHE_MS &&
+      typeof known.offset === 'number' &&
+      typeof known.first === 'string' &&
+      Array.isArray(known.temps) &&
+      Array.isArray(known.codes);
+    if (sound) cache.set(place, known);
+  }
+}
+
+/** Kept on the device: the freshest, at most 200 cities. */
+function saveCache() {
+  const kept = [...cache.entries()]
+    .filter(([, known]) => Date.now() - known.at < CACHE_MS)
+    .sort(([, a], [, b]) => b.at - a.at)
+    .slice(0, MAX_KEPT);
+  writeStored(CACHE_KEY, { version: 1, places: Object.fromEntries(kept) });
 }
 
 // ── Badges ──

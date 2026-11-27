@@ -223,7 +223,7 @@ async function fakeNetwork(
         return route.fulfill({ json: count === 1 ? answers[0] : answers });
       }
       // The weather symbols layer's many places (src/layer/weather-layer.ts).
-      if (url.searchParams.get('hourly') === 'temperature_2m,weather_code,is_day') {
+      if (url.searchParams.get('hourly') === 'temperature_2m,weather_code') {
         return route.fulfill({ json: weatherLayerFixture(url) });
       }
       // A balloon's winds at height (src/balloon/winds.ts).

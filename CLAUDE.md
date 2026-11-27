@@ -318,10 +318,12 @@ Never run `wrangler deploy` by hand; CI deploys `main` (see README).
   from `cities.ts` (made by `scripts/make-cities.py` from GeoNames'
   cities15000, CC BY 4.0: all ≥ 250,000 people, capitals, Nordic and
   Baltic places ≥ 15,000; biggest first), taken as many as fit ~88×56 px
-  apart (4–24); their weather in one Open-Meteo request for the places
-  not known (`current` + `hourly=temperature_2m,weather_code,is_day`,
-  `timezone=auto`, 3 days; 15 s timeout), kept 30 min, so panning back
-  asks nothing. A badge opens that city's weather. Saved as
+  apart (4–12); their weather in one Open-Meteo request for the places
+  not known (`hourly=temperature_2m,weather_code` only, `timezone=auto`, 2 days;
+  "Now" is this hour; day or night from the sun's height, `weather/solar.ts`;
+  15 s timeout), asked 1 s after the map stops, kept 2 h on the device
+  (`nordic-weather:weather-layer-cache`, 200 cities at most, in About's
+  privacy text), so panning back or reopening asks nothing. A badge opens that city's weather. Saved as
   `nordic-weather:weather-layer` (on, time). Hidden while the quiz is open
   (it would give the answers away). Its CSS (`weather-layer.css`) and
   texts load with it (start-up budgets)
@@ -435,7 +437,7 @@ Never run `wrangler deploy` by hand; CI deploys `main` (see README).
   snow or rain, or torn by 60 m/s), then drawn on the map in ~15 s (at
   once with reduced motion; Pause/tap the balloon, Skip to the end) with
   the weather up there and below. `winds.ts`: one Open-Meteo request per
-  point (`hourly=wind_speed_500hPa,…`, UTC), a new one ~250 km on (45 at
+  point (`hourly=wind_speed_500hPa,…`, UTC), a new one ~350 km on (30 at
   most a flight), cached 10 min; the launch place's asks all three heights
   (their winds now on the launch card). The card is a `<dialog id="balloon"
 class="quiz balloon">` (the quiz card's look and place). Result: distance

@@ -298,6 +298,36 @@ function openQuiz() {
 }
 if (window.location.hash === '#quiz') openQuiz();
 
+// The balloon (balloon/, loaded on demand): launched from the ⋯ menu at the
+// place shown, or a shared flight from a #balloon= link.
+const balloonDialog = document.querySelector<HTMLDialogElement>('#balloon')!;
+const balloonLink = (hash: string) => hash.startsWith('#balloon=');
+function openBalloon(target: PickedPoint | string) {
+  void import('./balloon/balloon').then(
+    ({ openBalloon: open }) => {
+      closePanel();
+      open(
+        {
+          dialog: balloonDialog,
+          map: worldMap.map,
+          placeName: (lat, lng) => placeNames().then((names) => names.placeNameAt(lat, lng)),
+          onClose: () => {
+            if (balloonLink(window.location.hash)) {
+              history.replaceState(null, '', window.location.pathname + window.location.search);
+            }
+          },
+        },
+        target,
+      );
+    },
+    () => undefined,
+  );
+}
+document.querySelector('.panel__balloon')!.addEventListener('click', () => {
+  if (currentPoint) openBalloon(currentPoint);
+});
+if (balloonLink(window.location.hash)) openBalloon(window.location.hash);
+
 /** How much of the map the panel hides: a bottom sheet, or a side panel. */
 function panelCoveredArea(): CoveredArea {
   const rect = panelElement.getBoundingClientRect();
@@ -365,6 +395,7 @@ async function loadWeather(
   if (!point.name && !quiet) void showPlaceName(point, controller.signal);
 
   if (!quiet) {
+    balloonDialog.close();
     panelMenu.close();
     panel.showLoading(point);
     favouriteButton.showFor(point);
@@ -521,6 +552,8 @@ window.addEventListener('hashchange', () => {
     worldMap.goTo(linked, panelCoveredArea());
   } else if (window.location.hash === '#quiz') {
     openQuiz();
+  } else if (balloonLink(window.location.hash)) {
+    openBalloon(window.location.hash);
   } else if (window.location.hash === '' && currentPoint) {
     // Back to the plain map. (Other hashes, like #about, leave it alone.)
     closePanel();
@@ -533,7 +566,8 @@ window.addEventListener('hashchange', () => {
 // press "My location".
 const linkedPlace = placeFromHash(window.location.hash);
 // Not under the quiz (a link to #quiz): its places need the map to themselves.
-const startPlace = linkedPlace ?? (quizOpen ? undefined : loadStartPlace());
+const startPlace =
+  linkedPlace ?? (quizOpen || balloonLink(window.location.hash) ? undefined : loadStartPlace());
 if (startPlace) {
   // Panel first, so the map knows how much of the screen it covers.
   void loadWeather(startPlace, linkedPlace ? 'none' : 'replace');

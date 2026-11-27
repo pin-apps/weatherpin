@@ -326,6 +326,11 @@
                 <span class="panel__menu-icon" aria-hidden="true">🍃</span>
                 <span data-i18n>Weather haiku</span>
               </button>
+              <!-- A balloon on the forecast winds from here (balloon/). -->
+              <button type="button" class="panel__menu-item panel__balloon">
+                <span class="panel__menu-icon" aria-hidden="true">🎈</span>
+                <span data-i18n>Launch a balloon</span>
+              </button>
               <!-- The weather on a past day, in a dialog (past-weather.ts). -->
               <button type="button" class="panel__menu-item panel__past" hidden>
                 <span class="panel__menu-icon" aria-hidden="true">🎂</span>
@@ -389,7 +394,7 @@
         <h3 data-i18n>Where the data comes from</h3>
         <ul class="about__list">
           <li data-i18n-html="sources-weather">
-            <strong>Weather, UV, snow and sea:</strong>
+            <strong>Weather, UV, snow and sea, and the balloon's winds:</strong>
             <a href="https://open-meteo.com/">Open-Meteo.com</a>
             (<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>)
           </li>
@@ -477,11 +482,12 @@
           </li>
           <li data-i18n-html="privacy-saved">
             Your favourites, start place (rounded to about 1 km), unit choices, light or dark
-            appearance and colours, language, rain radar setting, which sections you've folded away
-            and your quiz results (today's score, streak and best) are saved only in this browser,
-            on this device. So is your weather journey: points, badges and which roughly 50 km
-            areas, countries and continents you've looked at. So is the weather of the last three
-            places you looked at (rounded to about 1 km), so it can be shown without a connection.
+            appearance and colours, language, rain radar setting, which sections you've folded away,
+            your quiz results (today's score, streak and best) and your balloon's name and best
+            flight are saved only in this browser, on this device. So is your weather journey:
+            points, badges and which roughly 50 km areas, countries and continents you've looked at.
+            So is the weather of the last three places you looked at (rounded to about 1 km), so it
+            can be shown without a connection.
           </li>
           <li data-i18n-html="privacy-sent">
             To show the weather, the coordinates of the place you pick are sent to the weather
@@ -548,6 +554,18 @@
       </header>
       <div class="quiz__body"></div>
       <p class="quiz__status" role="status"></p>
+    </dialog>
+
+    <!-- The balloon (src/balloon/): the quiz card's look and place, not
+         modal, so the map shows the flight. Filled by the code. -->
+    <dialog id="balloon" class="quiz balloon" aria-labelledby="balloon-title">
+      <header class="quiz__header">
+        <h2 id="balloon-title" class="quiz__title"></h2>
+        <button type="button" class="quiz__close" aria-label="Close" data-i18n-attrs="aria-label">
+          <span aria-hidden="true">×</span>
+        </button>
+      </header>
+      <div class="quiz__body"></div>
     </dialog>
 
     <!-- Settings (src/settings.ts), opened from the ⚙ button. Each row of

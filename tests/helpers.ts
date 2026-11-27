@@ -15,6 +15,7 @@ import {
 import { airQualityFixture, type AirQualityKind } from './fixtures/air-quality';
 import { archiveFixture } from './fixtures/archive';
 import { auroraFixture } from './fixtures/aurora';
+import { balloonWindsFixture } from './fixtures/balloon';
 import { forecastFixture, type ForecastKind } from './fixtures/forecast';
 import { marineFixture, type MarineKind } from './fixtures/marine';
 import { ECCC_CAPABILITIES, radarFramesFixture } from './fixtures/radar';
@@ -220,6 +221,10 @@ async function fakeNetwork(
         }));
         return route.fulfill({ json: count === 1 ? answers[0] : answers });
       }
+      // A balloon's winds at height (src/balloon/winds.ts).
+      if (url.searchParams.get('hourly')?.includes('hPa')) {
+        return route.fulfill({ json: balloonWindsFixture(url) });
+      }
       return route.fulfill({ json: forecastFixture(forecastMode) });
     }
 
@@ -358,6 +363,7 @@ export async function placeAction(
     | 'Weather excuse'
     | 'Small talk'
     | 'Weather haiku'
+    | 'Launch a balloon'
     | 'Weather on a day…'
     | 'Start here',
 ) {

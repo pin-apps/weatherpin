@@ -1,13 +1,24 @@
-// The weather symbols layer (src/layer/weather-layer.ts): the button above
-// the radar button shows the weather at the bigger cities in view, now,
+// The weather symbols layer (src/layer/weather-layer.ts): picked in the map
+// layers menu (the button by My location; the rain radar or this, one at a
+// time), it shows the weather at the bigger cities in view, now,
 // tonight or tomorrow (the time bar), in one request for all of them
 // (fixtures/weather-layer.ts: tonight 6° colder, tomorrow 3° warmer than
 // now); a badge opens that city's weather; kept; hidden during the quiz.
 
 import type { Page } from '@playwright/test';
-import { expect, openApp, overlappingPairs, test, visibleBoxes, waitForMapStill } from './helpers';
+import {
+  chooseLayer,
+  expect,
+  openApp,
+  overlappingPairs,
+  test,
+  visibleBoxes,
+  waitForMapStill,
+} from './helpers';
 
+// The menu item (hidden while the layers menu is closed).
 const button = (page: Page) => page.locator('#layer-button');
+const layersButton = (page: Page) => page.locator('#layers-button');
 const bar = (page: Page) => page.getByRole('group', { name: 'Weather symbols' });
 const badges = (page: Page) => page.locator('.weather-badge');
 
@@ -22,7 +33,7 @@ function countRequests(page: Page): () => number {
 }
 
 async function turnOn(page: Page) {
-  await button(page).click();
+  await chooseLayer(page, 'Weather symbols');
   await expect(button(page)).toHaveAttribute('aria-pressed', 'true');
   await expect(badges(page).first()).toBeVisible();
 }
@@ -108,8 +119,9 @@ test.describe('weather symbols layer', () => {
       'aria-pressed',
       'true',
     );
-    await button(page).click();
+    await chooseLayer(page, 'Weather symbols');
     await expect(button(page)).toHaveAttribute('aria-pressed', 'false');
+    await expect(layersButton(page)).not.toHaveClass(/is-on/);
     await expect(badges(page)).toHaveCount(0);
     await expect(bar(page)).toBeHidden();
     const saved = await page.evaluate(() => localStorage.getItem('nordic-weather:weather-layer'));
@@ -164,7 +176,7 @@ test.describe('weather symbols layer', () => {
       return route.fulfill({ contentType: 'application/json', body: 'not json' });
     });
     await openApp(page);
-    await button(page).click();
+    await chooseLayer(page, 'Weather symbols');
     await expect(bar(page)).toContainText(
       "Couldn't load the weather symbols. Move the map to try again.",
     );
@@ -181,34 +193,64 @@ test.describe('weather symbols layer', () => {
     });
   });
 
-  test(
-    'with the radar on too: the bars apart, nothing overlapping',
-    { tag: '@layout' },
-    async ({ page }) => {
-      await openApp(page);
-      await page.getByRole('button', { name: 'Rain radar' }).click();
-      await expect(page.locator('.radar-bar')).toBeVisible();
-      await turnOn(page);
-      const boxes = await visibleBoxes(page, {
-        'weather bar': '.weather-bar',
-        'radar bar': '.radar-bar',
-        'weather symbols button': '#layer-button',
-        'rain radar button': '#radar-button',
-        'location button': '#locate-button',
-        attribution: '.leaflet-control-attribution',
-      });
-      expect(overlappingPairs(boxes)).toEqual([]);
-      for (const time of await bar(page).getByRole('button').all()) {
-        expect((await time.boundingBox())!.height).toBeGreaterThanOrEqual(44);
-      }
-    },
-  );
+  test('the layers menu: one at a time; Escape and a click elsewhere close it', async ({
+    page,
+  }) => {
+    await openApp(page);
+    const menu = page.locator('#layers-menu');
+    await layersButton(page).click();
+    await expect(layersButton(page)).toHaveAttribute('aria-expanded', 'true');
+    await expect(menu.getByRole('button', { name: 'Rain radar' })).toBeFocused();
+    await page.keyboard.press('Escape');
+    await expect(menu).toBeHidden();
+    await expect(layersButton(page)).toBeFocused();
+    await layersButton(page).click();
+    await page.locator('.search__input').click();
+    await expect(menu).toBeHidden();
+
+    // The radar, then the weather symbols: the radar goes off.
+    await chooseLayer(page, 'Rain radar');
+    await expect(menu).toBeHidden();
+    await expect(layersButton(page)).toHaveClass(/is-on/);
+    await expect(page.locator('.radar-bar')).toBeVisible();
+    await chooseLayer(page, 'Weather symbols');
+    await expect(badges(page).first()).toBeVisible();
+    await expect(page.locator('#radar-button')).toHaveAttribute('aria-pressed', 'false');
+    await expect(page.locator('.radar-bar')).toBeHidden();
+    // And back.
+    await chooseLayer(page, 'Rain radar');
+    await expect(button(page)).toHaveAttribute('aria-pressed', 'false');
+    await expect(badges(page)).toHaveCount(0);
+    await expect(layersButton(page)).toHaveClass(/is-on/);
+  });
+
+  test('the menu fits beside the button', { tag: '@layout' }, async ({ page }) => {
+    await openApp(page);
+    await layersButton(page).click();
+    const boxes = await visibleBoxes(page, {
+      'layers menu': '#layers-menu',
+      'map layers button': '#layers-button',
+      'location button': '#locate-button',
+      attribution: '.leaflet-control-attribution',
+      'search box': '.search__input',
+    });
+    expect(overlappingPairs(boxes)).toEqual([]);
+    const viewport = page.viewportSize()!;
+    const menuBox = boxes.find((box) => box.name === 'layers menu')!;
+    expect(menuBox.y).toBeGreaterThanOrEqual(0);
+    expect(menuBox.x).toBeGreaterThanOrEqual(0);
+    expect(menuBox.y + menuBox.height).toBeLessThanOrEqual(viewport.height);
+    for (const item of await page.locator('#layers-menu button').all()) {
+      expect((await item.boundingBox())!.height).toBeGreaterThanOrEqual(44);
+    }
+  });
 
   test.describe('in Finnish', () => {
     test.use({ locale: 'fi-FI' });
 
     test('"Sääsymbolit"', async ({ page }) => {
       await openApp(page);
+      await page.getByRole('button', { name: 'Karttatasot' }).click();
       await page.getByRole('button', { name: 'Sääsymbolit' }).click();
       const finnishBar = page.getByRole('group', { name: 'Sääsymbolit' });
       await expect(finnishBar.getByRole('button', { name: 'Nyt' })).toBeVisible();

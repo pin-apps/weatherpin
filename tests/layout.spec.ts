@@ -32,8 +32,7 @@ const CONTROLS = {
   'zoom buttons': '.leaflet-control-zoom',
   attribution: '.leaflet-control-attribution',
   'location button': '#locate-button',
-  'rain radar button': '#radar-button',
-  'weather symbols button': '#layer-button',
+  'map layers button': '#layers-button',
 };
 
 const WITH_PANEL = { ...CONTROLS, 'weather panel': '#panel' };
@@ -312,8 +311,7 @@ test.describe('layout', { tag: '@layout' }, () => {
     await pickPoint(page);
     const boxes = await visibleBoxes(page, {
       'location button': '#locate-button',
-      'rain radar button': '#radar-button',
-      'weather symbols button': '#layer-button',
+      'map layers button': '#layers-button',
       'close button': '.panel__close',
       'favourite button': '.panel__favourite',
       'settings button': '#settings-button',

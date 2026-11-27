@@ -244,7 +244,7 @@ test.describe('temperature quiz', () => {
               quiz: '#quiz',
               credits: '.leaflet-control-attribution',
               location: '#locate-button',
-              radar: '#radar-button',
+              layers: '#layers-button',
             }),
           ),
         )

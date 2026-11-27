@@ -220,6 +220,7 @@ Built or thought through, then put aside. Revisit only with a clear reason.
 
 Newest first, one line each; the details are in the PRs and git history.
 
+- Map layers menu: one button by My location for the rain radar or the weather symbols, one at a time
 - ☀️ Weather symbols layer: the weather now, tonight or tomorrow at the bigger cities in view
 - 💾 1990s colours: a light "Windows 95" look (grey, navy title bar, 3D buttons) and a dark DOS terminal (green on black)
 - 🎈 Launch a balloon: forecast winds at a height, flight on the map, weather up there, a share link

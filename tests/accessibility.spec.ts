@@ -6,7 +6,16 @@
 
 import AxeBuilder from '@axe-core/playwright';
 import type { Page } from '@playwright/test';
-import { expect, goOffline, openApp, openSettings, pickPoint, placeAction, test } from './helpers';
+import {
+  chooseLayer,
+  expect,
+  goOffline,
+  openApp,
+  openSettings,
+  pickPoint,
+  placeAction,
+  test,
+} from './helpers';
 import { forecastFixture } from './fixtures/forecast';
 import { roadForecastsFixture } from './fixtures/roads';
 
@@ -106,7 +115,7 @@ test.describe('accessibility (WCAG 2.2 AA)', { tag: '@layout' }, () => {
 
   test('the weather symbols layer', async ({ page }) => {
     await page.goto('/');
-    await page.locator('#layer-button').click();
+    await chooseLayer(page, 'Weather symbols');
     await expect(page.locator('.weather-badge').first()).toBeVisible();
     expect(await violations(page)).toEqual([]);
   });
@@ -218,7 +227,7 @@ test.describe('accessibility (WCAG 2.2 AA)', { tag: '@layout' }, () => {
 
   test('the rain radar with its history bar', async ({ page }) => {
     await openApp(page);
-    await page.getByRole('button', { name: 'Rain radar' }).click();
+    await chooseLayer(page, 'Rain radar');
     await expect(page.locator('.radar-bar')).toBeVisible();
     expect(await violations(page)).toEqual([]);
   });

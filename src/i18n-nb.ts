@@ -20,6 +20,7 @@ export const NORWEGIAN: Record<string, string> = {
   'Weather at my location': 'Været der jeg er',
   'Rain radar': 'Nedbørsradar',
   'Weather symbols': 'Værsymboler',
+  'Map layers': 'Kartlag',
   Tonight: 'I natt',
   'Weather details': 'Værdetaljer',
   Weather: 'Vær',

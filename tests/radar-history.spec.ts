@@ -6,6 +6,7 @@
 
 import type { Page } from '@playwright/test';
 import {
+  chooseLayer,
   expect,
   offScreen,
   openApp,
@@ -16,7 +17,6 @@ import {
   visibleBoxes,
 } from './helpers';
 
-const radarButton = (page: Page) => page.getByRole('button', { name: 'Rain radar' });
 const bar = (page: Page) => page.locator('.radar-bar');
 const play = (page: Page) => page.locator('.radar-bar__play');
 const slider = (page: Page) => page.getByRole('slider', { name: 'Radar time' });
@@ -39,7 +39,7 @@ const framesInOrder = (asked: { frame: string }[]) => [...new Set(asked.map((a) 
 
 async function radarOn(page: Page) {
   await openApp(page);
-  await radarButton(page).click();
+  await chooseLayer(page, 'Rain radar');
   await expect(bar(page)).toBeVisible();
 }
 
@@ -50,7 +50,7 @@ test.describe('rain radar history', () => {
     const asked = rainViewerTiles(page);
     await openApp(page);
     await expect(bar(page)).toBeHidden();
-    await radarButton(page).click();
+    await chooseLayer(page, 'Rain radar');
     await expect(bar(page)).toBeVisible();
     await expect(time(page)).toHaveText('14:00 · latest');
     await expect(slider(page)).toHaveAttribute('max', '12');
@@ -61,7 +61,7 @@ test.describe('rain radar history', () => {
     await page.waitForTimeout(1500);
     expect(framesInOrder(asked)).toEqual(['test1794747600']);
 
-    await radarButton(page).click();
+    await chooseLayer(page, 'Rain radar');
     await expect(bar(page)).toBeHidden();
   });
 
@@ -116,7 +116,7 @@ test.describe('rain radar history', () => {
   test('turning the radar off stops it all', async ({ page }) => {
     await radarOn(page);
     await play(page).click();
-    await radarButton(page).click();
+    await chooseLayer(page, 'Rain radar');
     await expect(bar(page)).toBeHidden();
     await expect(radarLayers(page)).toHaveCount(0);
     await expect(credit(page)).not.toContainText('RainViewer');
@@ -147,7 +147,7 @@ test.describe('rain radar history', () => {
       'zoom buttons': '.leaflet-control-zoom',
       attribution: '.leaflet-control-attribution',
       'location button': '#locate-button',
-      'rain radar button': '#radar-button',
+      'map layers button': '#layers-button',
       'radar history bar': '.radar-bar',
     };
     let boxes = await visibleBoxes(page, controls);
@@ -169,6 +169,7 @@ test.describe('rain radar history', () => {
 
     test('the bar in Finnish', async ({ page }) => {
       await openApp(page);
+      await page.getByRole('button', { name: 'Karttatasot' }).click();
       await page.getByRole('button', { name: 'Sadetutka' }).click();
       await expect(page.locator('.radar-bar__time')).toHaveText('14:00 · uusin');
       await expect(page.locator('.radar-bar__play')).toHaveAccessibleName('Toista tutkahistoria');

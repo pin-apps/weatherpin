@@ -5,6 +5,7 @@
 // (importing them would pull start-up code into this chunk).
 
 import L from 'leaflet';
+import './balloon.css';
 import { el } from '../dom';
 import {
   formatCoordinates,

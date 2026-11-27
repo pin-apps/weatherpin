@@ -169,6 +169,7 @@ test.describe('rain radar history', () => {
 
     test('the bar in Finnish', async ({ page }) => {
       await openApp(page);
+      await page.getByRole('button', { name: 'Karttatasot' }).click();
       await page.getByRole('button', { name: 'Sadetutka' }).click();
       await expect(page.locator('.radar-bar__time')).toHaveText('14:00 · uusin');
       await expect(page.locator('.radar-bar__play')).toHaveAccessibleName('Toista tutkahistoria');

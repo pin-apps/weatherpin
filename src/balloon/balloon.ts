@@ -48,6 +48,13 @@ interface Saved {
 const STORAGE_KEY = 'balloon';
 // The flight plays at 8 hours a second: 5 days in 15 s.
 const HOURS_PER_SECOND = 8;
+// The map first shows the first day's stretch, then follows the balloon:
+// when it reaches the edge of the free part of the map, a short pan puts
+// it back in the middle (room ahead), as a camera following it would.
+const FIRST_VIEW_HOURS = 24;
+const EDGE_PX = 48;
+// Above the map's top edge: the search bar.
+const TOP_BAR_PX = 40;
 const LEVEL_TEXT: Record<Level, TextName> = { 850: 'low', 700: 'middle', 500: 'high' };
 const HINT_TEXT: Record<Level, TextName> = { 850: 'lowHint', 700: 'middleHint', 500: 'highHint' };
 const ENDING_TEXT: Record<Ending, TextName> = {
@@ -63,6 +70,8 @@ let host: BalloonHost | undefined;
 let screen = 0;
 let layers: L.Layer[] = [];
 let stopPlaying: (() => void) | undefined;
+// While the map pans or zooms, following waits for it.
+let mapMoving = false;
 
 /** Opens the card: the launch for a place, or a flight from a link's #hash. */
 export function openBalloon(newHost: BalloonHost, target: PickedPoint | string): void {
@@ -97,6 +106,8 @@ function setUp(newHost: BalloonHost) {
   });
   new ResizeObserver(publishCoveredArea).observe(dialog);
   window.addEventListener('resize', publishCoveredArea);
+  newHost.map.on('movestart', () => (mapMoving = true));
+  newHost.map.on('moveend', () => (mapMoving = false));
 }
 
 // ── Screens ──
@@ -144,7 +155,7 @@ function showLaunch(place: PickedPoint) {
   colours.append(...colourButtons);
   pressOnly(colourButtons, colourButtons[COLOURS.indexOf(colour)]);
 
-  const launchButton = el('button', 'button quiz__primary balloon__launch', b('launch'));
+  const launchButton = el('button', 'button quiz__primary', b('launch'));
   launchButton.type = 'button';
   launchButton.disabled = true;
 
@@ -159,7 +170,7 @@ function showLaunch(place: PickedPoint) {
       nameInput,
       colourLabel,
       colours,
-      launchButton,
+      actionRow(launchButton),
       el('p', 'balloon__note', b('game')),
     ],
     launchButton,
@@ -283,7 +294,10 @@ function play(
   const marker = balloonMarker(latLngs[0], shared.colour, true);
   layers = [casing, line, marker];
   layers.forEach((layer) => layer.addTo(host!.map));
-  fitFlight(latLngs);
+  // The first day's stretch to begin with; the map then follows the
+  // balloon, and shows the whole flight at the end.
+  const firstDay = latLngs.filter((_, index) => track[index].hour <= FIRST_VIEW_HOURS);
+  fitFlight(firstDay.length > 1 ? firstDay : latLngs, false);
 
   const progress = el('p', 'balloon__progress');
   const upThere = el('p', 'balloon__up');
@@ -292,8 +306,7 @@ function play(
   pauseButton.type = 'button';
   const skipButton = el('button', 'button balloon__skip', b('skip'));
   skipButton.type = 'button';
-  const actions = el('div', 'quiz__actions balloon__actions');
-  actions.append(pauseButton, skipButton);
+  const actions = actionRow(pauseButton, skipButton);
   setTitle(shared.name || b('yourBalloon'));
   setBody([progress, upThere, below, actions], pauseButton);
 
@@ -319,6 +332,7 @@ function play(
     casing.setLatLngs(drawn);
     line.setLatLngs(drawn);
     marker.setLatLng(here);
+    if (!reduced) follow(here);
     const km = (cumulative[i] + (cumulative[next] - cumulative[i]) * fraction) * scale;
     const wholeHours = Math.floor(hour);
     progress.textContent = b('progress', {
@@ -338,6 +352,7 @@ function play(
     draw();
     marker.remove();
     layers.push(landingMarker(latLngs[latLngs.length - 1]).addTo(host!.map));
+    fitFlight(latLngs, !reduced);
     if (mine === screen) done();
   };
 
@@ -388,8 +403,7 @@ function showResult(shared: SharedFlight, place: PickedPoint, topSpeed: number) 
   shareButton.type = 'button';
   const againButton = el('button', 'button', b('flyAgain'));
   againButton.type = 'button';
-  const actions = el('div', 'quiz__actions balloon__actions');
-  actions.append(shareButton, againButton);
+  const actions = actionRow(shareButton, againButton);
   const shareStatus = el('p', 'balloon__status');
   shareStatus.setAttribute('role', 'status');
 
@@ -483,7 +497,7 @@ function showShared(shared: SharedFlight) {
         ...(saved.bestKm
           ? [el('p', 'balloon__best', b('yourBest', { distance: distanceText(saved.bestKm) }))]
           : []),
-        launchButton,
+        actionRow(launchButton),
         el('p', 'balloon__note', b('game')),
       ],
       launchButton,
@@ -561,14 +575,35 @@ function unwrapped(points: readonly Point[]): L.LatLng[] {
   return result;
 }
 
-function fitFlight(latLngs: L.LatLng[]) {
+/** Shows these points in the part of the map the card leaves free. */
+function fitFlight(latLngs: L.LatLng[], animate: boolean) {
+  host!.map.fitBounds(L.latLngBounds(latLngs), { ...freeArea(), maxZoom: 6, animate });
+}
+
+/** At the edge of the free part of the map: pans it back to the middle. */
+function follow(here: L.LatLng) {
+  const map = host!.map;
+  if (mapMoving) return;
+  const size = map.getSize();
   const { right, bottom } = coveredByCard();
-  host!.map.fitBounds(L.latLngBounds(latLngs), {
-    paddingTopLeft: [32, 72],
-    paddingBottomRight: [32 + right, 32 + bottom],
-    maxZoom: 6,
-    animate: false,
-  });
+  const at = map.latLngToContainerPoint(here);
+  const inside =
+    at.x >= EDGE_PX &&
+    at.y >= EDGE_PX + TOP_BAR_PX &&
+    at.x <= size.x - right - EDGE_PX &&
+    at.y <= size.y - bottom - EDGE_PX;
+  if (inside) return;
+  const middle = L.point((size.x - right) / 2, (TOP_BAR_PX + size.y - bottom) / 2);
+  map.panBy(at.subtract(middle), { animate: true, duration: 0.5 });
+}
+
+/** Leaflet padding for the map outside the card (and the search bar on top). */
+function freeArea(): { paddingTopLeft: L.PointTuple; paddingBottomRight: L.PointTuple } {
+  const { right, bottom } = coveredByCard();
+  return {
+    paddingTopLeft: [EDGE_PX, EDGE_PX + TOP_BAR_PX],
+    paddingBottomRight: [EDGE_PX + right, EDGE_PX + bottom],
+  };
 }
 
 /** How much of the map the card hides (as for the quiz card). */
@@ -600,6 +635,13 @@ function setBody(children: Node[], focus?: HTMLElement) {
   (focus ?? body.querySelector<HTMLElement>('button') ?? host!.dialog).focus({
     preventScroll: true,
   });
+}
+
+/** Buttons side by side, as on the quiz card (wrapping on narrow phones). */
+function actionRow(...buttons: HTMLButtonElement[]): HTMLElement {
+  const row = el('div', 'quiz__row quiz__actions');
+  row.append(...buttons);
+  return row;
 }
 
 function pressOnly(buttons: HTMLButtonElement[], pressed: HTMLButtonElement) {

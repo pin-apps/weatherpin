@@ -1635,6 +1635,21 @@ body:has(.quiz[open]) {
   }
 }
 
+/* A phone on its side: too little height to stack the weather symbols
+   button above the radar button, so it goes left of it, and the radar's
+   bar one button further left (layer/weather-layer.css does the same for
+   its own bar). */
+@media (max-width: 767px) and (max-height: 500px) {
+  .layer-button {
+    right: calc(var(--covered-right) + 132px);
+    bottom: calc(var(--covered-bottom) + 44px);
+  }
+
+  .radar-bar {
+    right: 192px;
+  }
+}
+
 /* Very narrow phones: the credits (with the radar's) take two lines. */
 @media (max-width: 359px) {
   .locate,

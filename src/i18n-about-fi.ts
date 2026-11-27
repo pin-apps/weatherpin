@@ -23,7 +23,7 @@ export const FINNISH_ABOUT: Record<string, string> = {
   'html:sources-weather':
     '<strong>Sää, UV, lumi ja meri sekä pallon tuulet:</strong> <a href="https://open-meteo.com/">Open-Meteo.com</a> (<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>)',
   'html:sources-search':
-    '<strong>Paikkahaku:</strong> Open-Meteo, paikannimet <a href="https://www.geonames.org/">GeoNames</a> (<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>)',
+    '<strong>Paikkahaku ja sääsymbolien kaupungit:</strong> Open-Meteo, paikannimet <a href="https://www.geonames.org/">GeoNames</a> (<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>)',
   'html:sources-names':
     '<strong>Napautettujen paikkojen nimet:</strong> <a href="https://nominatim.org/">Nominatim</a>, © <a href="https://www.openstreetmap.org/copyright">OpenStreetMapin</a> tekijät (ODbL)',
   'html:sources-air':
@@ -51,7 +51,7 @@ export const FINNISH_ABOUT: Record<string, string> = {
   'html:privacy-tracking':
     'Ei tiliä, ei evästeitä eikä seurantaa. Käynnit lasketaan nimettömästi Cloudflare Web Analyticsilla, ilman evästeitä tai mitään, mistä sinut voisi tunnistaa.',
   'html:privacy-saved':
-    'Suosikkisi, aloituspaikka (noin 1 km:n tarkkuudella), yksikkövalinnat, vaalea tai tumma ulkoasu ja värit, kieli, sadetutkan asetus, piilottamasi osiot, visatuloksesi (päivän tulos, putki ja paras) sekä pallosi nimi ja paras lento tallennetaan vain tähän selaimeen, tällä laitteella. Samoin sääseikkailusi: pisteet, merkit ja mitä noin 50 km:n alueita, maita ja maanosia olet katsonut. Samoin kolmen viimeksi katsomasi paikan sää (noin 1 km:n tarkkuudella), jotta sen voi näyttää ilman yhteyttä.',
+    'Suosikkisi, aloituspaikka (noin 1 km:n tarkkuudella), yksikkövalinnat, vaalea tai tumma ulkoasu ja värit, kieli, sadetutkan ja sääsymbolien asetukset, piilottamasi osiot, visatuloksesi (päivän tulos, putki ja paras) sekä pallosi nimi ja paras lento tallennetaan vain tähän selaimeen, tällä laitteella. Samoin sääseikkailusi: pisteet, merkit ja mitä noin 50 km:n alueita, maita ja maanosia olet katsonut. Samoin kolmen viimeksi katsomasi paikan sää (noin 1 km:n tarkkuudella), jotta sen voi näyttää ilman yhteyttä.',
   'html:privacy-sent':
     'Sään näyttämiseksi valitsemasi paikan koordinaatit lähetetään yllä mainituille sääpalveluille, ja napautetun paikan nimen hakemiseksi myös OpenStreetMapin Nominatimille. Toiminnossa Sää tiettynä päivänä Open-Meteolle lähetetään myös valitsemasi päivä, eikä sitä tallenneta. Kuten minkä tahansa verkkosivun kohdalla, ne, karttapalvelu ja sivustoa isännöivä Cloudflare näkevät IP-osoitteesi.',
   'html:privacy-location':

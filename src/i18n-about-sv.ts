@@ -23,7 +23,7 @@ export const SWEDISH_ABOUT: Record<string, string> = {
   'html:sources-weather':
     '<strong>Väder, UV, snö och hav samt ballongens vindar:</strong> <a href="https://open-meteo.com/">Open-Meteo.com</a> (<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>)',
   'html:sources-search':
-    '<strong>Platssökning:</strong> Open-Meteo, ortnamn från <a href="https://www.geonames.org/">GeoNames</a> (<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>)',
+    '<strong>Platssökning och vädersymbolernas städer:</strong> Open-Meteo, ortnamn från <a href="https://www.geonames.org/">GeoNames</a> (<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>)',
   'html:sources-names':
     '<strong>Namn på platser du trycker på:</strong> <a href="https://nominatim.org/">Nominatim</a>, © <a href="https://www.openstreetmap.org/copyright">OpenStreetMaps</a> bidragsgivare (ODbL)',
   'html:sources-air':
@@ -51,7 +51,7 @@ export const SWEDISH_ABOUT: Record<string, string> = {
   'html:privacy-tracking':
     'Inget konto, inga kakor och ingen spårning. Besök räknas anonymt med Cloudflare Web Analytics, utan kakor eller något som identifierar dig.',
   'html:privacy-saved':
-    'Dina favoriter, din startplats (avrundad till ungefär 1 km), dina val av enheter, ljust eller mörkt utseende och färger, språk, regnradarns inställning, vilka avsnitt du har fällt ihop, dina quizresultat (dagens resultat, svit och bästa) och din ballongs namn och bästa flygning sparas bara i den här webbläsaren, på den här enheten. Det gör även din väderresa: poäng, märken och vilka områden (ungefär 50 km), länder och världsdelar du har tittat på. Det gör även vädret för de tre senaste platserna du tittade på (avrundade till ungefär 1 km), så att det kan visas utan anslutning.',
+    'Dina favoriter, din startplats (avrundad till ungefär 1 km), dina val av enheter, ljust eller mörkt utseende och färger, språk, inställningarna för regnradarn och vädersymbolerna, vilka avsnitt du har fällt ihop, dina quizresultat (dagens resultat, svit och bästa) och din ballongs namn och bästa flygning sparas bara i den här webbläsaren, på den här enheten. Det gör även din väderresa: poäng, märken och vilka områden (ungefär 50 km), länder och världsdelar du har tittat på. Det gör även vädret för de tre senaste platserna du tittade på (avrundade till ungefär 1 km), så att det kan visas utan anslutning.',
   'html:privacy-sent':
     'För att visa vädret skickas koordinaterna för den plats du väljer till vädertjänsterna ovan, och för en plats du trycker på även till OpenStreetMaps Nominatim, för dess namn. För Vädret en viss dag skickas även dagen du väljer till Open-Meteo, och den sparas inte. Som för alla webbplatser ser de, liksom karttjänsten och Cloudflare (webbplatsens värdtjänst), din IP-adress.',
   'html:privacy-location':

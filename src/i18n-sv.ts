@@ -18,6 +18,8 @@ export const SWEDISH: Record<string, string> = {
   'Edit favourites': 'Redigera favoriter',
   'Weather at my location': 'Vädret där jag är',
   'Rain radar': 'Regnradar',
+  'Weather symbols': 'Vädersymboler',
+  Tonight: 'I natt',
   'Weather details': 'Väderuppgifter',
   Weather: 'Väder',
   'Start place': 'Startplats',

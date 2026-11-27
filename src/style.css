@@ -439,6 +439,19 @@ body:has(.quiz[open]) {
   color: var(--color-surface);
 }
 
+/* Weather symbols button (layer/): the same round button, above the
+   radar button. On: filled with the accent colour. */
+.layer-button {
+  right: calc(var(--covered-right) + 72px);
+  bottom: calc(var(--covered-bottom) + 96px);
+}
+
+.layer-button[aria-pressed='true'],
+.layer-button[aria-pressed='true']:hover {
+  background: var(--color-accent);
+  color: var(--color-surface);
+}
+
 /* Radar history bar (radar.ts): bottom left, which is free (zoom buttons
    top left, the panel, round buttons and credits on the right). On phones:
    beside the round buttons, in two rows. */
@@ -1583,6 +1596,10 @@ body:has(.quiz[open]) {
     bottom: calc(var(--covered-bottom) + 44px);
   }
 
+  .layer-button {
+    bottom: calc(var(--covered-bottom) + 104px);
+  }
+
   /* Left of the round buttons, the time under the slider. */
   .radar-bar {
     right: 132px;
@@ -1623,6 +1640,10 @@ body:has(.quiz[open]) {
   .locate,
   .radar-bar {
     bottom: calc(var(--covered-bottom) + 58px);
+  }
+
+  .layer-button {
+    bottom: calc(var(--covered-bottom) + 118px);
   }
 }
 

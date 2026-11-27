@@ -93,7 +93,7 @@ const placeholders = (text) =>
 let badLines = 0;
 let quipLines = 0;
 const sideBySide = [
-  ...['src/quips', 'src/quiz', 'src/journey', 'src/balloon'].flatMap((dir) =>
+  ...['src/quips', 'src/quiz', 'src/journey', 'src/balloon', 'src/layer'].flatMap((dir) =>
     readdirSync(dir)
       .filter((name) => name.endsWith('.ts'))
       .map((name) => `${dir}/${name}`),

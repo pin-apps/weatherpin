@@ -23,7 +23,7 @@ export const NORWEGIAN_ABOUT: Record<string, string> = {
   'html:sources-weather':
     '<strong>Vær, UV, snø og hav, og ballongens vinder:</strong> <a href="https://open-meteo.com/">Open-Meteo.com</a> (<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>)',
   'html:sources-search':
-    '<strong>Stedssøk:</strong> Open-Meteo, stedsnavn fra <a href="https://www.geonames.org/">GeoNames</a> (<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>)',
+    '<strong>Stedssøk og værsymbolenes byer:</strong> Open-Meteo, stedsnavn fra <a href="https://www.geonames.org/">GeoNames</a> (<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>)',
   'html:sources-names':
     '<strong>Navn på steder du trykker på:</strong> <a href="https://nominatim.org/">Nominatim</a>, © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap-bidragsytere</a> (ODbL)',
   'html:sources-air':
@@ -51,7 +51,7 @@ export const NORWEGIAN_ABOUT: Record<string, string> = {
   'html:privacy-tracking':
     'Ingen konto, ingen informasjonskapsler og ingen sporing. Besøk telles anonymt med Cloudflare Web Analytics, uten informasjonskapsler eller noe som identifiserer deg.',
   'html:privacy-saved':
-    'Favorittene dine, startstedet (avrundet til omtrent 1 km), valgene av enheter, lyst eller mørkt utseende og farger, språk, innstillingen for nedbørsradaren, hvilke deler du har skjult, quizresultatene dine (dagens resultat, rekke og beste) og ballongens navn og beste flytur lagres bare i denne nettleseren, på denne enheten. Det samme gjør værreisen din: poeng, merker og hvilke områder (omtrent 50 km), land og verdensdeler du har sett på. Det samme gjør været for de tre siste stedene du så på (avrundet til omtrent 1 km), slik at det kan vises uten nettforbindelse.',
+    'Favorittene dine, startstedet (avrundet til omtrent 1 km), valgene av enheter, lyst eller mørkt utseende og farger, språk, innstillingene for nedbørsradaren og værsymbolene, hvilke deler du har skjult, quizresultatene dine (dagens resultat, rekke og beste) og ballongens navn og beste flytur lagres bare i denne nettleseren, på denne enheten. Det samme gjør værreisen din: poeng, merker og hvilke områder (omtrent 50 km), land og verdensdeler du har sett på. Det samme gjør været for de tre siste stedene du så på (avrundet til omtrent 1 km), slik at det kan vises uten nettforbindelse.',
   'html:privacy-sent':
     'For å vise været sendes koordinatene for stedet du velger til værtjenestene ovenfor, og for et sted du trykker på også til OpenStreetMaps Nominatim, for navnet. For Været en bestemt dag sendes også dagen du velger til Open-Meteo, og den lagres ikke. Som for alle nettsteder ser de, kartjenesten og Cloudflare (som er vert for nettstedet) IP-adressen din.',
   'html:privacy-location':

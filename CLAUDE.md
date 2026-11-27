@@ -306,6 +306,23 @@ Never run `wrangler deploy` by hand; CI deploys `main` (see README).
   page title keep the place name), ↑/↓ to reorder, remove with Undo. New
   favourites go to the end of the list. Its code loads the first time
   it's opened (start-up size budget)
+- `src/layer/` — the weather symbols layer: the round button above the
+  radar button (`#layer-button`, start-up; the rest loads when first
+  turned on, or just after start-up if it was left on) shows the weather
+  at the bigger cities in view as badges (symbol, temperature, name;
+  Leaflet divIcons built with `el()`): **Now · Tonight (03:00) ·
+  Tomorrow (15:00)** local time, picked in `.weather-bar` (bottom left,
+  above the radar's bar when both are on: `--radar-bar-space`). Cities
+  from `cities.ts` (made by `scripts/make-cities.py` from GeoNames'
+  cities15000, CC BY 4.0: all ≥ 250,000 people, capitals, Nordic and
+  Baltic places ≥ 15,000; biggest first), taken as many as fit ~88×56 px
+  apart (4–24); their weather in one Open-Meteo request for the places
+  not known (`current` + `hourly=temperature_2m,weather_code,is_day`,
+  `timezone=auto`, 3 days; 15 s timeout), kept 30 min, so panning back
+  asks nothing. A badge opens that city's weather. Saved as
+  `nordic-weather:weather-layer` (on, time). Hidden while the quiz is open
+  (it would give the answers away). Its CSS (`weather-layer.css`) and
+  texts load with it (start-up budgets)
 - `src/radar/frame.ts` — what a radar source returns (one picture) and
   the shared layer look
 - `src/radar/rainviewer.ts` — RainViewer frame list → a layer per frame
@@ -526,6 +543,11 @@ class="quiz balloon">` (the quiz card's look and place). Result: distance
   weather now, one request, cached), full list, blocked storage
 - `tests/favourites-editor.spec.ts` — renaming (kept out of links),
   reordering, removing with Undo, keyboard, 20 favourites
+- `tests/weather-layer.spec.ts` — the weather symbols layer: off at
+  first, the cities in view apart in one request, tonight/tomorrow, a
+  badge opens its weather, kept and turned off, no new request for an
+  earlier view, hidden during the quiz, failure, °F, with the radar on
+  (bars apart), Finnish (`tests/fixtures/weather-layer.ts`)
 - `tests/radar-history.spec.ts` — the history bar: only with the radar
   on, ▶ loads older pictures one at a time (newest first, no burst) and
   plays, keyboard picking with time and credit, moving the map, off, ECCC

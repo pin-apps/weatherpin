@@ -104,6 +104,13 @@ test.describe('accessibility (WCAG 2.2 AA)', { tag: '@layout' }, () => {
     expect(await violations(page)).toEqual([]);
   });
 
+  test('the weather symbols layer', async ({ page }) => {
+    await page.goto('/');
+    await page.locator('#layer-button').click();
+    await expect(page.locator('.weather-badge').first()).toBeVisible();
+    expect(await violations(page)).toEqual([]);
+  });
+
   test('the temperature quiz: start and a round', async ({ page }) => {
     await page.goto('/#quiz');
     const quiz = page.getByRole('dialog', { name: 'Temperature quiz' });

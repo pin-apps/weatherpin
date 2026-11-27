@@ -17,6 +17,7 @@ import { archiveFixture } from './fixtures/archive';
 import { auroraFixture } from './fixtures/aurora';
 import { balloonWindsFixture } from './fixtures/balloon';
 import { forecastFixture, type ForecastKind } from './fixtures/forecast';
+import { weatherLayerFixture } from './fixtures/weather-layer';
 import { marineFixture, type MarineKind } from './fixtures/marine';
 import { ECCC_CAPABILITIES, radarFramesFixture } from './fixtures/radar';
 import {
@@ -220,6 +221,10 @@ async function fakeNetwork(
           current: { temperature_2m: 3 + i, weather_code: 3, is_day: 1 },
         }));
         return route.fulfill({ json: count === 1 ? answers[0] : answers });
+      }
+      // The weather symbols layer's many places (src/layer/weather-layer.ts).
+      if (url.searchParams.get('hourly') === 'temperature_2m,weather_code,is_day') {
+        return route.fulfill({ json: weatherLayerFixture(url) });
       }
       // A balloon's winds at height (src/balloon/winds.ts).
       if (url.searchParams.get('hourly')?.includes('hPa')) {

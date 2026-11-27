@@ -1,6 +1,7 @@
-// The weather symbols layer's request (src/layer/weather-layer.ts): the
-// weather now and hourly for 3 days at many places in one request, local
-// times (timezone=auto). Made up per place: the temperature falls with
+// The weather symbols layer's request (src/layer/weather-layer.ts): hourly
+// temperature and weather code at many places in one request, local times
+// (timezone=auto); the layer takes "now" from this hour (14:00 at the test
+// clock). Made up per place: the temperature falls with
 // latitude; now and tomorrow differ from tonight so a time switch shows.
 
 const START = Date.UTC(2026, 10, 15);

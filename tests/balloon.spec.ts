@@ -119,7 +119,7 @@ test.describe('balloon', () => {
     await expect(card(page)).toContainText('Your best flight so far!');
     await expect(page.locator('.balloon-landing')).toBeVisible();
     // The winds were asked for along the way, not every hour.
-    expect(winds()).toBeLessThanOrEqual(45);
+    expect(winds()).toBeLessThanOrEqual(30);
 
     // Remembered: the name and colour for next time, and the best flight.
     const saved = await page.evaluate(() => localStorage.getItem('nordic-weather:balloon'));

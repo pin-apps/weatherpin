@@ -2,8 +2,8 @@
 // hour it drifts with the wind at its height, for up to 5 days, unless the
 // weather brings it down first (thunder, heavy snow or rain, a wind strong
 // enough to tear it). The winds come from the nearest point asked for; a
-// new point is asked for once the balloon is ~250 km away (winds at height
-// change slowly), so a flight takes ~10–40 requests (45 at most: past that
+// new point is asked for once the balloon is ~350 km away (winds at height
+// change slowly), so a flight takes ~10–30 requests (30 at most: past that
 // the last winds carry it on).
 
 import { conditionsAt, fetchWinds, type Conditions, type Level, type Winds } from './winds';
@@ -14,8 +14,8 @@ export const PATH_STEP_HOURS = 3;
 
 const HOUR_MS = 3600 * 1000;
 const EARTH_KM = 6371;
-const REFETCH_KM = 250;
-const MAX_REQUESTS = 45;
+const REFETCH_KM = 350;
+const MAX_REQUESTS = 30;
 const THUNDER_FROM = 95;
 const SNOW_CODES = new Set([71, 73, 75, 77, 85, 86]);
 const HEAVY_SNOW_MM = 2; // mm of water an hour

@@ -2860,13 +2860,13 @@ body:has(.quiz[open]) {
   font-family: 'Courier New', Courier, monospace;
 }
 
-:root[data-skin='nineties'] :is(.button, .toolbar__button, .search__quiz) {
+:root[data-skin='nineties'] :is(.button, .toolbar__button, .search__quiz, .locate) {
   border: none;
   border-radius: 0;
   box-shadow: var(--bevel);
 }
 
-:root[data-skin='nineties'] .button:active {
+:root[data-skin='nineties'] :is(.button, .locate):active {
   box-shadow:
     inset 1px 1px #000000,
     inset -1px -1px #ffffff;

@@ -439,6 +439,18 @@ body:has(.quiz[open]) {
   color: var(--color-surface);
 }
 
+/* Weather symbols button (layer/): the same round button, left of the
+   radar button (above it on phones). On: filled with the accent colour. */
+.layer-button {
+  right: calc(var(--covered-right) + 132px);
+}
+
+.layer-button[aria-pressed='true'],
+.layer-button[aria-pressed='true']:hover {
+  background: var(--color-accent);
+  color: var(--color-surface);
+}
+
 /* Radar history bar (radar.ts): bottom left, which is free (zoom buttons
    top left, the panel, round buttons and credits on the right). On phones:
    beside the round buttons, in two rows. */
@@ -1583,6 +1595,11 @@ body:has(.quiz[open]) {
     bottom: calc(var(--covered-bottom) + 44px);
   }
 
+  .layer-button {
+    right: calc(var(--covered-right) + 72px);
+    bottom: calc(var(--covered-bottom) + 104px);
+  }
+
   /* Left of the round buttons, the time under the slider. */
   .radar-bar {
     right: 132px;
@@ -1618,11 +1635,30 @@ body:has(.quiz[open]) {
   }
 }
 
+/* A phone on its side: too little height to stack the weather symbols
+   button above the radar button, so it goes left of it, and the radar's
+   bar one button further left (layer/weather-layer.css does the same for
+   its own bar). */
+@media (max-width: 767px) and (max-height: 500px) {
+  .layer-button {
+    right: calc(var(--covered-right) + 132px);
+    bottom: calc(var(--covered-bottom) + 44px);
+  }
+
+  .radar-bar {
+    right: 192px;
+  }
+}
+
 /* Very narrow phones: the credits (with the radar's) take two lines. */
 @media (max-width: 359px) {
   .locate,
   .radar-bar {
     bottom: calc(var(--covered-bottom) + 58px);
+  }
+
+  .layer-button {
+    bottom: calc(var(--covered-bottom) + 118px);
   }
 }
 

@@ -19,6 +19,8 @@ export const FINNISH: Record<string, string> = {
   'Edit favourites': 'Muokkaa suosikkeja',
   'Weather at my location': 'Sää sijainnissani',
   'Rain radar': 'Sadetutka',
+  'Weather symbols': 'Sääsymbolit',
+  Tonight: 'Tänä yönä',
   'Weather details': 'Säätiedot',
   Weather: 'Sää',
   'Start place': 'Aloituspaikka',

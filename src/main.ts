@@ -9,6 +9,7 @@ import type { FavouritesEditor } from './favourites/editor';
 import { setUpLocateButton } from './locate';
 import { createMap, normaliseLongitude, type CoveredArea, type PickedPoint } from './map';
 import { createPanel } from './panel';
+import type { WeatherLayer } from './layer/weather-layer';
 import type { PanelActions } from './panel-actions';
 import { setUpPanelMenu } from './panel-menu';
 import { placeFromHash, placeHash } from './place-link';
@@ -20,6 +21,7 @@ import { SANTA_ZOOM, santaPoint } from './santa';
 import { setUpSearch } from './search';
 import { setUpSheet } from './sheet';
 import { loadStartPlace } from './start-place';
+import { readStored } from './storage';
 import { fetchAirQuality } from './weather/air-quality';
 import { fetchWarnings, inFinland } from './warnings/warnings';
 import { fetchForecast, WeatherError, type Forecast } from './weather/api';
@@ -250,6 +252,44 @@ setUpSearch(document.querySelector<HTMLElement>('#search')!, {
 // Far enough out to see where in the world a random place is.
 const RANDOM_PLACE_ZOOM = 6;
 
+// The weather symbols layer (layer/): loaded when first turned on, or
+// after start-up if it was left on.
+let weatherLayer: Promise<WeatherLayer> | undefined;
+function loadWeatherLayer(): Promise<WeatherLayer> {
+  weatherLayer ??= import('./layer/weather-layer').then(
+    ({ setUpWeatherLayer }) =>
+      setUpWeatherLayer({
+        map: worldMap.map,
+        button: document.querySelector<HTMLButtonElement>('#layer-button')!,
+        bar: document.querySelector<HTMLElement>('.weather-bar')!,
+        openPlace: (point) => {
+          void loadWeather(point);
+          worldMap.revealMarker(panelCoveredArea());
+        },
+      }),
+    (error: unknown) => {
+      // Offline, or a new version deployed: try again next time.
+      weatherLayer = undefined;
+      throw error;
+    },
+  );
+  return weatherLayer;
+}
+document.querySelector('#layer-button')!.addEventListener('click', () => {
+  loadWeatherLayer().then(
+    (layer) => layer.toggle(),
+    () => undefined,
+  );
+});
+if ((readStored('weather-layer') as { on?: boolean } | undefined)?.on) {
+  loadWeatherLayer().catch(() => undefined);
+}
+const pauseWeatherLayer = (paused: boolean) =>
+  void weatherLayer?.then(
+    (layer) => layer.setPaused(paused),
+    () => undefined,
+  );
+
 // The temperature quiz (quiz/, loaded on demand): from its button or a
 // link to #quiz (what a shared result points to).
 let quizOpen = false;
@@ -258,6 +298,8 @@ let shownWeather: { point: PickedPoint; forecast: Forecast } | undefined;
 function openQuiz() {
   closePanel();
   quizOpen = true;
+  // Nearby temperatures would give the answers away.
+  pauseWeatherLayer(true);
   void import('./quiz/quiz').then(
     ({ openQuiz: open }) =>
       open({
@@ -271,13 +313,17 @@ function openQuiz() {
         placeName: (lat, lng) => placeNames().then((names) => names.placeNameAt(lat, lng)),
         onClose: () => {
           quizOpen = false;
+          pauseWeatherLayer(false);
           if (window.location.hash === '#quiz') {
             history.replaceState(null, '', window.location.pathname + window.location.search);
           }
           if (!currentPoint) worldMap.clearMarker();
         },
       }),
-    () => (quizOpen = false),
+    () => {
+      quizOpen = false;
+      pauseWeatherLayer(false);
+    },
   );
 }
 if (window.location.hash === '#quiz') openQuiz();

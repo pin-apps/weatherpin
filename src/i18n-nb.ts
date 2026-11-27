@@ -19,6 +19,8 @@ export const NORWEGIAN: Record<string, string> = {
   'Edit favourites': 'Rediger favoritter',
   'Weather at my location': 'Været der jeg er',
   'Rain radar': 'Nedbørsradar',
+  'Weather symbols': 'Værsymboler',
+  Tonight: 'I natt',
   'Weather details': 'Værdetaljer',
   Weather: 'Vær',
   'Start place': 'Startsted',

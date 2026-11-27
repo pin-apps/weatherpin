@@ -1,0 +1,136 @@
+/* The weather symbols layer's own styles (weather-layer.ts), loaded with
+   it, not at start-up (start-up CSS budget). The button is in style.css. */
+
+/* The weather symbols' time (Now · Tonight · Tomorrow): bottom left like
+   the radar's bar, above it when both are on (--radar-bar-space, set by
+   layer/weather-layer.ts). */
+.weather-bar {
+  position: absolute;
+  z-index: 1050;
+  left: 12px;
+  bottom: calc(var(--covered-bottom) + 36px + var(--radar-bar-space, 0px));
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  max-width: calc(100% - 24px);
+  padding: 6px;
+  box-sizing: border-box;
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-panel);
+}
+
+.weather-bar[hidden] {
+  display: none;
+}
+
+.weather-bar__time {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+  font-size: 0.9375rem;
+  cursor: pointer;
+}
+
+.weather-bar__time[aria-pressed='true'] {
+  border-color: var(--color-accent);
+  background: var(--color-accent);
+  color: var(--color-surface);
+  font-weight: 600;
+}
+
+.weather-bar__status {
+  flex-basis: 100%;
+  padding: 0 4px;
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+}
+
+.weather-bar__status:empty {
+  display: none;
+}
+
+/* A city's weather on the map (a divIcon): symbol and temperature in a
+   small card, the name under it. */
+.weather-badge {
+  background: none;
+  border: none;
+}
+
+.weather-badge__box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 76px;
+  height: 36px;
+  box-sizing: border-box;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: var(--color-surface);
+  box-shadow: 0 1px 4px rgb(0 0 0 / 0.25);
+  cursor: pointer;
+}
+
+.weather-badge__icon {
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.weather-badge__temp {
+  font-size: 1.0625rem;
+  font-weight: 800;
+  color: var(--color-text);
+}
+
+.weather-badge__temp--cold {
+  color: var(--color-accent);
+}
+
+.weather-badge__temp--warm {
+  color: var(--color-temp);
+}
+
+.weather-badge__name {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 2px;
+  padding: 0 4px;
+  border-radius: 4px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* Phones: left of the round buttons, like the radar's bar. */
+@media (max-width: 767px) {
+  .weather-bar {
+    right: 132px;
+    bottom: calc(var(--covered-bottom) + 44px + var(--radar-bar-space, 0px));
+  }
+}
+
+/* Very narrow phones: the credits take two lines. */
+@media (max-width: 359px) {
+  .weather-bar {
+    bottom: calc(var(--covered-bottom) + 58px + var(--radar-bar-space, 0px));
+  }
+}
+
+/* A phone on its side: left of the round buttons, which sit in one row. */
+@media (max-width: 767px) and (max-height: 500px) {
+  .weather-bar {
+    right: 192px;
+  }
+}

@@ -199,7 +199,7 @@ Never run `wrangler deploy` by hand; CI deploys `main` (see README).
   under the list "Edit favourites" and "🎲 Random place" (buttons, also
   with no favourites)
 - `src/places/geocoding.ts` — Open-Meteo geocoding request, place helpers
-- `src/places/reverse.ts` — the name of a tapped point from Nominatim
+- `src/places/reverse.ts` — (loaded on the first tap, start-up size) the name of a tapped point from Nominatim
   ("Espoo, Finland"), spaced 1 s apart, cached; a name in another script
   (北京市) gives way to its name in the app's language, English or
   `int_name` (`namedetails=1`), else just the country; `main.ts` sets it on the

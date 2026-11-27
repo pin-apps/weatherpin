@@ -12,7 +12,6 @@ import { createPanel } from './panel';
 import { setUpPanelMenu } from './panel-menu';
 import { placeFromHash, placeHash } from './place-link';
 import { placeLabel, zoomForPlace } from './places/geocoding';
-import { countryCodeAt, placeNameAt } from './places/reverse';
 import { noteJourney, setUpLevelChip } from './journey/chip';
 import { samePlace } from './places/same-place';
 import { SAUNA_ZOOM, saunaPoint } from './sauna';
@@ -285,7 +284,7 @@ function openQuiz() {
           void loadWeather(point);
           worldMap.goTo(point, panelCoveredArea(), RANDOM_PLACE_ZOOM);
         },
-        placeName: (lat, lng) => placeNameAt(lat, lng),
+        placeName: (lat, lng) => placeNames().then((names) => names.placeNameAt(lat, lng)),
         onClose: () => {
           quizOpen = false;
           if (window.location.hash === '#quiz') {
@@ -467,14 +466,22 @@ async function loadWeather(
   }
 }
 
+/** The place name lookup (places/reverse.ts), loaded on the first tap: start-up size. */
+function placeNames() {
+  return import('./places/reverse');
+}
+
 /**
  * Looks up the name of a point that has none ("Espoo, Finland") and shows
  * it: panel title, page title, address. The weather never waits for it,
  * and without a name (at sea, or a failure) the coordinates stay.
  */
 async function showPlaceName(point: PickedPoint, signal: AbortSignal) {
-  const name = await placeNameAt(point.lat, point.lng, signal);
-  const country = countryCodeAt(point.lat, point.lng);
+  // No code to load (offline, or a new version deployed): the coordinates stay.
+  const names = await placeNames().catch(() => undefined);
+  if (!names) return;
+  const name = await names.placeNameAt(point.lat, point.lng, signal);
+  const country = names.countryCodeAt(point.lat, point.lng);
   if (country && !signal.aborted) noteJourney({ kind: 'country', code: country });
   if (!name || signal.aborted || currentPoint !== point) return;
   // The same point object: the favourite, share and start place buttons

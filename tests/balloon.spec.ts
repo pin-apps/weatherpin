@@ -170,20 +170,20 @@ test.describe('balloon', () => {
       /#balloon=1\.5991,1075\.2026111513\.500\.red\.120\.landed\.[\w-]+\.Puhti$/,
     );
 
-    // A friend opens it: the same flight, replayed, with nothing asked for
-    // but the places' names.
-    const friend = await page.context().newPage();
-    const winds = countWinds(friend);
-    await friend.emulateMedia({ reducedMotion: 'reduce' });
-    await friend.goto(link);
-    await expect(card(friend).getByRole('heading', { name: 'Puhti' })).toBeVisible();
-    await expect(card(friend).locator('.balloon__distance')).toHaveText(distance);
-    await expect(card(friend)).toContainText('Puhti from Espoo, Finland flew');
-    await expect(card(friend)).toContainText('5.5 km · 5 d 0 h in the air');
+    // A friend opens it (here, in the same page, which keeps the test's
+    // fake network): the same flight, replayed, with no winds asked for.
+    const winds = countWinds(page);
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.goto(link);
+    // Opened afresh, not just the address changing.
+    await page.reload();
+    await expect(card(page).getByRole('heading', { name: 'Puhti' })).toBeVisible();
+    await expect(card(page).locator('.balloon__distance')).toHaveText(distance);
+    await expect(card(page)).toContainText('Puhti from Espoo, Finland flew');
+    await expect(card(page)).toContainText('5.5 km · 5 d 0 h in the air');
     expect(winds()).toBe(0);
-    await card(friend).getByRole('button', { name: 'Launch from Espoo, Finland too' }).click();
-    await expect(card(friend).getByRole('heading', { name: 'Launch a balloon' })).toBeVisible();
-    await friend.close();
+    await card(page).getByRole('button', { name: 'Launch from Espoo, Finland too' }).click();
+    await expect(card(page).getByRole('heading', { name: 'Launch a balloon' })).toBeVisible();
   });
 
   test('a broken or changed link is ignored', async ({ page }) => {

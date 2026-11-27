@@ -1062,6 +1062,13 @@ body:has(.quiz[open]) {
   line-height: 1.4;
 }
 
+/* A haiku: three lines as written. */
+.quip__text--poem {
+  white-space: pre-line;
+  font-style: italic;
+  line-height: 1.6;
+}
+
 .quip__actions {
   display: flex;
   flex-wrap: wrap;

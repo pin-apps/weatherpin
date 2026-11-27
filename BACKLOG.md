@@ -100,8 +100,8 @@ which the check used to skip): ask before adding to start-up.
   colder and windy"), weather twin (places with the same weather now),
   "take me somewhere sunny" (one many-place request, cached 15 min),
   gentle
-  falling snow/rain in the current-weather box (off for reduced motion),
-  weather haiku from templates. (Northern lights shipped in the Sky
+  falling snow/rain in the current-weather box (off for reduced motion).
+  (Weather haiku shipped in the ⋯ menu.) (Northern lights shipped in the Sky
   section, as a chance "now" from NOAA's nowcast, not a "tonight" forecast.)
 
 - Postcard on computers: copy the picture to the clipboard as well as
@@ -157,6 +157,7 @@ Built or thought through, then put aside. Revisit only with a clear reason.
 
 Newest first, one line each; the details are in the PRs and git history.
 
+- 🍃 Weather haiku in the ⋯ menu (90 lines in four languages, Finnish syllables checked)
 - Colour skins (Classic, Nordic night, Sauna, Retro, High contrast; light and dark); "More units" folded in Settings
 - Weather levels: 10 levels, first steps, badges and secret badges, a chip next to Settings, a picture to share
 - Fishing times (solunar) in the Sky section; snow on the ground at a glance

@@ -117,6 +117,7 @@ const postcardButton = setUpPostcardButton(
 const quipButtons = setUpQuipButtons(
   document.querySelector<HTMLButtonElement>('.panel__excuse')!,
   document.querySelector<HTMLButtonElement>('.panel__small-talk')!,
+  document.querySelector<HTMLButtonElement>('.panel__haiku')!,
   actionStatus,
 );
 

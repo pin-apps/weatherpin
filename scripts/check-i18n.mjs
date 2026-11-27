@@ -12,6 +12,7 @@ import { exit } from 'node:process';
 import { FINNISH } from '../src/i18n-fi.ts';
 import { SWEDISH } from '../src/i18n-sv.ts';
 import { NORWEGIAN } from '../src/i18n-nb.ts';
+import { OPENINGS, VERSES } from '../src/quips/haiku-lines.ts';
 
 function sourceFiles(dir) {
   return readdirSync(dir).flatMap((name) => {
@@ -122,6 +123,39 @@ if (badLines > 0 || quipLines === 0) {
 console.log(
   `ok   ${quipLines} quiz, excuse and small talk texts, same placeholders in all languages`,
 );
+
+// The weather haiku's Finnish lines are 5-7-5. Finnish syllables follow
+// the vowels: a long vowel or a diphthong is one syllable, any other
+// vowel pair two (good enough for the words used; no loan words).
+const VOWELS = 'aeiouyäö';
+const DIPHTHONGS = new Set('ai ei oi ui yi äi öi au eu iu ou ey iy äy öy ie uo yö'.split(' '));
+function finnishSyllables(text) {
+  let count = 0;
+  for (const word of text.toLocaleLowerCase('fi').match(/[a-zåäö]+/g) ?? []) {
+    for (let i = 0; i < word.length; i++) {
+      if (!VOWELS.includes(word[i])) continue;
+      count++;
+      const pair = word.slice(i, i + 2);
+      if (pair.length === 2 && (pair[0] === pair[1] || DIPHTHONGS.has(pair))) i++;
+    }
+  }
+  return count;
+}
+const haikuLines = [
+  ...OPENINGS.map(({ text }) => [text.fi, 5]),
+  ...Object.values(VERSES).flatMap(({ middle, last }) => [
+    ...middle.map((text) => [text.fi, 7]),
+    ...last.map((text) => [text.fi, 5]),
+  ]),
+];
+const badHaiku = haikuLines.filter(([text, want]) => finnishSyllables(text) !== want);
+for (const [text, want] of badHaiku) {
+  console.error(
+    `src/quips/haiku-lines.ts: "${text}" has ${finnishSyllables(text)} syllables, not ${want}`,
+  );
+}
+if (badHaiku.length > 0) exit(1);
+console.log(`ok   ${haikuLines.length} Finnish haiku lines, 5-7-5`);
 
 let failed = false;
 for (const { name, file, texts } of LANGUAGES) {

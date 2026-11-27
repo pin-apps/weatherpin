@@ -1,5 +1,5 @@
-// The card at the top of the panel for a weather excuse or a small talk
-// line: the line, "Another one" (every line that fits before repeating),
+// The card at the top of the panel for a weather excuse, a small talk
+// line or a haiku: the line, "Another one" (every line that fits before repeating),
 // "Share" (with a link to the place) and ×. One card at a time: opening
 // one replaces the other. Loaded on demand with the lines (quip-buttons.ts).
 
@@ -26,6 +26,8 @@ export function showCard({ icon, title, lines, placeLink, status }: CardOptions)
 
   let round = lines();
   let index = 0;
+  // A poem (a haiku) comes in lines: kept as written, no quote marks.
+  const poem = round[0]?.includes('\n') ?? false;
   const { say } = statusLine(status);
 
   const card = el('section', 'quip');
@@ -40,7 +42,8 @@ export function showCard({ icon, title, lines, placeLink, status }: CardOptions)
   const header = el('div', 'quip__header');
   header.append(heading, close);
 
-  const text = el('p', 'quip__text', `“${round[0]}”`);
+  const quoted = (line: string) => (poem ? line : `“${line}”`);
+  const text = el('p', poem ? 'quip__text quip__text--poem' : 'quip__text', quoted(round[0]));
   // Focus lands here when the card opens, so it's read out first.
   text.tabIndex = -1;
 
@@ -69,7 +72,7 @@ export function showCard({ icon, title, lines, placeLink, status }: CardOptions)
       if (round.length > 1 && round[0] === last) round.push(round.shift()!);
       index = 0;
     }
-    text.textContent = `“${round[index]}”`;
+    text.textContent = quoted(round[index]);
   });
 
   share.addEventListener('click', async () => {

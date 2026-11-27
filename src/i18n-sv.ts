@@ -560,9 +560,10 @@ export const SWEDISH: Record<string, string> = {
     'paraply till senare (regn från omkring kl. {time})',
   'no umbrella needed today': 'inget paraply behövs i dag',
   'Small talk': 'Småprat',
+  'Weather haiku': 'Väderhaiku',
   Copied: 'Kopierat',
   'html:fun-disclaimer':
-    'Väderursäkter och småprat är på skoj. De bygger på prognosen för platsen; resultatet kan inte garanteras. Vi tar inget ansvar om chefen inte godtar ursäkten, samtalet dör efter en mening eller om din katt inte håller med.',
+    'Väderursäkter, småprat och haiku är på skoj. De bygger på prognosen för platsen; resultatet kan inte garanteras. Vi tar inget ansvar om chefen inte godtar ursäkten, samtalet dör efter en mening eller om din katt inte håller med.',
   // ── Add to home screen (settings.ts) ──
   App: 'App',
   'Add to home screen': 'Lägg till på hemskärmen',

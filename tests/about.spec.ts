@@ -19,7 +19,7 @@ test.describe('About dialog', () => {
     await expect(about(page)).toContainText('No account, no cookies and no tracking');
     await expect(about(page)).toContainText('Use at your own risk');
     // The excuses and small talk are jokes, not advice.
-    await expect(about(page)).toContainText('Weather excuses and small talk are for fun.');
+    await expect(about(page)).toContainText('Weather excuses, small talk and haiku are for fun.');
     await snapshot(page, testInfo, 'about');
 
     // Fits on the screen; long content scrolls inside it.

@@ -70,6 +70,43 @@ function nextText(journey: Journey): string {
   });
 }
 
+/**
+ * Every level and what it needs ("🌈 Rainbow: 80 points · 14 days"),
+ * reached ones ticked and the current one marked.
+ */
+function allLevels(journey: Journey): HTMLElement[] {
+  const current = levelIndex(journey);
+  const list = el('ol', 'journey__levels');
+  LEVELS.forEach((level, i) => {
+    const needs = [
+      level.points > 0 ? journeyText('needPoints', { count: level.points }) : '',
+      level.days > 0 ? journeyText('needDays', { count: level.days }) : '',
+      level.badges > 0 ? journeyText('needBadges', { count: level.badges }) : '',
+    ].filter(Boolean);
+    const classes = [
+      'journey__level-row',
+      i <= current ? 'is-reached' : '',
+      i === current ? 'is-current' : '',
+    ]
+      .filter(Boolean)
+      .join(' ');
+    const item = el('li', classes);
+    item.append(
+      iconEl(i <= current ? '✓' : '○', 'journey__task-mark'),
+      ` ${level.emoji} `,
+      el('strong', undefined, levelName(level.id)),
+      `: ${needs.length > 0 ? needs.join(' · ') : journeyText('levelStart')}`,
+    );
+    if (i === current) item.setAttribute('aria-current', 'step');
+    list.append(item);
+  });
+  return [
+    el('h3', undefined, journeyText('allLevels')),
+    list,
+    el('p', 'settings__hint', journeyText('allLevelsHow')),
+  ];
+}
+
 /** The first steps: done ones ticked; one line once all are done. */
 function firstSteps(journey: Journey): HTMLElement[] {
   const done = TASKS.filter((task) => journey.tasks.includes(task)).length;
@@ -211,6 +248,7 @@ function fill(body: HTMLElement) {
           ),
         ]
       : []),
+    ...allLevels(journey),
     el('p', 'settings__hint', journeyText('how')),
     el('p', 'settings__hint', journeyText('device')),
   );

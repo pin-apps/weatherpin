@@ -152,6 +152,17 @@ test.describe('weather levels', () => {
     await expect(card(page)).toContainText('🔥 4 days in a row');
     await expect(card(page)).toContainText('0 areas · 2 countries · 1 continent');
     await expect(card(page).locator('.journey__badge.is-earned')).toHaveText(['⛈️ Thunderstorm']);
+    // All levels: what each needs; reached ones ticked, Storm the current one.
+    const levels = card(page).locator('.journey__level-row');
+    await expect(levels).toHaveCount(10);
+    await expect(levels.first()).toHaveText('✓ 💧 Dewdrop: the start');
+    await expect(levels.nth(4)).toHaveText('✓ 🌈 Rainbow: 80 points · 14 days');
+    await expect(card(page).locator('[aria-current="step"]')).toHaveText(
+      '✓ ⛈️ Storm: 180 points · 30 days',
+    );
+    await expect(levels.nth(7)).toHaveText('○ 🌪️ Whirlwind: 300 points · 45 days · 2 badges');
+    await expect(levels.locator('.journey__task-mark', { hasText: '✓' })).toHaveCount(7);
+    await expect(card(page)).not.toContainText('Storm also needs 7 days');
     await card(page).getByRole('button', { name: 'Close' }).click();
     await expect(card(page)).toBeHidden();
   });

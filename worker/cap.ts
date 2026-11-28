@@ -39,7 +39,8 @@ function decode(text: string): string {
     .replace(/&(#x[0-9a-f]+|#\d+|[a-z]+);/gi, (whole, name: string) => {
       if (name[0] === '#') {
         const code = name[1] === 'x' ? parseInt(name.slice(2), 16) : parseInt(name.slice(1), 10);
-        return Number.isFinite(code) ? String.fromCodePoint(code) : whole;
+        // Past Unicode's last character, fromCodePoint would throw: keep the text.
+        return code <= 0x10ffff ? String.fromCodePoint(code) : whole;
       }
       return ENTITIES[name] ?? whole;
     })

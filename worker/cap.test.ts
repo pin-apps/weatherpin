@@ -45,6 +45,20 @@ test('texts: entities decoded, areas once, level from the colour', () => {
   ]);
 });
 
+test('texts: odd character codes stay as text, never break the file', () => {
+  const warning = compactCap(
+    ID,
+    capFile({
+      description: 'Big &#1114112; &#x110000; &#99999999999999999999; ok &#x41; &#228; &bogus;',
+    }),
+  );
+  assert.ok(warning);
+  assert.equal(
+    warning.texts.en?.description,
+    'Big &#1114112; &#x110000; &#99999999999999999999; ok A ä &bogus;',
+  );
+});
+
 test('outlines: grid snapping drops repeats; bad numbers end the ring', () => {
   // 0.001° apart: the same grid point, kept once.
   assert.deepEqual(polygonsOf('<polygon>60.1,24.8 60.1001,24.8001 60.2,24.9 60.3,24.8</polygon>'), [

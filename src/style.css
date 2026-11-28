@@ -429,7 +429,8 @@ body:has(.quiz[open]) {
 
 /* Map layers button (the rain radar or the weather symbols): the same
    round button, one place to the left; filled with the accent colour
-   while one is on. Its menu opens to its left, at the same height. */
+   while one is on. Its menu opens to its left, at the same height, over
+   the weather panel (it can reach under the panel on a tablet). */
 .radar-button {
   right: calc(var(--covered-right) + 72px);
 }
@@ -442,7 +443,7 @@ body:has(.quiz[open]) {
 
 .layers-menu {
   position: absolute;
-  z-index: 1100;
+  z-index: 1150;
   right: calc(var(--covered-right) + 132px);
   bottom: calc(var(--covered-bottom) + 36px);
   display: flex;

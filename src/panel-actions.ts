@@ -1,9 +1,10 @@
 // The weather panel's ⋯ menu actions (Start here and the ⌂ mark, Share
 // this place, Share as a picture, the weather excuse, small talk and haiku,
-// Weather on a day), set up together. Loaded right after start-up, not
+// Drift here, Weather on a day), set up together. Loaded right after start-up, not
 // with it (main.ts; start-up size budget): main.ts keeps the place and
 // weather shown until then and hands them over.
 
+import { setUpDriftButton } from './drift-button';
 import type { PickedPoint } from './map';
 import { setUpPastWeatherButton } from './past-weather-button';
 import { setUpPostcardButton } from './postcard-button';
@@ -33,9 +34,10 @@ export function setUpPanelActions(status: HTMLElement): PanelActions {
     button('.panel__haiku'),
     status,
   );
+  const drift = setUpDriftButton(button('.panel__drift'), status);
   const past = setUpPastWeatherButton(button('.panel__past'), status);
   // These draw from the weather, so they show only once it's there.
-  const withWeather = [postcard, quips, past];
+  const withWeather = [postcard, quips, drift, past];
 
   return {
     show(point, forecast) {

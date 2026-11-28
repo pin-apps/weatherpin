@@ -379,6 +379,7 @@ export async function placeAction(
     | 'Small talk'
     | 'Weather haiku'
     | 'Launch a balloon'
+    | 'Drift here'
     | 'Weather on a day…'
     | 'Start here',
 ) {

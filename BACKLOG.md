@@ -188,6 +188,11 @@ CORS) are dropped.
   in a bottle drifting on real currents, found by whoever taps near where
   it lands (needs shared storage on the Worker's free plan and set phrases
   only, no typed text; the hardest).
+- 🚗 Drift, next steps (2026-11-28): replay links like the balloon ("Watch
+  it and beat it": the run's path, cones and the weather it had, then
+  "Drift here too"; planned as step 2), a scorecard picture (score, place,
+  weather, skid marks; on the postcard code), snow banks and oil patches,
+  moving obstacles. Tune the speed after trying it on phones.
 - Australia (a user asked, 2026-11-22): the Bureau of Meteorology's
   licence forbids re-use; the "not covered" line could link to the BoM.
 
@@ -219,6 +224,7 @@ Built or thought through, then put aside. Revisit only with a clear reason.
 
 Newest first, one line each; the details are in the PRs and git history.
 
+- 🚗 Drift here (Beta): a 20 s drift game on the weather's road (grip, wind), best score per road
 - General hardening (input checks, headers, security tests); the map layers menu over the weather panel on an iPad
 - Fewer, leaner Open-Meteo calls: weather symbols (≤ 12 cities, 2 variables, kept 2 h on the device) and the balloon (≤ 30 requests)
 - Map layers menu: one button by My location for the rain radar or the weather symbols, one at a time

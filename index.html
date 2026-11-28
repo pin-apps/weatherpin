@@ -413,6 +413,12 @@
                 <span data-i18n>Launch a balloon</span>
                 <span class="beta-tag" data-i18n>Beta</span>
               </button>
+              <!-- A drift game on the weather's road here (drift/). -->
+              <button type="button" class="panel__menu-item panel__drift" hidden>
+                <span class="panel__menu-icon" aria-hidden="true">🚗</span>
+                <span data-i18n>Drift here</span>
+                <span class="beta-tag" data-i18n>Beta</span>
+              </button>
               <!-- The weather on a past day, in a dialog (past-weather.ts). -->
               <button type="button" class="panel__menu-item panel__past" hidden>
                 <span class="panel__menu-icon" aria-hidden="true">🎂</span>
@@ -567,7 +573,7 @@
             Your favourites, start place (rounded to about 1 km), unit choices, light or dark
             appearance and colours, language, rain radar and weather symbols settings, which
             sections you've folded away, your quiz results (today's score, streak and best) and your
-            balloon's name and best flight are saved only in this browser, on this device. So is
+            balloon's name and best flight and your best drift scores are saved only in this browser, on this device. So is
             your weather journey: points, badges and which roughly 50 km areas, countries and
             continents you've looked at. So is the weather of the last three places you looked at
             (rounded to about 1 km), so it can be shown without a connection, and for two hours the
@@ -653,6 +659,28 @@
         </button>
       </header>
       <div class="quiz__body"></div>
+    </dialog>
+
+    <!-- The drift game (src/drift/, loaded on demand with its CSS): a modal
+         card for the place shown. Filled by the code. -->
+    <dialog id="drift" class="drift" aria-labelledby="drift-title">
+      <div class="drift__content">
+        <header class="about__header">
+          <h2 id="drift-title" class="about__title">
+            <span class="drift__title-text"></span>
+            <span class="beta-tag" data-i18n>Beta</span>
+          </h2>
+          <button
+            type="button"
+            class="about__close drift__close"
+            aria-label="Close"
+            data-i18n-attrs="aria-label"
+          >
+            <span aria-hidden="true">×</span>
+          </button>
+        </header>
+        <div class="drift__body"></div>
+      </div>
     </dialog>
 
     <!-- Settings (src/settings.ts), opened from the ⚙ button. Each row of

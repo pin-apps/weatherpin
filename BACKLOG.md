@@ -3,22 +3,23 @@
 Light list of ideas and loose ends. Add freely; move items to **Done** (or
 delete them) when they ship. Newest ideas at the bottom of each section.
 
-## Status (2026-11-27)
+## Status (2026-11-28)
 
 Live at https://weatherpin.app and working; development continues. The
 repo is `pin-apps/weatherpin` (public, main protected by a ruleset, CodeQL
-and secret scanning on). Recently shipped: snow on the ground, fishing
-times, weather levels, colour skins, the weather haiku and the 🎈 balloon
-(Beta, step 1; see Done). Start-up code 73.6/75 KB, texts 8.9/12 KB, CSS 13.8/14 KB (after
-#20, #24 and the ⋯ menu actions on demand). Good first picks: request timeouts (Next), the TV forecast, the security fixes, balloon step 2 and the sky viewer
-(Ideas). Decided: no EDM calculator with typed-in readings; no emails to
+and secret scanning on). Recently shipped: the 🎈 balloon (Beta, step 1),
+the 1990s colours, the weather symbols layer with the map layers menu,
+fewer Open-Meteo calls and general hardening (see Done). Start-up code
+74.0/75 KB, texts 9.0/12 KB, CSS 13.5/14 KB: new features load on demand.
+Keep Open-Meteo calls low: every feature states its calls per use. Good
+first picks: request timeouts (Next), the TV forecast, balloon step 2 and
+the sky viewer (Ideas). Decided: no EDM calculator with typed-in readings; no emails to
 outside organisations (2026-11-27), so nothing waits on a reply: plans
 that needed one (WMO's re-use terms for its warnings list, asking FMI for
 CORS) are dropped.
 
 ## Next
 
-- Security review and tests (planned; notes kept outside the repo).
 - Request timeouts: no request to Open-Meteo (or the others) has a time
   limit, so one that never answers leaves "Loading…" up for good (seen
   2026-11-27 on a bad connection). Give up after ~15 s: the normal error,
@@ -77,18 +78,16 @@ CORS) are dropped.
 
 - Excuses and small talk from an AI at run time (later, maybe): a "✨ Something new" button asking Cloudflare Workers AI through the site's own Worker (free plan only: it stops, never charges, when the daily allowance runs out), cached per weather and language, with the written lines as the fallback. Weaker in Finnish than the written lines; About would need a line.
 
-- More map layers. Rain radar has its own button; with a second
-  layer, move both into one "Layers" button with a small menu. Each image
-  layer needs its host in `img-src` (`public/_headers`), fake tiles in
-  `tests/helpers.ts`, a credit in the attribution, and the button in the
-  overlap checks. Candidates:
+- More map layers, as items in the map layers menu (`#layers-menu`, one
+  layer at a time). Each image layer needs its host in `img-src`
+  (`public/_headers`), fake tiles in `tests/helpers.ts`, a credit in the
+  attribution. Candidates:
   - Wind: a small grid of arrows from Open-Meteo (one many-place request
-    per view after panning stops; mind the rate limits).
+    per view after panning stops, like the weather symbols; mind the
+    calls).
   - Radar forecast frames (rain in the next hour): needs a paid source
     (Rainbow.ai etc., checked 2026-11-21), so not for now.
   - Satellite clouds from NASA GIBS: free, no key, but daily, not live.
-  - Temperatures for big cities in view, from Open-Meteo (many places in
-    one request). Panning makes more requests: mind the rate limits.
 
 - Native speakers to read through `src/i18n-sv.ts` and `src/i18n-nb.ts`
   (Norwegian, incl. the weather excuses' jokes).
@@ -153,9 +152,9 @@ CORS) are dropped.
   next; never starts sound by itself, a mute button. Later: Retro skin
   symbols, a "tomorrow at noon" picture. Not smooth cloud/rain sweeps (no
   free gridded images); the radar's ▶ shows the past 2 h. Tests: fake
-  speech events.
-  "Show in the sky" in the
-  Sky section. Step 1, a sky dome: a flat circle (N/E/S/W) with today's
+  speech events. On hold (2026-11-27); can reuse the weather symbols
+  layer's cities and badges.
+- 🔭 Sky viewer: "Show in the sky" in the Sky section. Step 1, a sky dome: a flat circle (N/E/S/W) with today's
   sun path and hour marks, sunrise/sunset directions, golden hour, the
   moon (phase, rise/set), the northern lights' direction when there's a
   chance, and a time slider (18:00 today, midsummer, midwinter); works
@@ -170,9 +169,7 @@ CORS) are dropped.
   computers) → the sky dome. Needs `camera=(self)` in `public/_headers`'
   Permissions-Policy and a line in About (the picture stays on the
   phone). Tests: fake camera and orientation events (Pixel 7, iPhone).
-- More new ideas (2026-11-27, lower): 🎂 the weather of your life (the
-  weather on every birthday since 1940 from the archive, as a poster;
-  reuses past-weather and postcard code); 📻 radio only (the TV forecast's
+- More new ideas (2026-11-27, lower): 📻 radio only (the TV forecast's
   voice without the map, sea-bulletin style); 🌍 "where is it perfect right
   now?" (surf, ski, sauna and ice swim, barbecue, stargazing, golden hour:
   a few hundred cities in one many-place request, then fly there); 🃏
@@ -180,7 +177,9 @@ CORS) are dropped.
   the quiz, played over links). Dropped: a living map with snow and rain
   over the whole map (too busy beside the labels, radar and panel); kept
   as a small idea: a few flakes or drops around the marker for 2–3 s when
-  a place opens.
+  a place opens. Dropped (2026-11-28): 🎂 the weather of your life (one
+  day a year says nothing about the weather of a life, and 40–80
+  archive calls a person; "Weather on a day" already shows any birthday).
 - More playful ideas (2026-11-27): 🎼 a weather symphony (the weather
   there as music made by the browser: rain as piano drops, wind as pads,
   thunder as drums, key by temperature; also a calm rain-sounds mode);
@@ -220,6 +219,8 @@ Built or thought through, then put aside. Revisit only with a clear reason.
 
 Newest first, one line each; the details are in the PRs and git history.
 
+- General hardening (input checks, headers, security tests); the map layers menu over the weather panel on an iPad
+- Fewer, leaner Open-Meteo calls: weather symbols (≤ 12 cities, 2 variables, kept 2 h on the device) and the balloon (≤ 30 requests)
 - Map layers menu: one button by My location for the rain radar or the weather symbols, one at a time
 - ☀️ Weather symbols layer: the weather now, tonight or tomorrow at the bigger cities in view
 - 💾 1990s colours: a light "Windows 95" look (grey, navy title bar, 3D buttons) and a dark DOS terminal (green on black)

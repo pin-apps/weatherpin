@@ -42,7 +42,8 @@ function surfaceFor(forecast: Forecast): Surface {
   const now = forecast.current;
   const code = now.weather_code;
   const freezing = now.temperature_2m <= 0;
-  if (FREEZING_RAIN.includes(code)) return 'ice';
+  // Freezing rain glazes the road: glare ice, the slipperiest.
+  if (FREEZING_RAIN.includes(code)) return 'glare';
   if (SNOWFALL.includes(code)) return 'snow';
   if (freezing && (FOG.includes(code) || wetLately(forecast))) return 'ice';
   if ((now.snow_depth ?? 0) >= SNOW_ON_GROUND_M) return 'snow';

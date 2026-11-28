@@ -454,24 +454,28 @@ class="quiz balloon">` (the quiz card's look and place). Result: distance
   impossible links ignored). Opening one replays it (no winds asked) with
   "Launch from … too". Saved: `nordic-weather:balloon` (name, colour, best
   km; in About's privacy text). Texts side by side in `texts.ts`
-- `src/drift-button.ts` + `src/drift/` — "🚗 Drift here" (Beta) in the ⋯
-  menu (`panel-actions.ts`; the game, its CSS `drift.css` and texts load on
-  the first tap): a modal card (`#drift` in `index.html`) with a 20 s drift
-  game on a 380×420 canvas track. The road comes from the weather now at the
-  place shown (`surface.ts`, the forecast already loaded, no request):
-  freezing rain → black ice; snowfall → snowy; ≤ 0 °C after rain or snow in
-  the last 6 h (or freezing fog) → black ice; snow on the ground ≥ 1 cm →
-  snowy; rain → wet (3 puddles); else dry; grip 0.20/0.10/0.06/0.032, shown
-  as a % of dry. The wind pushes the car downwind (`windPush`, capped).
-  `physics.ts` is pure (no page): fixed 60 steps a second (`stepsDue`, so
-  120 Hz plays the same), top speed 3.5 (calmer than the spec's 5.5),
-  drifting = speed > 1.3 and > 12° off the heading, combo x1–x5, 9 cones
-  (−100), seeded cone places. `draw.ts` draws it with the app's colour
-  variables. Steering: hold the left/right half, or the arrow keys (the
-  track has the focus on opening). Pauses when the page is hidden, stops
-  when closed. Best score per road type saved as `nordic-weather:drift`
-  (in About's privacy text); "Share result" sends a text with the place's
-  link (share sheet, else copied). Texts side by side in `texts.ts`
+- `src/drift-button.ts` + `src/drift/` — "🚗 Drift here" (Beta) under ⋯ →
+  Games (`panel-actions.ts`; the game, its CSS `drift.css`, texts and
+  sounds load on the first tap): a modal card (`#drift` in `index.html`)
+  with a 30 s drift game on a 380×420 track, tuned with the user in a
+  private drift lab (2026-11-28). The day's course (`course.ts`, from the
+  UTC date, the same for everyone): a loop or a figure 8 around pylons,
+  4–6 gates in order (+150, drifting through ×2, a clean lap +300 and
+  +2 s). Drift points collect while sliding and are banked when the drift
+  ends cleanly ("Nice/Big/Huge drift"; a hit wipes them; a 2 s drift +1 s);
+  cones and walls cost 2 s. The road comes from the weather now at the place
+  shown (`surface.ts`, the forecast already loaded, no request): freezing
+  rain → glare ice; snowfall → snowy; ≤ 0 °C after rain or snow in the last
+  6 h (or freezing fog) → black ice; snow on the ground ≥ 1 cm → snowy;
+  rain → wet (puddles on the line); else dry; grip 0.20/0.10/0.05/0.02/0.008,
+  shown as a % of dry. The wind pushes the car downwind. `physics.ts` is pure
+  (no page): fixed 60 steps a second (`stepsDue`), steering that builds up,
+  top speed 3.5; it reports events, which `drift.ts` turns into pops and
+  sounds. `draw.ts` draws it with the app's colour variables. `sound.ts`:
+  Web Audio made in the browser (engine, tyres, thud, chimes), off until
+  the 🔇 button turns it on. Saved as `nordic-weather:drift` (best score per
+  road type, sound on/off; in About's privacy text). "Share result" sends a
+  text with the place's link. Texts side by side in `texts.ts`
 - `src/weather/solar.ts` — the sun's height for a place and moment (NOAA's
   simplified formulas), day length on a date, spans of sun heights
 - `src/weather/aurora.ts` — NOAA SWPC's OVATION aurora nowcast (30–90 min
@@ -640,9 +644,11 @@ class="quiz balloon">` (the quiz card's look and place). Result: distance
 - `tests/drift.spec.ts` + `tests/drift-physics.spec.ts` — the drift game:
   opened from the ⋯ menu, the road from the weather (wet, black ice), no
   game code before the tap and no weather request, a full run with the
-  arrow keys (score, best saved, share), taps, pause, closing stops it,
-  fits, accessibility, Finnish; the rules without a page (steps on
-  60/120 Hz, walls, drifting and combo, cones, seeds, wind, road types)
+  arrow keys (score, best saved, share), the lap counter and sound off
+  until turned on, taps, pause, closing stops it, fits, accessibility,
+  Finnish; the rules without a page (steps on 60/120 Hz, steering, walls,
+  banking and wiping, long drifts, cones and time, gates and laps, the
+  daily course, wind, road types)
 - `tests/haiku.spec.ts` — the weather haiku: three lines from the right
   groups (rain in Oslo, polar night and snow, a clear southern spring
   night, heat near the equator with no season), a round, sharing, one card

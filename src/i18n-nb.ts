@@ -512,6 +512,8 @@ export const NORWEGIAN: Record<string, string> = {
   'Weather haiku': 'Værhaiku',
   'Launch a balloon': 'Send av gårde en ballong',
   'Drift here': 'Drift her',
+  'For fun…': 'For moro skyld…',
+  Back: 'Tilbake',
   Beta: 'Beta',
   Copied: 'Kopiert',
   // ── Add to home screen (settings.ts) ──

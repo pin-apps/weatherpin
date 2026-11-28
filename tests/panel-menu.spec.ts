@@ -45,6 +45,7 @@ test.describe('⋯ menu', () => {
         'small talk': '.panel__small-talk',
         haiku: '.panel__haiku',
         balloon: '.panel__balloon',
+        drift: '.panel__drift',
         'a past day': '.panel__past',
         'start here': '.panel__start',
       });
@@ -55,6 +56,7 @@ test.describe('⋯ menu', () => {
         'small talk',
         'haiku',
         'balloon',
+        'drift',
         'a past day',
         'start here',
       ]);
@@ -87,6 +89,8 @@ test.describe('⋯ menu', () => {
     await page.keyboard.press('Tab');
     await expect(page.locator('.panel__balloon')).toBeFocused();
     await page.keyboard.press('Tab');
+    await expect(page.locator('.panel__drift')).toBeFocused();
+    await page.keyboard.press('Tab');
     await expect(page.locator('.panel__past')).toBeFocused();
     await page.keyboard.press('Tab');
     await expect(page.locator('.panel__start')).toBeFocused();
@@ -100,7 +104,7 @@ test.describe('⋯ menu', () => {
     // An action from the keyboard (Start here, the last item): the menu
     // closes, focus back on ⋯.
     await page.keyboard.press('Enter');
-    for (let i = 0; i < 8; i++) await page.keyboard.press('Tab');
+    for (let i = 0; i < 9; i++) await page.keyboard.press('Tab');
     await expect(page.locator('.panel__start')).toBeFocused();
     await page.keyboard.press('Enter');
     await expect(menu(page)).toBeHidden();
@@ -168,6 +172,7 @@ test.describe('⋯ menu', () => {
         'small talk': '.panel__small-talk',
         haiku: '.panel__haiku',
         balloon: '.panel__balloon',
+        drift: '.panel__drift',
         'a past day': '.panel__past',
         'start here': '.panel__start',
       });

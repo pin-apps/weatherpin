@@ -27,9 +27,9 @@ async function openDrift(page: Page) {
 function watchRequests(page: Page) {
   const seen = { game: 0, weather: 0 };
   page.on('request', (request) => {
-    const url = request.url();
-    if (/\/assets\/drift-[^/]+\.js$/.test(url)) seen.game++;
-    if (url.includes('open-meteo.com')) seen.weather++;
+    const url = new URL(request.url());
+    if (/^\/assets\/drift-[^/]+\.js$/.test(url.pathname)) seen.game++;
+    if (url.hostname.endsWith('.open-meteo.com')) seen.weather++;
   });
   return seen;
 }

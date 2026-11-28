@@ -1582,6 +1582,12 @@ body:has(.quiz[open]) {
     height: auto;
   }
 
+  /* With the ⋯ menu open, the sheet rises to the top, so all of the place's
+     actions fit below its header (a phone held sideways, an iPhone SE). */
+  .panel:has(.panel__menu:not([hidden])) {
+    height: calc(100dvh - 12px);
+  }
+
   .panel--collapsed .panel__content {
     display: none;
   }

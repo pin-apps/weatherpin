@@ -366,7 +366,11 @@ Never run `wrangler deploy` by hand; CI deploys `main` (see README).
 - `src/panel-menu.ts` — the ⋯ button in the panel header (☆ ⋯ ×) and its
   menu of the place's actions (Share this place, Start here): a
   disclosure of plain buttons; closes on Escape (not the panel), outside
-  clicks, after an action and on another place; opens a collapsed sheet
+  clicks, after an action and on another place; opens a collapsed sheet.
+  "🎉 For fun…" swaps its contents to the fun actions (excuse, small talk,
+  haiku, balloon, drift; "‹ Back" first), so the menu stays short enough
+  for a phone's sheet (decided 2026-11-28); tests reach them through
+  `placeAction`
 - `src/status-line.ts` — a self-clearing message line (live region),
   shared by the ⋯ menu's actions
 - `src/sheet.ts` — mobile bottom sheet (collapse/expand, swipe;

@@ -198,6 +198,12 @@ class Game {
       },
       { signal },
     );
+    // iPhone Safari: a held touch would select text or open a callout.
+    stage.addEventListener('touchstart', (event) => event.preventDefault(), {
+      signal,
+      passive: false,
+    });
+    stage.addEventListener('contextmenu', (event) => event.preventDefault(), { signal });
     for (const type of ['pointerup', 'pointercancel', 'lostpointercapture'] as const) {
       stage.addEventListener(type, (event) => this.held.delete(event.pointerId), { signal });
     }

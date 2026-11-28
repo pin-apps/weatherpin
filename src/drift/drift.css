@@ -10,6 +10,11 @@
   background: var(--color-surface);
   color: var(--color-text);
   box-shadow: var(--shadow-panel);
+  /* A held finger steers: no text selection, magnifier or callout on the
+     card (iPhone Safari). */
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
 }
 
 .drift::backdrop {

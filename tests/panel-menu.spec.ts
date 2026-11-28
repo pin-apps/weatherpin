@@ -18,6 +18,16 @@ import {
 const moreButton = (page: Page) => page.getByRole('button', { name: 'More actions' });
 const menu = (page: Page) => page.locator('#panel-menu');
 
+// Behind "For fun…", in order (Back first).
+const FUN_ITEMS = {
+  back: '.panel__fun-back',
+  excuse: '.panel__excuse',
+  'small talk': '.panel__small-talk',
+  haiku: '.panel__haiku',
+  balloon: '.panel__balloon',
+  drift: '.panel__drift',
+};
+
 test.describe('⋯ menu', () => {
   test(
     'the weather starts right under the header; the menu opens over it',
@@ -41,22 +51,14 @@ test.describe('⋯ menu', () => {
       const boxes = await visibleBoxes(page, {
         share: '.panel__share',
         picture: '.panel__postcard',
-        excuse: '.panel__excuse',
-        'small talk': '.panel__small-talk',
-        haiku: '.panel__haiku',
-        balloon: '.panel__balloon',
-        drift: '.panel__drift',
+        'for fun': '.panel__fun',
         'a past day': '.panel__past',
         'start here': '.panel__start',
       });
       expect(boxes.map((b) => b.name)).toEqual([
         'share',
         'picture',
-        'excuse',
-        'small talk',
-        'haiku',
-        'balloon',
-        'drift',
+        'for fun',
         'a past day',
         'start here',
       ]);
@@ -67,6 +69,19 @@ test.describe('⋯ menu', () => {
         expect(box.height).toBeGreaterThanOrEqual(44);
         expect(box.width).toBeGreaterThanOrEqual(44);
       }
+
+      // For fun…: the fun ones in its place, the sheet where it was.
+      const panelTop = (await page.locator('#panel').boundingBox())!.y;
+      await page.locator('.panel__fun').click();
+      const funBoxes = await visibleBoxes(page, FUN_ITEMS);
+      expect(funBoxes.map((b) => b.name)).toEqual(Object.keys(FUN_ITEMS));
+      expect(offScreen(page, funBoxes)).toEqual([]);
+      for (const box of funBoxes) {
+        expect(box.y).toBeGreaterThanOrEqual(more.y + more.height - 4);
+        expect(box.height).toBeGreaterThanOrEqual(44);
+      }
+      expect((await page.locator('#panel').boundingBox())!.y).toBe(panelTop);
+      await snapshot(page, testInfo, 'for fun open');
     },
   );
 
@@ -81,15 +96,24 @@ test.describe('⋯ menu', () => {
     await page.keyboard.press('Tab');
     await expect(page.locator('.panel__postcard')).toBeFocused();
     await page.keyboard.press('Tab');
-    await expect(page.locator('.panel__excuse')).toBeFocused();
-    await page.keyboard.press('Tab');
-    await expect(page.locator('.panel__small-talk')).toBeFocused();
-    await page.keyboard.press('Tab');
-    await expect(page.locator('.panel__haiku')).toBeFocused();
-    await page.keyboard.press('Tab');
-    await expect(page.locator('.panel__balloon')).toBeFocused();
-    await page.keyboard.press('Tab');
-    await expect(page.locator('.panel__drift')).toBeFocused();
+    await expect(page.locator('.panel__fun')).toBeFocused();
+    // For fun… swaps in the fun ones, Back first, and Back returns.
+    await page.keyboard.press('Enter');
+    await expect(menu(page)).toBeVisible();
+    await expect(page.locator('.panel__fun-back')).toBeFocused();
+    for (const selector of Object.values(FUN_ITEMS).slice(1)) {
+      await page.keyboard.press('Tab');
+      await expect(page.locator(selector)).toBeFocused();
+    }
+    await page.keyboard.press('Shift+Tab');
+    await page.keyboard.press('Shift+Tab');
+    await page.keyboard.press('Shift+Tab');
+    await page.keyboard.press('Shift+Tab');
+    await page.keyboard.press('Shift+Tab');
+    await expect(page.locator('.panel__fun-back')).toBeFocused();
+    await page.keyboard.press('Enter');
+    await expect(page.locator('.panel__fun')).toBeFocused();
+    await expect(page.locator('.panel__excuse')).toBeHidden();
     await page.keyboard.press('Tab');
     await expect(page.locator('.panel__past')).toBeFocused();
     await page.keyboard.press('Tab');
@@ -104,7 +128,7 @@ test.describe('⋯ menu', () => {
     // An action from the keyboard (Start here, the last item): the menu
     // closes, focus back on ⋯.
     await page.keyboard.press('Enter');
-    for (let i = 0; i < 9; i++) await page.keyboard.press('Tab');
+    for (let i = 0; i < 5; i++) await page.keyboard.press('Tab');
     await expect(page.locator('.panel__start')).toBeFocused();
     await page.keyboard.press('Enter');
     await expect(menu(page)).toBeHidden();
@@ -168,11 +192,7 @@ test.describe('⋯ menu', () => {
       const boxes = await visibleBoxes(page, {
         share: '.panel__share',
         picture: '.panel__postcard',
-        excuse: '.panel__excuse',
-        'small talk': '.panel__small-talk',
-        haiku: '.panel__haiku',
-        balloon: '.panel__balloon',
-        drift: '.panel__drift',
+        'for fun': '.panel__fun',
         'a past day': '.panel__past',
         'start here': '.panel__start',
       });

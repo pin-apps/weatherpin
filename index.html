@@ -383,57 +383,71 @@
               <span aria-hidden="true">⋯</span>
             </button>
             <div id="panel-menu" class="panel__menu" hidden>
-              <button type="button" class="panel__menu-item panel__share" hidden>
-                <span class="panel__menu-icon" aria-hidden="true">↗</span>
-                <span data-i18n>Share this place</span>
-              </button>
-              <!-- The weather as a postcard picture (postcard.ts). -->
-              <button type="button" class="panel__menu-item panel__postcard" hidden>
-                <span class="panel__menu-icon" aria-hidden="true">📸</span>
-                <span data-i18n>Share as a picture</span>
-              </button>
-              <!-- An excuse made from the weather, just for fun (quips/excuses.ts). -->
-              <button type="button" class="panel__menu-item panel__excuse" hidden>
-                <span class="panel__menu-icon" aria-hidden="true">🎲</span>
-                <span data-i18n>Weather excuse</span>
-              </button>
-              <!-- A conversation opener from the weather (quips/small-talk.ts). -->
-              <button type="button" class="panel__menu-item panel__small-talk" hidden>
-                <span class="panel__menu-icon" aria-hidden="true">💬</span>
-                <span data-i18n>Small talk</span>
-              </button>
-              <!-- A three-line poem about the weather now (quips/haiku.ts). -->
-              <button type="button" class="panel__menu-item panel__haiku" hidden>
-                <span class="panel__menu-icon" aria-hidden="true">🍃</span>
-                <span data-i18n>Weather haiku</span>
-              </button>
-              <!-- A balloon on the forecast winds from here (balloon/). -->
-              <button type="button" class="panel__menu-item panel__balloon">
-                <span class="panel__menu-icon" aria-hidden="true">🎈</span>
-                <span data-i18n>Launch a balloon</span>
-                <span class="beta-tag" data-i18n>Beta</span>
-              </button>
-              <!-- A drift game on the weather's road here (drift/). -->
-              <button type="button" class="panel__menu-item panel__drift" hidden>
-                <span class="panel__menu-icon" aria-hidden="true">🚗</span>
-                <span data-i18n>Drift here</span>
-                <span class="beta-tag" data-i18n>Beta</span>
-              </button>
-              <!-- The weather on a past day, in a dialog (past-weather.ts). -->
-              <button type="button" class="panel__menu-item panel__past" hidden>
-                <span class="panel__menu-icon" aria-hidden="true">🎂</span>
-                <span data-i18n>Weather on a day…</span>
-              </button>
-              <!-- On/off: aria-pressed, and ✓ instead of ⌂ when on. -->
-              <button
-                type="button"
-                class="panel__menu-item panel__start"
-                aria-pressed="false"
-                hidden
-              >
-                <span class="panel__menu-icon panel__start-icon" aria-hidden="true">⌂</span>
-                <span data-i18n>Start here</span>
-              </button>
+              <div class="panel__menu-group panel__menu-main">
+                <button type="button" class="panel__menu-item panel__share" hidden>
+                  <span class="panel__menu-icon" aria-hidden="true">↗</span>
+                  <span data-i18n>Share this place</span>
+                </button>
+                <!-- The weather as a postcard picture (postcard.ts). -->
+                <button type="button" class="panel__menu-item panel__postcard" hidden>
+                  <span class="panel__menu-icon" aria-hidden="true">📸</span>
+                  <span data-i18n>Share as a picture</span>
+                </button>
+                <!-- The fun ones, behind one item: it swaps the menu's contents
+                   to them, so the menu stays short (panel-menu.ts). -->
+                <button type="button" class="panel__menu-item panel__fun" data-menu-nav>
+                  <span class="panel__menu-icon" aria-hidden="true">🎉</span>
+                  <span data-i18n>For fun…</span>
+                </button>
+                <!-- The weather on a past day, in a dialog (past-weather.ts). -->
+                <button type="button" class="panel__menu-item panel__past" hidden>
+                  <span class="panel__menu-icon" aria-hidden="true">🎂</span>
+                  <span data-i18n>Weather on a day…</span>
+                </button>
+                <!-- On/off: aria-pressed, and ✓ instead of ⌂ when on. -->
+                <button
+                  type="button"
+                  class="panel__menu-item panel__start"
+                  aria-pressed="false"
+                  hidden
+                >
+                  <span class="panel__menu-icon panel__start-icon" aria-hidden="true">⌂</span>
+                  <span data-i18n>Start here</span>
+                </button>
+              </div>
+              <div class="panel__menu-group panel__menu-fun" hidden>
+                <button type="button" class="panel__menu-item panel__fun-back" data-menu-nav>
+                  <span class="panel__menu-icon" aria-hidden="true">‹</span>
+                  <span data-i18n>Back</span>
+                </button>
+                <!-- An excuse made from the weather, just for fun (quips/excuses.ts). -->
+                <button type="button" class="panel__menu-item panel__excuse" hidden>
+                  <span class="panel__menu-icon" aria-hidden="true">🎲</span>
+                  <span data-i18n>Weather excuse</span>
+                </button>
+                <!-- A conversation opener from the weather (quips/small-talk.ts). -->
+                <button type="button" class="panel__menu-item panel__small-talk" hidden>
+                  <span class="panel__menu-icon" aria-hidden="true">💬</span>
+                  <span data-i18n>Small talk</span>
+                </button>
+                <!-- A three-line poem about the weather now (quips/haiku.ts). -->
+                <button type="button" class="panel__menu-item panel__haiku" hidden>
+                  <span class="panel__menu-icon" aria-hidden="true">🍃</span>
+                  <span data-i18n>Weather haiku</span>
+                </button>
+                <!-- A balloon on the forecast winds from here (balloon/). -->
+                <button type="button" class="panel__menu-item panel__balloon">
+                  <span class="panel__menu-icon" aria-hidden="true">🎈</span>
+                  <span data-i18n>Launch a balloon</span>
+                  <span class="beta-tag" data-i18n>Beta</span>
+                </button>
+                <!-- A drift game on the weather's road here (drift/). -->
+                <button type="button" class="panel__menu-item panel__drift" hidden>
+                  <span class="panel__menu-icon" aria-hidden="true">🚗</span>
+                  <span data-i18n>Drift here</span>
+                  <span class="beta-tag" data-i18n>Beta</span>
+                </button>
+              </div>
             </div>
             <button
               type="button"
@@ -573,11 +587,11 @@
             Your favourites, start place (rounded to about 1 km), unit choices, light or dark
             appearance and colours, language, rain radar and weather symbols settings, which
             sections you've folded away, your quiz results (today's score, streak and best) and your
-            balloon's name and best flight and your best drift scores are saved only in this browser, on this device. So is
-            your weather journey: points, badges and which roughly 50 km areas, countries and
-            continents you've looked at. So is the weather of the last three places you looked at
-            (rounded to about 1 km), so it can be shown without a connection, and for two hours the
-            weather at the cities the weather symbols showed.
+            balloon's name and best flight and your best drift scores are saved only in this
+            browser, on this device. So is your weather journey: points, badges and which roughly 50
+            km areas, countries and continents you've looked at. So is the weather of the last three
+            places you looked at (rounded to about 1 km), so it can be shown without a connection,
+            and for two hours the weather at the cities the weather symbols showed.
           </li>
           <li data-i18n-html="privacy-sent">
             To show the weather, the coordinates of the place you pick are sent to the weather

@@ -922,6 +922,12 @@ body:has(.quiz[open]) {
   display: none;
 }
 
+/* The main list or the fun one (panel-menu.ts): their buttons lay out as
+   the menu's own items. */
+.panel__menu-group:not([hidden]) {
+  display: contents;
+}
+
 /* Each action: a full-width row, 44px tall for touch. Start place on: the
    accent colour and a ✓. */
 .panel__menu-item {
@@ -1581,13 +1587,6 @@ body:has(.quiz[open]) {
 
   .panel--collapsed {
     height: auto;
-  }
-
-  /* With the ⋯ menu open, the sheet rises to just below the search bar, so
-     all of the place's actions fit under its header (a phone held sideways,
-     an iPhone SE). */
-  .panel:has(.panel__menu:not([hidden])) {
-    height: calc(100dvh - 72px);
   }
 
   .panel--collapsed .panel__content {

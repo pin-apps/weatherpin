@@ -156,6 +156,22 @@ test('input checks: only GET/HEAD, only FMI file ids, nothing else', async () =>
   assert.equal((await call('/api/fmi/warning/')).status, 400);
   assert.equal((await call('/api/other')).status, 404);
   assert.equal((await call('/api/fmi/warnings/extra')).status, 404);
+  assert.equal((await call('/api/fmi/warnings', 'OPTIONS')).status, 405);
+  assert.equal((await call('/api/fmi/warnings', 'PUT')).status, 405);
+  // Encoded slashes and dots, backslashes, odd characters, very long ids.
+  for (const bad of [
+    '..%2F..%2Fsecret',
+    '%2e%2e%2fsecret',
+    '2026%5C11-21%5Cx.xml',
+    `${ID.replace(/\//g, '%5C')}`,
+    `${ID}%00`,
+    `${ID}%0d%0aX-Injected:%201`,
+    `${'a/'.repeat(5000)}x.xml`,
+    ID.replace('2026', '9'.repeat(5000)),
+  ]) {
+    const answer = await call(`/api/fmi/warning/${bad}`);
+    assert.ok([400, 404].includes(answer.status), `${bad.slice(0, 60)}: ${answer.status}`);
+  }
   // None of these reached FMI.
   assert.deepEqual(asked, []);
 });
@@ -174,6 +190,42 @@ test('FMI errors, too-big or slow answers: 502, nothing kept', async () => {
   assert.equal(good.asked.length, 1);
 });
 
+test('a slow FMI: given up on, the last good list served, marked stale', async () => {
+  const clock = { now: Date.parse('2026-11-21T10:00:00Z') };
+  const cache = memoryCache(clock);
+  await setup(() => ok(RSS), clock, cache).call('/api/fmi/warnings');
+  clock.now += 3 * 60 * 1000;
+  // FMI never answers; only the time limit ends the wait.
+  const asked: string[] = [];
+  const hanging = ((input: RequestInfo | URL, init?: RequestInit) => {
+    asked.push(String(input));
+    return new Promise<Response>((_, reject) => {
+      init?.signal?.addEventListener('abort', () => reject(init.signal!.reason));
+    });
+  }) as typeof fetch;
+  const answer = await handleApi(
+    new Request('https://weatherpin.app/api/fmi/warnings', {
+      headers: { 'Sec-Fetch-Site': 'same-origin' },
+    }),
+    { fetch: hanging, cache, now: () => new Date(clock.now), timeoutMs: 50 },
+  );
+  assert.equal(answer.status, 200);
+  assert.equal(((await answer.json()) as FmiWarningList).stale, true);
+  assert.equal(asked.length, 1);
+});
+
+test('a too-big list from FMI: the last good list, marked stale', async () => {
+  const clock = { now: Date.parse('2026-11-21T10:00:00Z') };
+  const cache = memoryCache(clock);
+  await setup(() => ok(RSS), clock, cache).call('/api/fmi/warnings');
+  clock.now += 3 * 60 * 1000;
+  // No Content-Length: the size is checked on the text itself.
+  const huge = setup(() => ok('x'.repeat(5 * 1024 * 1024)), clock, cache);
+  const list = (await (await huge.call('/api/fmi/warnings')).json()) as FmiWarningList;
+  assert.equal(list.stale, true);
+  assert.ok(list.ids.length > 0);
+});
+
 test('only from our own pages: other sites, no browser headers → 403', async () => {
   const { call, asked } = setup(() => ok(RSS));
   const others: Record<string, string>[] = [
@@ -183,6 +235,10 @@ test('only from our own pages: other sites, no browser headers → 403', async (
     {},
     { Referer: 'https://evil.example/page' },
     { Referer: 'not a url' },
+    // Our address inside another site's: still another site.
+    { Referer: 'https://weatherpin.app.evil.example/' },
+    { Referer: 'http://weatherpin.app/' },
+    { 'Sec-Fetch-Site': 'cross-site', Referer: 'https://weatherpin.app/' },
   ];
   for (const headers of others) {
     assert.equal(

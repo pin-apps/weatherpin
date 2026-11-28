@@ -34,6 +34,8 @@ export interface Deps {
   /** Cloudflare's cache (caches.default); null where there's none. */
   cache: Cache | null;
   now: () => Date;
+  /** How long FMI may take (tests make it short). */
+  timeoutMs?: number;
 }
 
 const SECURITY_HEADERS = {
@@ -64,7 +66,7 @@ function error(status: number, message: string): Response {
 /** Text from FMI, within the time and size limits, or an Error. */
 async function fetchText(deps: Deps, url: string): Promise<string> {
   const response = await deps.fetch(url, {
-    signal: AbortSignal.timeout(TIMEOUT_MS),
+    signal: AbortSignal.timeout(deps.timeoutMs ?? TIMEOUT_MS),
     headers: { Accept: 'application/xml, text/xml, */*' },
   });
   if (!response.ok) throw new Error(`FMI: HTTP ${response.status}`);

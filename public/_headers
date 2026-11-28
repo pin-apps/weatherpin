@@ -15,11 +15,17 @@
 # Nothing else external may load.
 # Strict-Transport-Security: browsers use https only, for a year (the .app
 # domain is on the browsers' https-only list anyway).
+# X-Frame-Options backs up frame-ancestors for older browsers; the
+# Cross-Origin-Opener-Policy keeps other sites' windows from reaching ours.
+# (No Cross-Origin-Resource-Policy: it would stop link previews of
+# og-image.png.)
 # geolocation=(self) lets our own page ask for the user's location (the
 # "My location" button); embedded third-party frames cannot.
 /*
   Content-Security-Policy: default-src 'self'; script-src 'self' https://static.cloudflareinsights.com; style-src 'self'; img-src 'self' data: https://tile.openstreetmap.org https://tilecache.rainviewer.com https://geo.weather.gc.ca; font-src 'self'; connect-src 'self' https://api.open-meteo.com https://archive-api.open-meteo.com https://services.swpc.noaa.gov https://tie.digitraffic.fi https://geocoding-api.open-meteo.com https://nominatim.openstreetmap.org https://air-quality-api.open-meteo.com https://marine-api.open-meteo.com https://api.rainviewer.com https://geo.weather.gc.ca https://api.weather.gc.ca https://api.weather.gov https://api.met.no https://opendata-download-warnings.smhi.se https://cloudflareinsights.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests
   X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Cross-Origin-Opener-Policy: same-origin
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: geolocation=(self), camera=(), microphone=(), payment=(), usb=()
   Strict-Transport-Security: max-age=31536000; includeSubDomains

@@ -17,14 +17,18 @@ import { placeUrl } from '../place-link';
 import { readStored, writeStored } from '../storage';
 import { currentUnits } from '../units';
 import type { Forecast } from '../weather/api';
-import { draw, makeWeatherParticles, readColours, type Colours } from './draw';
+import { courseDay, makeCourse } from './course';
+import { POP_STEPS, draw, makeWeatherParticles, readColours, type Colours, type Pop } from './draw';
 import {
   GRIP,
   HEIGHT,
   WIDTH,
+  driftAngle,
+  finish,
   finished,
   newWorld,
   secondsLeft,
+  speedOf,
   step,
   stepsDue,
   type Steer,
@@ -32,6 +36,16 @@ import {
   type World,
 } from './physics';
 import { roadFor, type Road } from './surface';
+import {
+  pauseSound,
+  playBanked,
+  playChime,
+  playCombo,
+  playFanfare,
+  playThud,
+  setSound,
+  soundFrame,
+} from './sound';
 import { d, type TextName } from './texts';
 
 const STORAGE_KEY = 'drift';
@@ -45,11 +59,14 @@ const ON: Record<Surface, TextName> = {
   rain: 'onRain',
   snow: 'onSnow',
   ice: 'onIce',
+  glare: 'onGlare',
 };
 
 interface Saved {
   version: 1;
   best: Partial<Record<Surface, number>>;
+  /** Sound on (off until the player turns it on). */
+  sound?: boolean;
 }
 
 type Phase = 'ready' | 'running' | 'paused' | 'over';
@@ -96,7 +113,9 @@ class Game {
   private readonly canvas = el('canvas', 'drift__canvas');
   private readonly context: CanvasRenderingContext2D;
   private readonly scoreValue = el('span', 'drift__score');
-  private readonly comboValue = el('span', 'drift__combo');
+  private readonly lapValue = el('span', 'drift__lap');
+  private readonly soundButton = el('button', 'button drift__sound');
+  private pops: Pop[] = [];
   private readonly timeValue = el('span', 'drift__time');
   private readonly overlay = el('p', 'drift__overlay');
   private readonly bestLine = el('p', 'drift__best');
@@ -130,14 +149,16 @@ class Game {
       el('span', 'drift__label', `${d('score')} `),
       this.scoreValue,
       ' · ',
-      this.comboValue,
+      this.lapValue,
       ' · ',
       this.timeValue,
     );
     const stage = el('div', 'drift__stage');
     stage.append(this.canvas, this.overlay);
     const footer = el('div', 'drift__footer');
-    footer.append(this.bestLine, this.shareButton);
+    footer.append(this.bestLine, this.soundButton, this.shareButton);
+    this.soundButton.type = 'button';
+    this.showSound();
 
     // The hints last: on small screens the buttons stay in view first.
     this.elements = [
@@ -163,13 +184,15 @@ class Game {
   }
 
   stop() {
+    pauseSound();
     cancelAnimationFrame(this.frame);
     this.frame = 0;
     this.cleanUp.abort();
   }
 
   private newRun(): World {
-    return newWorld(this.road.surface, this.road.push, Math.floor(Math.random() * 2 ** 32));
+    this.pops = [];
+    return newWorld(this.road.surface, this.road.push, makeCourse(courseDay()));
   }
 
   // ── Input ──
@@ -237,6 +260,16 @@ class Game {
     );
     window.addEventListener('resize', () => this.fitCanvas(), { signal });
     this.shareButton.addEventListener('click', () => void this.share(), { signal });
+    this.soundButton.addEventListener(
+      'click',
+      () => {
+        const on = !loadSaved().sound;
+        writeStored(STORAGE_KEY, { ...loadSaved(), sound: on });
+        this.showSound();
+        void setSound(on).then(() => playChime(false));
+      },
+      { signal },
+    );
   }
 
   /** Starts, resumes or restarts a run on a tap or key; true if it did. */
@@ -265,6 +298,7 @@ class Game {
   }
 
   private pause() {
+    pauseSound();
     this.phase = 'paused';
     cancelAnimationFrame(this.frame);
     this.held.clear();
@@ -282,6 +316,8 @@ class Game {
       this.spare = due.spare;
       this.last = now;
       for (let i = 0; i < due.steps; i++) step(this.world, this.steer());
+      this.happened(due.steps);
+      soundFrame(speedOf(this.world), driftAngle(this.world), this.world.drifting, true);
       this.render();
       this.updateStats();
       if (finished(this.world)) this.end();
@@ -289,7 +325,64 @@ class Game {
     });
   }
 
+  /** The steps' events as words over the car and sounds; older words fade. */
+  private happened(steps: number) {
+    for (const pop of this.pops) pop.age += steps;
+    this.pops = this.pops.filter((pop) => pop.age < POP_STEPS);
+    const at = { x: this.world.x, y: this.world.y - 18, age: 0 };
+    const say = (text: string, kind: Pop['kind']) => this.pops.push({ ...at, text, kind });
+    for (const event of this.world.events) {
+      switch (event.type) {
+        case 'gate':
+          say(
+            d(event.drifting ? 'popDriftGate' : 'popGate', { points: event.points }),
+            event.drifting ? 'great' : 'good',
+          );
+          playChime(event.drifting);
+          break;
+        case 'lap':
+          if (event.clean) {
+            say(d('popCleanLap', { points: event.points }), 'great');
+            playFanfare();
+          } else say(d('popLap', { laps: this.world.laps }), 'good');
+          break;
+        case 'cone':
+        case 'wall':
+          say(d('popHit'), 'bad');
+          playThud();
+          break;
+        case 'wiped':
+          say(d('popWiped', { points: event.points }), 'bad');
+          break;
+        case 'banked': {
+          const name = event.points < 150 ? 'popNice' : event.points < 500 ? 'popBig' : 'popHuge';
+          const text = d(name, { points: event.points });
+          say(event.long ? d('plusSecond', { text }) : text, event.points < 150 ? 'good' : 'great');
+          playBanked(event.points);
+          break;
+        }
+        case 'combo':
+          playCombo(event.level);
+          break;
+      }
+    }
+    this.world.events = [];
+  }
+
+  private showSound() {
+    const on = loadSaved().sound === true;
+    // The icon is only a picture: the button's name says it in words.
+    const icon = el('span', 'drift__sound-icon', on ? '🔊' : '🔇');
+    icon.setAttribute('aria-hidden', 'true');
+    this.soundButton.replaceChildren(icon);
+    this.soundButton.setAttribute('aria-pressed', String(on));
+    this.soundButton.setAttribute('aria-label', d(on ? 'soundOn' : 'soundOff'));
+  }
+
   private end() {
+    finish(this.world);
+    this.happened(0);
+    soundFrame(0, 0, false, false);
     this.phase = 'over';
     this.overAt = performance.now();
     this.held.clear();
@@ -301,7 +394,8 @@ class Game {
     if (newBest)
       writeStored(STORAGE_KEY, { ...saved, best: { ...saved.best, [this.road.surface]: score } });
     this.showBest();
-    const result = d('result', { score: number(score), on });
+    const result = d('result', { score: number(score), on, laps: this.world.laps });
+    if (newBest && score > 0) playFanfare();
     this.announce.textContent = newBest && score > 0 ? `${result} ${d('newBest', { on })}` : result;
     this.overlay.textContent = d('tapAgain');
     this.overlay.hidden = false;
@@ -315,14 +409,22 @@ class Game {
       this.colours,
       this.phase === 'running' ? this.particles : [],
       !this.reducedMotion,
+      this.pops,
+      this.world.pending > 0
+        ? d('counter', { points: Math.round(this.world.pending), combo: this.world.combo })
+        : '',
     );
   }
 
   private updateStats() {
     const score = number(Math.round(this.world.score));
     if (this.scoreValue.textContent !== score) this.scoreValue.textContent = score;
-    const combo = `x${this.world.combo}`;
-    if (this.comboValue.textContent !== combo) this.comboValue.textContent = combo;
+    const lap = d('lap', {
+      lap: this.world.laps + 1,
+      gate: this.world.gate + 1,
+      gates: this.world.course.gates.length,
+    });
+    if (this.lapValue.textContent !== lap) this.lapValue.textContent = lap;
     const time = d('time', { seconds: secondsLeft(this.world) });
     if (this.timeValue.textContent !== time) this.timeValue.textContent = time;
   }
@@ -409,5 +511,6 @@ function loadSaved(): Saved {
       }
     }
   }
-  return { version: 1, best };
+  const sound = stored && typeof stored === 'object' && stored.sound === true;
+  return sound ? { version: 1, best, sound } : { version: 1, best };
 }

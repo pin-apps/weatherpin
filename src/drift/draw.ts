@@ -1,9 +1,11 @@
 // Draws the drift game's world (physics.ts) on a canvas: the track, its
-// tint for snow or ice, puddles, skid marks, cones, the car, falling rain or
-// snow, and a red edge after a hit. Colours come from the app's CSS
+// tint for snow or ice, puddles, the gates (the next one glowing), skid
+// marks, cones (knocked ones lying down), the car, falling rain or snow,
+// the drift counter and pops (what just happened), and a red edge after a
+// hit. Colours come from the app's CSS
 // variables, so every skin, light or dark, has its own track.
 
-import { CAR_RADIUS, HEIGHT, WIDTH, type Point, type World } from './physics';
+import { CAR_RADIUS, HEIGHT, WIDTH, coneDown, type Cone, type Point, type World } from './physics';
 
 export interface Colours {
   track: string;
@@ -11,7 +13,17 @@ export interface Colours {
   car: string;
   glass: string;
   skid: string;
+  gate: string;
+  ink: string;
 }
+
+/** Words rising from the car for a moment ("Gate +150"). */
+export interface Pop extends Point {
+  text: string;
+  kind: 'good' | 'great' | 'bad';
+  age: number;
+}
+export const POP_STEPS = 60;
 
 /** The app's colours as the page has them now. */
 export function readColours(element: HTMLElement): Colours {
@@ -23,6 +35,8 @@ export function readColours(element: HTMLElement): Colours {
     car: value('--color-accent', '#0b63ce'),
     glass: value('--color-surface', '#ffffff'),
     skid: value('--color-text', '#1b2633'),
+    gate: '#16a34a',
+    ink: value('--color-text', '#1b2633'),
   };
 }
 
@@ -48,11 +62,14 @@ export function draw(
   colours: Colours,
   particles: Flake[],
   flash: boolean,
+  pops: Pop[] = [],
+  counter = '',
 ): void {
   context.fillStyle = colours.track;
   context.fillRect(0, 0, WIDTH, HEIGHT);
   if (world.surface === 'snow') tint(context, 'rgb(255 255 255 / 35%)');
   if (world.surface === 'ice') tint(context, 'rgb(120 180 255 / 22%)');
+  if (world.surface === 'glare') tint(context, 'rgb(120 180 255 / 35%)');
 
   context.fillStyle = 'rgb(60 120 210 / 35%)';
   for (const puddle of world.puddles) {
@@ -61,10 +78,12 @@ export function draw(
     context.fill();
   }
 
+  drawGates(context, world, colours, flash);
   drawSkids(context, world, colours);
-  for (const cone of world.cones) drawCone(context, cone);
+  for (const cone of world.cones) drawCone(context, cone, coneDown(world, cone));
   drawCar(context, world, colours);
   drawParticles(context, world, particles);
+  drawWords(context, world, colours, pops, counter, flash);
 
   context.lineWidth = 4;
   context.strokeStyle = colours.edge;
@@ -102,7 +121,70 @@ function drawSkids(context: CanvasRenderingContext2D, world: World, colours: Col
   context.restore();
 }
 
-function drawCone(context: CanvasRenderingContext2D, cone: Point) {
+function drawGates(
+  context: CanvasRenderingContext2D,
+  world: World,
+  colours: Colours,
+  motion: boolean,
+) {
+  world.course.gates.forEach((gate, i) => {
+    const next = i === world.gate;
+    context.save();
+    context.strokeStyle = colours.gate;
+    context.lineWidth = next ? 4 : 2;
+    context.globalAlpha = next ? 0.9 : 0.25;
+    context.setLineDash(next ? [] : [6, 6]);
+    context.beginPath();
+    context.moveTo(gate.a.x, gate.a.y);
+    context.lineTo(gate.b.x, gate.b.y);
+    context.stroke();
+    if (next && motion) {
+      context.globalAlpha = 0.25 + 0.2 * Math.sin(performance.now() / 150);
+      context.lineWidth = 12;
+      context.stroke();
+    }
+    context.restore();
+  });
+}
+
+function drawWords(
+  context: CanvasRenderingContext2D,
+  world: World,
+  colours: Colours,
+  pops: Pop[],
+  counter: string,
+  motion: boolean,
+) {
+  context.save();
+  context.textAlign = 'center';
+  context.font = '700 17px system-ui, sans-serif';
+  context.lineWidth = 4;
+  context.strokeStyle = colours.glass;
+  if (counter) {
+    context.strokeText(counter, world.x, world.y - 26);
+    context.fillStyle = '#d97706';
+    context.fillText(counter, world.x, world.y - 26);
+  }
+  for (const pop of pops) {
+    const k = pop.age / POP_STEPS;
+    const y = pop.y - (motion ? k * 24 : 0);
+    context.globalAlpha = 1 - k;
+    context.strokeText(pop.text, pop.x, y);
+    context.fillStyle =
+      pop.kind === 'bad' ? '#dc2626' : pop.kind === 'great' ? colours.gate : colours.ink;
+    context.fillText(pop.text, pop.x, y);
+  }
+  context.restore();
+}
+
+function drawCone(context: CanvasRenderingContext2D, cone: Cone, down: boolean) {
+  if (down) {
+    context.save();
+    context.globalAlpha = 0.55;
+    context.translate(cone.x, cone.y);
+    context.rotate(Math.PI / 2);
+    context.translate(-cone.x, -cone.y);
+  }
   context.fillStyle = '#f28c28';
   context.beginPath();
   context.moveTo(cone.x, cone.y - 9);
@@ -112,6 +194,7 @@ function drawCone(context: CanvasRenderingContext2D, cone: Point) {
   context.fill();
   context.fillStyle = '#ffffff';
   context.fillRect(cone.x - 3.5, cone.y - 1, 7, 2.5);
+  if (down) context.restore();
 }
 
 function drawCar(context: CanvasRenderingContext2D, world: World, colours: Colours) {

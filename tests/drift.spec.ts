@@ -52,20 +52,20 @@ test.describe('drift game', () => {
     await expect(road(page)).toHaveText(/^Wet road, .?5 °C, grip 50 %$/);
     await expect(page.locator('.drift__wind')).toHaveText(/^Wind .+ from SW: it pushes the car\.$/);
     await expect(overlay(page)).toHaveText('Tap to start drifting');
-    await expect(time(page)).toHaveText('20 s');
+    await expect(time(page)).toHaveText('30 s');
     await expect(page.locator('.drift__share')).toBeDisabled();
     // The track has the focus: the arrow keys play straight away.
     await expect(page.locator('.drift__canvas')).toBeFocused();
 
     // Playing a little asks nothing either.
     await page.keyboard.down('ArrowLeft');
-    await expect(time(page)).not.toHaveText('20 s', { timeout: 3000 });
+    await expect(time(page)).not.toHaveText('30 s', { timeout: 3000 });
     await page.keyboard.up('ArrowLeft');
     expect(seen.weather).toBe(weatherBefore);
   });
 
   test('a full run with the arrow keys: score, best kept, share', async ({ page }) => {
-    test.setTimeout(60_000);
+    test.setTimeout(120_000);
     await page.addInitScript(() => {
       Object.defineProperty(navigator, 'share', {
         configurable: true,
@@ -80,10 +80,10 @@ test.describe('drift game', () => {
     await page.waitForTimeout(1500);
     await page.keyboard.up('ArrowRight');
     await page.keyboard.down('ArrowLeft');
-    await expect(result(page)).toContainText('Time!', { timeout: 30_000 });
+    await expect(result(page)).toContainText('Time!', { timeout: 80_000 });
     await page.keyboard.up('ArrowLeft');
     await expect(time(page)).toHaveText('0 s');
-    await expect(result(page)).toHaveText(/^Time! [\d,]+ points on a wet road\./);
+    await expect(result(page)).toHaveText(/^Time! [\d,]+ points on a wet road, \d+ laps\./);
     await expect(overlay(page)).toHaveText('Tap to drift again');
 
     const saved = await page.evaluate(() =>
@@ -114,7 +114,7 @@ test.describe('drift game', () => {
     await page.mouse.move(box.x + box.width * 0.25, box.y + box.height * 0.5);
     await page.mouse.down();
     await expect(overlay(page)).toBeHidden();
-    await expect(time(page)).not.toHaveText('20 s', { timeout: 3000 });
+    await expect(time(page)).not.toHaveText('30 s', { timeout: 3000 });
     await page.mouse.up();
 
     // Switching away pauses it.
@@ -140,6 +140,20 @@ test.describe('drift game', () => {
     expect(await time(page).textContent()).toBe(closedAt);
   });
 
+  test('the daily course, the lap counter, sound off until turned on', async ({ page }) => {
+    await openDrift(page);
+    await expect(page.locator('.drift__lap')).toHaveText(/^Lap 1 · gate 1\/[4-6]$/);
+    const sound = page.locator('.drift__sound');
+    await expect(sound).toHaveAccessibleName('Sound off');
+    await expect(sound).toHaveAttribute('aria-pressed', 'false');
+    await sound.click();
+    await expect(sound).toHaveAccessibleName('Sound on');
+    const saved = await page.evaluate(() =>
+      JSON.parse(localStorage.getItem('nordic-weather:drift') ?? 'null'),
+    );
+    expect(saved.sound).toBe(true);
+  });
+
   test('black ice below zero after rain', async ({ page }) => {
     const icy = forecastFixture();
     icy.current.temperature_2m = -6;
@@ -154,7 +168,7 @@ test.describe('drift game', () => {
       return route.fulfill({ json: icy });
     });
     await openDrift(page);
-    await expect(road(page)).toHaveText(/^Black ice, .6 °C, grip 16 %$/);
+    await expect(road(page)).toHaveText(/^Black ice, .6 °C, grip 10 %$/);
     await expect(page.locator('.drift__wind')).toHaveCount(0);
   });
 

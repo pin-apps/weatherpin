@@ -511,6 +511,7 @@ export const NORWEGIAN: Record<string, string> = {
   'Small talk': 'Småprat',
   'Weather haiku': 'Værhaiku',
   'Launch a balloon': 'Send av gårde en ballong',
+  'Drift here': 'Drift her',
   Beta: 'Beta',
   Copied: 'Kopiert',
   // ── Add to home screen (settings.ts) ──

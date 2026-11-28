@@ -513,6 +513,7 @@ export const FINNISH: Record<string, string> = {
   'Small talk': 'Jutun juurta',
   'Weather haiku': 'Säähaiku',
   'Launch a balloon': 'Lähetä pallo matkaan',
+  'Drift here': 'Driftaa täällä',
   Beta: 'Beta',
   Copied: 'Kopioitu',
   // ── Add to home screen (settings.ts) ──

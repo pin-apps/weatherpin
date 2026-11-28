@@ -516,6 +516,7 @@ export const SWEDISH: Record<string, string> = {
   'Small talk': 'Småprat',
   'Weather haiku': 'Väderhaiku',
   'Launch a balloon': 'Skicka iväg en ballong',
+  'Drift here': 'Drifta här',
   Beta: 'Beta',
   Copied: 'Kopierat',
   // ── Add to home screen (settings.ts) ──

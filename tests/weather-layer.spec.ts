@@ -11,6 +11,7 @@ import {
   expect,
   openApp,
   overlappingPairs,
+  pickPoint,
   test,
   visibleBoxes,
   waitForMapStill,
@@ -261,6 +262,24 @@ test.describe('weather symbols layer', () => {
     for (const item of await page.locator('#layers-menu button').all()) {
       expect((await item.boundingBox())!.height).toBeGreaterThanOrEqual(44);
     }
+  });
+
+  test('the menu is on top of an open weather panel', { tag: '@layout' }, async ({ page }) => {
+    await openApp(page);
+    await pickPoint(page);
+    await layersButton(page).click();
+    // Each item is what a tap there reaches (on a tablet the menu can
+    // reach under the panel's bottom edge).
+    for (const item of await page.locator('#layers-menu button').all()) {
+      const box = (await item.boundingBox())!;
+      const hit = await page.evaluate(
+        ({ x, y }) => document.elementFromPoint(x, y)?.closest('#layers-menu') !== null,
+        { x: box.x + box.width / 2, y: box.y + box.height / 2 },
+      );
+      expect(hit).toBe(true);
+    }
+    await page.locator('#layers-menu').getByRole('button', { name: 'Rain radar' }).click();
+    await expect(page.locator('#radar-button')).toHaveAttribute('aria-pressed', 'true');
   });
 
   test.describe('in Finnish', () => {

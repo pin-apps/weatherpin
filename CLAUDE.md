@@ -367,10 +367,10 @@ Never run `wrangler deploy` by hand; CI deploys `main` (see README).
   menu of the place's actions (Share this place, Start here): a
   disclosure of plain buttons; closes on Escape (not the panel), outside
   clicks, after an action and on another place; opens a collapsed sheet.
-  "🎉 For fun…" swaps its contents to the fun actions (excuse, small talk,
-  haiku, balloon, drift; "‹ Back" first), so the menu stays short enough
-  for a phone's sheet (decided 2026-11-28); tests reach them through
-  `placeAction`
+  "🎮 Games…" swaps its contents to the games (balloon, drift; "‹ Back"
+  first), so the menu stays short enough for a phone's sheet; the excuse,
+  small talk and haiku stay on the main level (decided 2026-11-28); tests
+  reach the games through `placeAction`
 - `src/status-line.ts` — a self-clearing message line (live region),
   shared by the ⋯ menu's actions
 - `src/sheet.ts` — mobile bottom sheet (collapse/expand, swipe;

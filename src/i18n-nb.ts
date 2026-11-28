@@ -512,7 +512,7 @@ export const NORWEGIAN: Record<string, string> = {
   'Weather haiku': 'Værhaiku',
   'Launch a balloon': 'Send av gårde en ballong',
   'Drift here': 'Drift her',
-  'For fun…': 'For moro skyld…',
+  'Games…': 'Spill…',
   Back: 'Tilbake',
   Beta: 'Beta',
   Copied: 'Kopiert',

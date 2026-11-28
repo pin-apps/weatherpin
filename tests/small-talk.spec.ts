@@ -156,7 +156,6 @@ test.describe('small talk', () => {
       await expect(page.locator('.current__temp')).toBeVisible();
       await repeatableRandom(page);
       await page.getByRole('button', { name: 'Lisää toimintoja' }).click();
-      await page.locator('#panel-menu').getByRole('button', { name: 'Huvin vuoksi…' }).click();
       await page.locator('#panel-menu').getByRole('button', { name: 'Jutun juurta' }).click();
       await expect(card(page).getByRole('heading', { name: 'Jutun juurta' })).toBeVisible();
       const lines = await wholeRound(page, 'Toinen');

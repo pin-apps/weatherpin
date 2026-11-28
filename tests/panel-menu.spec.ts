@@ -18,12 +18,21 @@ import {
 const moreButton = (page: Page) => page.getByRole('button', { name: 'More actions' });
 const menu = (page: Page) => page.locator('#panel-menu');
 
-// Behind "For fun…", in order (Back first).
-const FUN_ITEMS = {
-  back: '.panel__fun-back',
+// The main list, in order.
+const MAIN_ITEMS = {
+  share: '.panel__share',
+  picture: '.panel__postcard',
   excuse: '.panel__excuse',
   'small talk': '.panel__small-talk',
   haiku: '.panel__haiku',
+  games: '.panel__games',
+  'a past day': '.panel__past',
+  'start here': '.panel__start',
+};
+
+// Behind "Games…", in order (Back first).
+const GAME_ITEMS = {
+  back: '.panel__games-back',
   balloon: '.panel__balloon',
   drift: '.panel__drift',
 };
@@ -47,21 +56,9 @@ test.describe('⋯ menu', () => {
       await expect(menu(page)).toBeVisible();
       await snapshot(page, testInfo, 'menu open');
 
-      // Both actions, on screen, below ⋯, big enough to tap.
-      const boxes = await visibleBoxes(page, {
-        share: '.panel__share',
-        picture: '.panel__postcard',
-        'for fun': '.panel__fun',
-        'a past day': '.panel__past',
-        'start here': '.panel__start',
-      });
-      expect(boxes.map((b) => b.name)).toEqual([
-        'share',
-        'picture',
-        'for fun',
-        'a past day',
-        'start here',
-      ]);
+      // Every action, on screen, below ⋯, big enough to tap.
+      const boxes = await visibleBoxes(page, MAIN_ITEMS);
+      expect(boxes.map((b) => b.name)).toEqual(Object.keys(MAIN_ITEMS));
       expect(offScreen(page, boxes)).toEqual([]);
       const more = (await moreButton(page).boundingBox())!;
       for (const box of boxes) {
@@ -70,18 +67,18 @@ test.describe('⋯ menu', () => {
         expect(box.width).toBeGreaterThanOrEqual(44);
       }
 
-      // For fun…: the fun ones in its place, the sheet where it was.
+      // Games…: the games in its place, the sheet where it was.
       const panelTop = (await page.locator('#panel').boundingBox())!.y;
-      await page.locator('.panel__fun').click();
-      const funBoxes = await visibleBoxes(page, FUN_ITEMS);
-      expect(funBoxes.map((b) => b.name)).toEqual(Object.keys(FUN_ITEMS));
-      expect(offScreen(page, funBoxes)).toEqual([]);
-      for (const box of funBoxes) {
+      await page.locator('.panel__games').click();
+      const gameBoxes = await visibleBoxes(page, GAME_ITEMS);
+      expect(gameBoxes.map((b) => b.name)).toEqual(Object.keys(GAME_ITEMS));
+      expect(offScreen(page, gameBoxes)).toEqual([]);
+      for (const box of gameBoxes) {
         expect(box.y).toBeGreaterThanOrEqual(more.y + more.height - 4);
         expect(box.height).toBeGreaterThanOrEqual(44);
       }
       expect((await page.locator('#panel').boundingBox())!.y).toBe(panelTop);
-      await snapshot(page, testInfo, 'for fun open');
+      await snapshot(page, testInfo, 'games open');
     },
   );
 
@@ -91,29 +88,25 @@ test.describe('⋯ menu', () => {
     await moreButton(page).focus();
     await page.keyboard.press('Enter');
     await expect(menu(page)).toBeVisible();
-    await page.keyboard.press('Tab');
-    await expect(page.locator('.panel__share')).toBeFocused();
-    await page.keyboard.press('Tab');
-    await expect(page.locator('.panel__postcard')).toBeFocused();
-    await page.keyboard.press('Tab');
-    await expect(page.locator('.panel__fun')).toBeFocused();
-    // For fun… swaps in the fun ones, Back first, and Back returns.
+    // The main list, in order, up to Games…
+    for (const selector of Object.values(MAIN_ITEMS).slice(0, 6)) {
+      await page.keyboard.press('Tab');
+      await expect(page.locator(selector)).toBeFocused();
+    }
+    // Games… swaps in the games, Back first, and Back returns.
     await page.keyboard.press('Enter');
     await expect(menu(page)).toBeVisible();
-    await expect(page.locator('.panel__fun-back')).toBeFocused();
-    for (const selector of Object.values(FUN_ITEMS).slice(1)) {
+    await expect(page.locator('.panel__games-back')).toBeFocused();
+    for (const selector of Object.values(GAME_ITEMS).slice(1)) {
       await page.keyboard.press('Tab');
       await expect(page.locator(selector)).toBeFocused();
     }
     await page.keyboard.press('Shift+Tab');
     await page.keyboard.press('Shift+Tab');
-    await page.keyboard.press('Shift+Tab');
-    await page.keyboard.press('Shift+Tab');
-    await page.keyboard.press('Shift+Tab');
-    await expect(page.locator('.panel__fun-back')).toBeFocused();
+    await expect(page.locator('.panel__games-back')).toBeFocused();
     await page.keyboard.press('Enter');
-    await expect(page.locator('.panel__fun')).toBeFocused();
-    await expect(page.locator('.panel__excuse')).toBeHidden();
+    await expect(page.locator('.panel__games')).toBeFocused();
+    await expect(page.locator('.panel__balloon')).toBeHidden();
     await page.keyboard.press('Tab');
     await expect(page.locator('.panel__past')).toBeFocused();
     await page.keyboard.press('Tab');
@@ -128,7 +121,7 @@ test.describe('⋯ menu', () => {
     // An action from the keyboard (Start here, the last item): the menu
     // closes, focus back on ⋯.
     await page.keyboard.press('Enter');
-    for (let i = 0; i < 5; i++) await page.keyboard.press('Tab');
+    for (let i = 0; i < 8; i++) await page.keyboard.press('Tab');
     await expect(page.locator('.panel__start')).toBeFocused();
     await page.keyboard.press('Enter');
     await expect(menu(page)).toBeHidden();
@@ -189,13 +182,7 @@ test.describe('⋯ menu', () => {
       await moreButton(page).click();
       await expect(handle).toHaveAttribute('aria-expanded', 'true');
       await expect(menu(page)).toBeVisible();
-      const boxes = await visibleBoxes(page, {
-        share: '.panel__share',
-        picture: '.panel__postcard',
-        'for fun': '.panel__fun',
-        'a past day': '.panel__past',
-        'start here': '.panel__start',
-      });
+      const boxes = await visibleBoxes(page, MAIN_ITEMS);
       expect(offScreen(page, boxes)).toEqual([]);
     },
   );

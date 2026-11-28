@@ -194,7 +194,7 @@ test.describe('drift game', () => {
       await page.goto(OSLO);
       await expect(page.locator('.current__temp')).toBeVisible();
       await page.getByRole('button', { name: 'Lisää toimintoja' }).click();
-      await page.locator('#panel-menu').getByRole('button', { name: 'Huvin vuoksi…' }).click();
+      await page.locator('#panel-menu').getByRole('button', { name: 'Pelit…' }).click();
       await page.locator('#panel-menu').getByRole('button', { name: 'Driftaa täällä' }).click();
       await expect(page.locator('.drift__title-text')).toHaveText('Driftaa: Oslo');
       await expect(road(page)).toHaveText(/^Märkä tie, .?5 °C, pito 50 %$/);

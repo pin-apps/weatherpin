@@ -7,10 +7,10 @@
 // Closes on Escape (focus back on ⋯), on a click outside it, after an item
 // is pressed, and when the panel shows another place or closes.
 //
-// "🎉 For fun…" swaps the menu's contents to the fun actions (excuse, small
-// talk, haiku, balloon, drift) with "‹ Back" first: the menu stays short, so
-// it fits a phone's sheet without moving it. Closing goes back to the main
-// list. (Those two buttons have data-menu-nav: pressing them doesn't close.)
+// "🎮 Games…" swaps the menu's contents to the games (balloon, drift) with
+// "‹ Back" first: the menu stays short, so it fits a phone's sheet without
+// moving it. Closing goes back to the main list. (Those two buttons have
+// data-menu-nav: pressing them doesn't close.)
 
 export interface PanelMenu {
   close(): void;
@@ -23,17 +23,17 @@ export function setUpPanelMenu(
 ): PanelMenu {
   const isOpen = () => !menu.hidden;
   const main = menu.querySelector<HTMLElement>('.panel__menu-main')!;
-  const fun = menu.querySelector<HTMLElement>('.panel__menu-fun')!;
-  const funButton = menu.querySelector<HTMLButtonElement>('.panel__fun')!;
-  const backButton = menu.querySelector<HTMLButtonElement>('.panel__fun-back')!;
+  const games = menu.querySelector<HTMLElement>('.panel__menu-games')!;
+  const gamesButton = menu.querySelector<HTMLButtonElement>('.panel__games')!;
+  const backButton = menu.querySelector<HTMLButtonElement>('.panel__games-back')!;
 
-  function showFun(on: boolean) {
+  function showGames(on: boolean) {
     main.hidden = on;
-    fun.hidden = !on;
-    (on ? backButton : funButton).focus();
+    games.hidden = !on;
+    (on ? backButton : gamesButton).focus();
   }
-  funButton.addEventListener('click', () => showFun(true));
-  backButton.addEventListener('click', () => showFun(false));
+  gamesButton.addEventListener('click', () => showGames(true));
+  backButton.addEventListener('click', () => showGames(false));
 
   function open() {
     // E.g. a collapsed phone sheet expands, so the menu has room to show.
@@ -49,7 +49,7 @@ export function setUpPanelMenu(
     const hadFocus = menu.contains(document.activeElement);
     menu.hidden = true;
     main.hidden = false;
-    fun.hidden = true;
+    games.hidden = true;
     button.setAttribute('aria-expanded', 'false');
     document.removeEventListener('pointerdown', closeIfOutside, true);
     if (hadFocus) button.focus();

@@ -370,13 +370,7 @@ export async function chooseLayer(page: Page, name: 'Rain radar' | 'Weather symb
 }
 
 /** Presses one of the place's actions in the weather panel's ⋯ menu. */
-const FUN_ACTIONS: string[] = [
-  'Weather excuse',
-  'Small talk',
-  'Weather haiku',
-  'Launch a balloon',
-  'Drift here',
-];
+const GAMES: string[] = ['Launch a balloon', 'Drift here'];
 
 export async function placeAction(
   page: Page,
@@ -392,9 +386,9 @@ export async function placeAction(
     | 'Start here',
 ) {
   await page.getByRole('button', { name: 'More actions' }).click();
-  // The fun ones are behind "For fun…".
-  if (FUN_ACTIONS.includes(name)) {
-    await page.locator('#panel-menu').getByRole('button', { name: 'For fun…' }).click();
+  // The games are behind "Games…".
+  if (GAMES.includes(name)) {
+    await page.locator('#panel-menu').getByRole('button', { name: 'Games…' }).click();
   }
   await page.locator('#panel-menu').getByRole('button', { name }).click();
   // The menu closes by itself once the action is chosen.

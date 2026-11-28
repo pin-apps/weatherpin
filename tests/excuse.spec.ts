@@ -177,7 +177,6 @@ test.describe('weather excuse', () => {
       await expect(page.locator('.current__temp')).toBeVisible();
       await repeatableRandom(page);
       await page.getByRole('button', { name: 'Lisää toimintoja' }).click();
-      await page.locator('#panel-menu').getByRole('button', { name: 'Huvin vuoksi…' }).click();
       await page.locator('#panel-menu').getByRole('button', { name: 'Säätekosyy' }).click();
       await expect(card(page).getByRole('heading', { name: 'Säätekosyy' })).toBeVisible();
       const excuses = await wholeRound(page, 'Toinen');

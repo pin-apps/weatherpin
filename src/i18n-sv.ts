@@ -517,7 +517,7 @@ export const SWEDISH: Record<string, string> = {
   'Weather haiku': 'Väderhaiku',
   'Launch a balloon': 'Skicka iväg en ballong',
   'Drift here': 'Drifta här',
-  'For fun…': 'För skojs skull…',
+  'Games…': 'Spel…',
   Back: 'Tillbaka',
   Beta: 'Beta',
   Copied: 'Kopierat',

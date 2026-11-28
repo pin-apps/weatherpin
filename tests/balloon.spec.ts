@@ -244,7 +244,7 @@ test.describe('balloon', () => {
       await page.goto('/#at=59.91,10.75&name=Oslo,+Norja');
       await expect(page.locator('.current__temp')).toBeVisible();
       await page.getByRole('button', { name: 'Lisää toimintoja' }).click();
-      await page.locator('#panel-menu').getByRole('button', { name: 'Huvin vuoksi…' }).click();
+      await page.locator('#panel-menu').getByRole('button', { name: 'Pelit…' }).click();
       await page
         .locator('#panel-menu')
         .getByRole('button', { name: 'Lähetä pallo matkaan' })

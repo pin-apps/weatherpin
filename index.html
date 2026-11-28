@@ -393,11 +393,26 @@
                   <span class="panel__menu-icon" aria-hidden="true">📸</span>
                   <span data-i18n>Share as a picture</span>
                 </button>
-                <!-- The fun ones, behind one item: it swaps the menu's contents
-                   to them, so the menu stays short (panel-menu.ts). -->
-                <button type="button" class="panel__menu-item panel__fun" data-menu-nav>
-                  <span class="panel__menu-icon" aria-hidden="true">🎉</span>
-                  <span data-i18n>For fun…</span>
+                <!-- An excuse made from the weather, just for fun (quips/excuses.ts). -->
+                <button type="button" class="panel__menu-item panel__excuse" hidden>
+                  <span class="panel__menu-icon" aria-hidden="true">🎲</span>
+                  <span data-i18n>Weather excuse</span>
+                </button>
+                <!-- A conversation opener from the weather (quips/small-talk.ts). -->
+                <button type="button" class="panel__menu-item panel__small-talk" hidden>
+                  <span class="panel__menu-icon" aria-hidden="true">💬</span>
+                  <span data-i18n>Small talk</span>
+                </button>
+                <!-- A three-line poem about the weather now (quips/haiku.ts). -->
+                <button type="button" class="panel__menu-item panel__haiku" hidden>
+                  <span class="panel__menu-icon" aria-hidden="true">🍃</span>
+                  <span data-i18n>Weather haiku</span>
+                </button>
+                <!-- The games, behind one item: it swaps the menu's contents to
+                   them, so the menu stays short (panel-menu.ts). -->
+                <button type="button" class="panel__menu-item panel__games" data-menu-nav>
+                  <span class="panel__menu-icon" aria-hidden="true">🎮</span>
+                  <span data-i18n>Games…</span>
                 </button>
                 <!-- The weather on a past day, in a dialog (past-weather.ts). -->
                 <button type="button" class="panel__menu-item panel__past" hidden>
@@ -415,25 +430,10 @@
                   <span data-i18n>Start here</span>
                 </button>
               </div>
-              <div class="panel__menu-group panel__menu-fun" hidden>
-                <button type="button" class="panel__menu-item panel__fun-back" data-menu-nav>
+              <div class="panel__menu-group panel__menu-games" hidden>
+                <button type="button" class="panel__menu-item panel__games-back" data-menu-nav>
                   <span class="panel__menu-icon" aria-hidden="true">‹</span>
                   <span data-i18n>Back</span>
-                </button>
-                <!-- An excuse made from the weather, just for fun (quips/excuses.ts). -->
-                <button type="button" class="panel__menu-item panel__excuse" hidden>
-                  <span class="panel__menu-icon" aria-hidden="true">🎲</span>
-                  <span data-i18n>Weather excuse</span>
-                </button>
-                <!-- A conversation opener from the weather (quips/small-talk.ts). -->
-                <button type="button" class="panel__menu-item panel__small-talk" hidden>
-                  <span class="panel__menu-icon" aria-hidden="true">💬</span>
-                  <span data-i18n>Small talk</span>
-                </button>
-                <!-- A three-line poem about the weather now (quips/haiku.ts). -->
-                <button type="button" class="panel__menu-item panel__haiku" hidden>
-                  <span class="panel__menu-icon" aria-hidden="true">🍃</span>
-                  <span data-i18n>Weather haiku</span>
                 </button>
                 <!-- A balloon on the forecast winds from here (balloon/). -->
                 <button type="button" class="panel__menu-item panel__balloon">
